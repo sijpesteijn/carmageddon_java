@@ -14,4 +14,5 @@ Morgen meenemen:
 - Beaglebone black
 - hd camera
 - usb connector maken
+- servo
 - tools
