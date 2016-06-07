@@ -6,7 +6,9 @@ http://www.rcgroups.com/forums/showthread.php?t=1987765
 
 http://www.rcgroups.com/forums/showpost.php?p=29363846&postcount=1905
 
-https://www.youtube.com/watch?v=zOgSC---rgM
+Beaglebone black met opencv: https://www.youtube.com/watch?v=zOgSC---rgM
+
+Servo: http://www.servodatabase.com/servo/modelcraft/4519
 
 
 Morgen meenemen:
