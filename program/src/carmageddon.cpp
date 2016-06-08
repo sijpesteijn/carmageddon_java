@@ -15,7 +15,7 @@
 using namespace std;
 
 int main() {
-	// Set up syslog. (tail -f /var/log/syslog)
+	// Set up syslog. (tail -f /var/log/syslog | grep carmageddon)
 	openlog("carmageddon-bbb", LOG_PID | LOG_CONS | LOG_NDELAY | LOG_NOWAIT, LOG_LOCAL0);
 	setlogmask(LOG_UPTO(LOG_DEBUG));
 	syslog(LOG_INFO, "%s", "Starting Carmaggedon...");
