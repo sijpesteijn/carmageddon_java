@@ -8,22 +8,38 @@
 #ifndef OBJECTS_STEER_H_
 #define OBJECTS_STEER_H_
 
-#include <iostream>
-using namespace std;
+#include <syslog.h>
 
-class Steer {
-public:
-	int angle = 0;
-	static Steer* getInstance() {
-		static Steer obj;
-		return &obj;
-	}
-private:
-	Steer() {
-		syslog(LOG_INFO, "%s", "Setting up steering wheel.");
-
-		syslog(LOG_INFO, "%s", "Here is your steering wheel.");
-	};
+class Steer
+{
+	public:
+		static Steer* getInstance();
+		void setAngle(int a);
+		int getAngle();
+	private:
+		int angle;
+		Steer();
 };
+
+
+Steer::Steer() {
+	angle = 0;
+	syslog(LOG_INFO, "%s", "Setting up steering wheel.");
+
+	syslog(LOG_INFO, "%s", "Here is your steering wheel.");
+}
+
+Steer* Steer::getInstance() {
+	static Steer obj;
+	return &obj;
+}
+
+void Steer::setAngle(int a) {
+	angle = a;
+}
+
+int Steer::getAngle() {
+	return angle;
+}
 
 #endif /* OBJECTS_STEER_H_ */
