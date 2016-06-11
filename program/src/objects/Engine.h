@@ -14,7 +14,7 @@ public:
 	void setThrottle(int t);
 	int getThrottle();
 private:
-	int throttle;
+	int throttle = 0;
 	Engine();
 };
 

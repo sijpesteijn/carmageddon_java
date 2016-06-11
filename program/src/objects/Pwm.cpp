@@ -30,7 +30,7 @@ PWM::PWM(int pwm_number, int p) {
 	pwmNr = pwm_number;
 	period = p;
 	polarity = 0;
-	duty = 880000;
+	duty = 0;
 	run = 0;
 	struct overlay* ol = (struct overlay*) malloc(sizeof(struct overlay));
 	ol->file_name = pwms[pwmNr].bone_name;
@@ -46,69 +46,70 @@ PWM::PWM(int pwm_number, int p) {
 	deviceTree.load_device_tree_overlay(ol);
 }
 
-int PWM::open() {
-	std::string tmp;
-	tmp = PWM_PATH + std::string(pwms[pwmNr].pwm_name);
-
-	if (access(tmp.c_str(), F_OK) == -1) {
-		syslog(LOG_ERR, "Could not open file: %s", tmp.c_str());
-		return 1;
-	}
-	setPolarity(polarity);
-	setPeriod(period);
-	setDuty(duty);
-	start();
-	return 0;
-}
-
-void PWM::setPolarity(int p) {
+int PWM::setPolarity(int p) {
 	char command[255];
 	sprintf(command, "echo %d > %s/%s/polarity", p, PWM_PATH, pwms[pwmNr].pwm_name);
-	system(command);
+	if (system(command) > 0) {
+		return 1;
+	}
 	polarity = p;
+	return 0;
 }
 
 int PWM::getPolarity() {
 	return polarity;
 }
 
-void PWM::setPeriod(int p) {
+int PWM::setPeriod(int p) {
 	char command[255];
 	sprintf(command, "echo %d > %s/%s/period", p, PWM_PATH, pwms[pwmNr].pwm_name);
-	system(command);
+	if (system(command) > 0) {
+		return 1;
+	}
 	period = p;
+	return 0;
 }
 
 int PWM::getPeriod() {
 	return period;
 }
 
-void PWM::setDuty(int d) {
+int PWM::setDuty(int d) {
 	char command[255];
 	sprintf(command, "echo %d > %s/%s/duty", d, PWM_PATH, pwms[pwmNr].pwm_name);
-	system(command);
+	if (system(command) > 0) {
+		return 1;
+	}
 	duty = d;
+	return 0;
 }
 
 int PWM::getDuty() {
 	return duty;
 }
 
-void PWM::toggle(int r) {
+int PWM::toggle(int r) {
 	char command[255];
 	sprintf(command, "echo %d > %s/%s/run", r, PWM_PATH, pwms[pwmNr].pwm_name);
-	system(command);
+	if (system(command) > 0) {
+		return 1;
+	}
 	run = r;
+	return 0;
 }
 
-void PWM::start() {
-	toggle(1);
+int PWM::start() {
+	return toggle(1);
 }
 
-void PWM::stop() {
-	toggle(0);
+int PWM::stop() {
+	return toggle(0);
 }
 
 int PWM::isRunning() {
 	return run;
+}
+
+const char* PWM::getName() {
+	return pwms[pwmNr].pwm_name;
 }
