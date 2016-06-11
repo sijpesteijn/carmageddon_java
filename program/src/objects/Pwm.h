@@ -10,7 +10,7 @@
 
 #include <unistd.h>
 #include <map>
-#define PWM_PATH "/sys/class/pwm/"
+#define PWM_PATH "/sys/devices/ocp.3/"
 
 struct pwm {
 	int id;
@@ -28,11 +28,16 @@ public:
 	int getDuty();
 	void setPeriod(int p);
 	int getPeriod();
+	void start();
+	void stop();
+	int isRunning();
 private:
 	int pwmNr;
 	int period;
 	int polarity;
 	int duty;
+	int run;
+	void toggle(int r);
 };
 
 #endif /* OBJECTS_PWM_H_ */

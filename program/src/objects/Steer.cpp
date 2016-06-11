@@ -8,9 +8,11 @@
 #include "Steer.h"
 #include "Pwm.h"
 
+PWM pwm;
+
 Steer::Steer() {
 	int pwmNr = 0;
-	PWM pwm(pwmNr);
+	pwm = PWM(pwmNr);
 	if (pwm.open() > 0) {
 		syslog(LOG_ERR, "Could not open pwm port: %i", pwmNr);
 	}
@@ -20,12 +22,17 @@ Steer::Steer() {
 	syslog(LOG_INFO, "%s", "Here is your steering wheel.");
 }
 
+Steer::~Steer() {
+
+}
+
 Steer* Steer::getInstance() {
 	static Steer obj;
 	return &obj;
 }
 
 void Steer::setAngle(int a) {
+	pwm.setDuty(a);
 	angle = a;
 }
 

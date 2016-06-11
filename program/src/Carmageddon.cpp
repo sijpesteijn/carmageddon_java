@@ -21,12 +21,16 @@ int main() {
 	syslog(LOG_INFO, "%s", "Starting Carmaggedon...");
 
 	Steer *steer = Steer::getInstance(); // We hebben maar een stuur.
-	steer->setAngle(-10);
 	syslog(LOG_INFO, "Steering wheel angle: %i", steer->getAngle());
+
 	Engine *engine = Engine::getInstance(); // We hebben maar een motor.
 	syslog(LOG_INFO, "Engine throttle: %i", engine->getThrottle());
+
 	Camera *camera = Camera::getInstance(); // We hebben maar een camera.
 	syslog(LOG_INFO, "Camera connected: %i", camera->isConnected());
+
+	steer->setAngle(2000000);
+
 
 	syslog(LOG_INFO, "%s", "Carmaggedon stopped");
 	return 0;

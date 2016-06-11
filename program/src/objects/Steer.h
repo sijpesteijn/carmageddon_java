@@ -14,6 +14,7 @@ class Steer
 		static Steer* getInstance();
 		void setAngle(int a);
 		int getAngle();
+		~Steer();
 	private:
 		int angle;
 		Steer();

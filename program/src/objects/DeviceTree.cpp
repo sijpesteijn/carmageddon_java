@@ -15,7 +15,7 @@
 #include <string.h>
 #include "../Utils.h"
 
-char* slotsFilePath;
+const char* SLOTS = "/sys/devices/bone_capemgr.9/slots";
 #define MAX_LENGTH 1048576
 
 
@@ -30,7 +30,7 @@ char* getTokenValue(char* token) {
 
 int DeviceTreeOverlay::get_device_tree_overlay_count() {
 	syslog(LOG_INFO, "%s", "get device tree overlay count");
-	FILE *fh = fopen("/sys/devices/bone_capemgr.9/slots", "r");
+	FILE *fh = fopen(SLOTS, "r");
 
 	if (fh == NULL) {
 		printf("failed to openfile\n");
@@ -41,6 +41,7 @@ int DeviceTreeOverlay::get_device_tree_overlay_count() {
 	while (fgets(buf, sizeof buf, fh) != NULL) {
 		nrOfOverlays++;
 	}
+	syslog(LOG_DEBUG, "Nr of device tree overlays %i", nrOfOverlays);
 	return nrOfOverlays;
 }
 
@@ -82,7 +83,7 @@ int DeviceTreeOverlay::get_device_tree_overlays(struct overlay** overlays) {
 }
 
 int DeviceTreeOverlay::device_tree_overlay_equal(struct overlay* ol1, struct overlay* ol2) {
-	syslog(LOG_INFO, "device tree overlay equal. %s-%s %s-%s", ol1->part_number, ol1->version,
+	syslog(LOG_DEBUG, "device tree overlay equal. %s-%s %s-%s", ol1->part_number, ol1->version,
 			ol2->part_number, ol2->version);
 	int equals = 0;
 	if (ol1 == NULL || ol2 == NULL) {
@@ -108,29 +109,31 @@ int DeviceTreeOverlay::is_device_tree_overlay_loaded(struct overlay* ol) {
 		if (device_tree_overlay_equal(ol, overlays[i]) == 1) {
 			struct overlay *ol1;
 			ol1 = overlays[i];
-			syslog(LOG_INFO,
+			syslog(LOG_DEBUG,
 					"Overlay already loaded. version: %s,%s partnumber: %s,%s",
 					ol->version, ol1->version, ol->part_number,
 					ol1->part_number);
-			return 1;
+			return i+1;
 		}
 	}
-	return 0;
+	return -1;
 }
 
 int DeviceTreeOverlay::load_device_tree_overlay(struct overlay* ol) {
 	syslog(LOG_INFO, "Load device tree overlay: %s", ol->file_name);
-	if (is_device_tree_overlay_loaded(ol) == 0) {
+	int loaded = is_device_tree_overlay_loaded(ol);
+	if (loaded == -1) {
 		syslog(LOG_INFO, "Loading device tree overlay: %s", ol->part_number);
 		int status;
 		pid_t pID = fork();
 		if (pID == 0) {               // child
-		   char cmd[100] = "echo ";
+		   char cmd[100] = "\"echo ";
 		   strcat(cmd, ol->file_name);
 		   strcat(cmd, " > ");
-		   strcat(cmd, slotsFilePath);
+		   strcat(cmd, SLOTS);
+		   strcat(cmd, "\"");
 		   char *name[] = {
-		        "/bin/bash",
+		        "/bin/sh ",
 		        "-c",
 				cmd,
 		        NULL
@@ -138,7 +141,7 @@ int DeviceTreeOverlay::load_device_tree_overlay(struct overlay* ol) {
 		   chdir("/lib/firmware/");
 		   execvp(name[0], name);
 		   usleep(50000);
-		   exit(EXIT_SUCCESS);
+		   loaded = get_device_tree_overlay_count();
 		}
 		wait(&status);
 
@@ -146,9 +149,13 @@ int DeviceTreeOverlay::load_device_tree_overlay(struct overlay* ol) {
 		syslog(LOG_INFO, "Device tree overlay %s already loaded",
 				ol->part_number);
 	}
-	return 0;
+	return loaded;
 }
 
+/**
+ * Unloading an overlay can cause the kernel to freeze.
+ * Best is to reboot :(
+ */
 int DeviceTreeOverlay::unload_device_tree_overlay(int slot_nr) {
 	pid_t pID = fork();
 	if (pID == 0) {               // child
@@ -157,7 +164,7 @@ int DeviceTreeOverlay::unload_device_tree_overlay(int slot_nr) {
 	   sprintf(nr, "-%d", slot_nr);
 	   strcat(cmd, nr);
 	   strcat(cmd, " > ");
-	   strcat(cmd, slotsFilePath);
+	   strcat(cmd, SLOTS);
 	   char *name[] = {
 	        "/bin/bash",
 	        "-c",
