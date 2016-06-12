@@ -29,7 +29,10 @@ int main() {
 	Camera *camera = Camera::getInstance(); // We hebben maar een camera.
 	syslog(LOG_INFO, "Camera connected: %i", camera->isConnected());
 
-	steer->setAngle(2000000);
+	for(int i = 0; i < 100000000;i++) {
+
+	}
+	steer->setAngle(1500000);
 
 
 	syslog(LOG_INFO, "%s", "Carmaggedon stopped");

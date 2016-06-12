@@ -17,7 +17,7 @@
 
 pwm pwms[8] = {
 		{0,"bone_pwm_P9_22", "pwm_test_P9_22.15"},
-		{1,"bone_pwm_P9_22", "pwm_test_P9_22.31"},
+		{1,"bone_pwm_P9_42", "pwm_test_P9_42.16"},
 		{2,"bone_pwm_P9_22", "pwm_test_P9_22.15"},
 		{3,"bone_pwm_P9_22", "pwm_test_P9_22.15"},
 		{4,"bone_pwm_P9_22", "pwm_test_P9_22.15"},
@@ -26,12 +26,12 @@ pwm pwms[8] = {
 		{7,"bone_pwm_P9_22", "pwm_test_P9_22.15"}
 };
 
-PWM::PWM(int pwm_number, int p) {
+PWM::PWM(int pwm_number) {
 	pwmNr = pwm_number;
-	period = p;
 	polarity = 0;
 	duty = 0;
 	run = 0;
+	period = 0;
 	struct overlay* ol = (struct overlay*) malloc(sizeof(struct overlay));
 	ol->file_name = pwms[pwmNr].bone_name;
 	ol->board_name = "Override Board Name";

@@ -13,10 +13,13 @@ static PWM pwm;
 
 Engine::Engine() {
 	syslog(LOG_INFO, "%s", "Setting up the engine.");
-	int pwmNr = 0;
+	int pwmNr = 1;
 	int maxDuty= 900000;
 	int minDuty= 800000;
-	pwm = PWM(pwmNr, 1000000);
+	pwm = PWM(pwmNr);
+	if (pwm.setPeriod(maxDuty) > 0) {
+		syslog(LOG_ERR, "Could not set pwm period: %s", pwm.getName());
+	}
 	if (pwm.setDuty(minDuty) > 0) {
 		syslog(LOG_ERR, "Could not set pwm duty: %s", pwm.getName());
 	}

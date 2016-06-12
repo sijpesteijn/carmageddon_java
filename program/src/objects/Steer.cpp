@@ -11,14 +11,17 @@
 static PWM pwm;
 
 Steer::Steer() {
-	int dutyMax = 2000000;
-	int dutyMin = 880000;
+	int dutyMax = 20000000;
+	int dutyMin = 880000 ;
 	int pwmNr = 0;
-	pwm = PWM(pwmNr, dutyMax);
+	pwm = PWM(pwmNr);
+	if (pwm.setPeriod(dutyMax) > 0) {
+		syslog(LOG_ERR, "Could not set pwm period: %s", pwm.getName());
+	}
 	if (pwm.setDuty(dutyMin) > 0) {
 		syslog(LOG_ERR, "Could not set pwm duty: %s", pwm.getName());
 	}
-	if (pwm.setPolarity(1) > 0) {
+	if (pwm.setPolarity(0) > 0) {
 		syslog(LOG_ERR, "Could not set pwm polarity: %s", pwm.getName());
 	}
 	if (pwm.start() > 0) {

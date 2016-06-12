@@ -20,7 +20,7 @@ struct pwm {
 
 class PWM {
 public:
-	PWM(int pwm_number = 0, int period = 20000000);
+	PWM(int pwm_number = 0);
 	int setPolarity(int p);
 	int getPolarity();
 	int setDuty(int d);
