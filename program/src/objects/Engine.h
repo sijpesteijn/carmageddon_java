@@ -13,6 +13,8 @@ public:
 	static Engine* getInstance();
 	void setThrottle(int t);
 	int getThrottle();
+	void slowDown();
+	void speedUp();
 private:
 	int throttle = 0;
 	Engine();

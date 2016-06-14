@@ -10,25 +10,31 @@
 #include <syslog.h>
 
 static PWM pwm;
+static int dutyMax= 2000000;
+static int dutyMiddle = 1200000;
+static int dutyMin= 800000;
+
+
+#define STEP 50000
 
 Engine::Engine() {
 	syslog(LOG_INFO, "%s", "Setting up the engine.");
-	int pwmNr = 1;
-	int maxDuty= 900000;
-	int minDuty= 800000;
+	int pwmNr = 0;
+	int period = 20000000;
 	pwm = PWM(pwmNr);
-	if (pwm.setPeriod(maxDuty) > 0) {
+	if (pwm.setPeriod(period) > 0) {
 		syslog(LOG_ERR, "Could not set pwm period: %s", pwm.getName());
 	}
-	if (pwm.setDuty(minDuty) > 0) {
+	if (pwm.setDuty(dutyMiddle) > 0) {
 		syslog(LOG_ERR, "Could not set pwm duty: %s", pwm.getName());
 	}
-	if (pwm.setPolarity(1) > 0) {
+	if (pwm.setPolarity(0) > 0) {
 		syslog(LOG_ERR, "Could not set pwm polarity: %s", pwm.getName());
 	}
 	if (pwm.start() > 0) {
 		syslog(LOG_ERR, "Could not start pwm port: %i", pwmNr);
 	}
+	throttle = dutyMiddle;
 	syslog(LOG_INFO, "%s", "Here is the engine.");
 }
 
@@ -48,4 +54,14 @@ void Engine::setThrottle(int t) {
 
 int Engine::getThrottle() {
 	return throttle;
+}
+
+void Engine::speedUp() {
+	if (throttle + STEP <= dutyMax)
+		setThrottle(throttle + STEP);
+}
+
+void Engine::slowDown() {
+	if (throttle - STEP >= dutyMin)
+		setThrottle(throttle - STEP);
 }
