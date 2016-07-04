@@ -11,7 +11,7 @@
 
 static PWM pwm;
 static int dutyMax= 2000000;
-static int dutyMiddle = 1200000;
+static int dutyMiddle = 1400000;
 static int dutyMin= 800000;
 
 

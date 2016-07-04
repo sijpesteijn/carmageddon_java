@@ -47,7 +47,7 @@ int DeviceTreeOverlay::get_device_tree_overlay_count() {
 
 int DeviceTreeOverlay::get_device_tree_overlays(struct overlay** overlays) {
 	syslog(LOG_INFO, "%s", "get device tree overlays");
-	FILE *fh = fopen("/sys/devices/bone_capemgr.9/slots", "r");
+	FILE *fh = fopen(SLOTS, "r");
 
 	if (fh == NULL) {
 		printf("failed to openfile\n");

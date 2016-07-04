@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <termios.h>
+#include "objects/ESP8266.h"
 #include "./objects/Steer.h"
 #include "./objects/Engine.h"
 #include "./objects/Camera.h"
@@ -22,6 +23,9 @@ int main() {
 	openlog("carmageddon-bbb", LOG_PID | LOG_CONS | LOG_NDELAY | LOG_NOWAIT, LOG_LOCAL0);
 	setlogmask(LOG_UPTO(LOG_DEBUG));
 	syslog(LOG_INFO, "%s", "Starting Carmaggedon...");
+
+	ESP8266 *esp8266 = ESP8266::getInstance(); // We hebben maar een wifi module.
+	syslog(LOG_INFO, "Wifi connected: %i", esp8266->isConnected());
 
 	Engine *engine = Engine::getInstance(); // We hebben maar een motor.
 	syslog(LOG_INFO, "Engine throttle: %i", engine->getThrottle());

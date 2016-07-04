@@ -16,7 +16,7 @@ public:
 	void slowDown();
 	void speedUp();
 private:
-	int throttle = 0;
+	int throttle;
 	Engine();
 };
 
