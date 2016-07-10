@@ -16,8 +16,8 @@
 #include "DeviceTree.h"
 
 pwm pwms[8] = {
-		{0,"bone_pwm_P9_22", "pwm_test_P9_22.15"},
-		{1,"bone_pwm_P9_42", "pwm_test_P9_42.16"},
+		{0,"bone_pwm_P9_22", "pwm_test_P9_22.12"},
+		{1,"bone_pwm_P9_42", "pwm_test_P9_42.13"},
 		{2,"bone_pwm_P9_22", "pwm_test_P9_22.15"},
 		{3,"bone_pwm_P9_22", "pwm_test_P9_22.15"},
 		{4,"bone_pwm_P9_22", "pwm_test_P9_22.15"},

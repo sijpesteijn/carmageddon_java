@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <termios.h>
+#include <iostream>
 
 typedef enum {
 	uart0 = 0, uart1 = 1, uart2 = 2, uart3 = 3, uart4 = 4, uart5 = 5
@@ -27,8 +28,8 @@ class UART {
 public:
 	UART(uart_number number, int baudrate);
 	~UART();
-	int sendData(char *tx, int length);
-	int readData(unsigned char *rx, int length);
+	int sendData(std::string msg);
+	std::string readData();
 private:
 	uart_properties *properties;
 };

@@ -12,18 +12,29 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
+#include <algorithm>
+#include <iterator>
 
 UART::UART(uart_number number, int baudrate) {
 	properties = (uart_properties *) malloc(sizeof(uart_properties));
 	properties->baudrate = baudrate;
 	properties->uart_id = number;
-//	FILE *slots;
 	char buf[30] = "/dev/ttyO";
 	char port_nr[2];
 	sprintf(port_nr, "%d", properties->uart_id);
 	strcat(buf,port_nr);
 	struct termios uart_port;
 
+//	FILE *slots;
 //	slots = fopen(SLOTS, "w");
 //	if(slots == NULL) printf("slots didn't open\n");
 //	fseek(slots,0,SEEK_SET);
@@ -51,24 +62,21 @@ UART::UART(uart_number number, int baudrate) {
 	syslog(LOG_INFO, "%s", "UART initialized.");
 }
 
-int UART::sendData(char *tx, int length) {
-	if (write(properties->fd, tx, length) == -1) {
-		syslog(LOG_ERR, "Could not write %s to uart %i", tx, properties->uart_id);
+int UART::sendData(std::string msg) {
+	if (write(properties->fd, msg.c_str(), msg.length()) == -1) {
+		syslog(LOG_ERR, "Could not write %s to uart %i", msg.c_str(), properties->uart_id);
 		return -1;
 	}
-
-	syslog(LOG_INFO, "Wrote %s to uart %i", tx, properties->uart_id);
+	printf("%s\n", msg.c_str());
 	return 0;
 }
 
-int UART::readData(unsigned char *rx, int length) {
-	int count;
-	if( (count = read(properties->fd,(void*)rx,length)) > 0) {
-		syslog(LOG_ERR, "Could not read from uart %i", properties->uart_id);
-		return count;
-	}
-	syslog(LOG_INFO,"Read %s from uart %i", rx, properties->uart_id);
-	return 0;
+std::string UART::readData() {
+	char str[4096];
+	read(this->properties->fd,str,4096);
+	std::string answer(str);
+	syslog(LOG_INFO, "m:%i %s.\n", answer.length(), answer.c_str());
+	return answer;
 }
 
 UART::~UART() {

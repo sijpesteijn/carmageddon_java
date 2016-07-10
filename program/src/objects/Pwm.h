@@ -10,7 +10,7 @@
 
 #include <unistd.h>
 #include <map>
-#define PWM_PATH "/sys/devices/ocp.3/"
+#define PWM_PATH "/sys/devices/ocp.3"
 
 struct pwm {
 	int id;
