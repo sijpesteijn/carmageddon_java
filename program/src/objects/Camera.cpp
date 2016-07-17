@@ -7,8 +7,17 @@
 
 #include "Camera.h"
 #include <syslog.h>
+#include <opencv2/opencv.hpp>
+
+using namespace cv;
+using namespace std;
 
 Camera::Camera() {
+
+	VideoCapture cap(0);
+	if (!cap.isOpened()) {
+		cout << "Cannot open the video cam" << endl;
+	}
 	connected = 0;
 	syslog(LOG_INFO, "%s", "Setting up camera.");
 
