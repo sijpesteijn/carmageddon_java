@@ -39,4 +39,8 @@ Wifi:
  - https://www.adafruit.com/products/2282
  - http://wiki.aprbrother.com/wiki/Firmware_For_ESP8266
  - https://github.com/sleemanj/ESP8266_Simple
->>>>>>> .merge_file_tD1EEG
+
+sites:
+
+commands: 
+sudo mkfs.ext4 -L "J Connor" /dev/sdX
