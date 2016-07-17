@@ -74,3 +74,7 @@ lsmod
 rmmod uvcvideo
 modprobe uvcvideo nodrop=1 timeout=5000
 
+# sites 
+http://docs.opencv.org/2.4/doc/tutorials/introduction/crosscompilation/arm_crosscompile_with_cmake.html?highlight=arm
+https://github.com/DmitrySandalov/Install-OpenCV
+http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
