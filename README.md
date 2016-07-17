@@ -1,6 +1,5 @@
 # carmageddon
 
-<<<<<<< .merge_file_omBvXE
 http://derekmolloy.ie/streaming-video-using-rtp-on-the-beaglebone-black/
 
 http://www.rcgroups.com/forums/showthread.php?t=1987765
@@ -41,6 +40,10 @@ Wifi:
  - https://github.com/sleemanj/ESP8266_Simple
 
 sites:
+http://docs.opencv.org/2.4/doc/tutorials/introduction/crosscompilation/arm_crosscompile_with_cmake.html?highlight=arm
+http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
+https://raw.githubusercontent.com/DmitrySandalov/Install-OpenCV/master/Ubuntu/2.4/opencv2_4_5.sh
+https://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.13/
 
 commands: 
 sudo mkfs.ext4 -L "J Connor" /dev/sdX
