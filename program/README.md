@@ -36,7 +36,7 @@ optargs=quiet
 Dit zorgt ervoor dat je de sd card kan laten zitten bij booten en geboot wordt vanaf interne schijf.
 
 # Carmageddon startup script
-Bij booten moeten we een aantal dingen klaar zetten. Oa. device tree overlays (die zeggen hoe io poorten geconfigureerd worden) en de sd kaart.
+Bij booten moeten we een aantal dingen klaar zetten. Oa. device tree overlays (die zeggen hoe io poorten geconfigureerd worden)
 - Copieer carmageddon.sh file naar /etc/profile.d/
 
 # Root gebruiker configureren
