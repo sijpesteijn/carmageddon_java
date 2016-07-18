@@ -37,13 +37,7 @@ Dit zorgt ervoor dat je de sd card kan laten zitten bij booten en geboot wordt v
 
 # Carmageddon startup script
 Bij booten moeten we een aantal dingen klaar zetten. Oa. device tree overlays (die zeggen hoe io poorten geconfigureerd worden) en de sd kaart.
-- Copieer carmageddon.sh file naar /usr/bin/
-- Copieer carmageddon.service file naar /lib/systemd/
-- Maak een symbolic link aan in: /etc/systemd/system/
-ln /lib/systemd/carmageddon.service carmageddon.service
-- systemctl daemon-reload
-- systemctl start carmageddon.service
-- systemctl enable carmageddon.service
+- Copieer carmageddon.sh file naar /etc/profile.d/
 
 # Root gebruiker configureren
 We willen vanuit het programma gewoon over root rechten beschikken. Lekker makkelijk.
