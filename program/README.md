@@ -61,6 +61,9 @@ Nu heb je een bonecape manager in /sys/devices/platform/bone_capemgr/slots
 - sudo vi /etc/ssh/sshd_config en wijzig: PermitRootLogin yes
 - restart ssh (sudo service ssh reload)
 
+# ESP8266 WIFI module
+- om firmware te flashen: https://nodemcu.readthedocs.io/en/dev/en/flash/
+- nodemcu toolchain voor ubuntu, maar kan ook op debian: https://www.htlinux.com/install-esp8266-sdk-toolchain-on-linux-ubuntu-14-10-desktop/
 
 
 # Webcam timeout
