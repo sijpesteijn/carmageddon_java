@@ -32,18 +32,18 @@ PWM::PWM(int pwm_number) {
 	duty = 0;
 	run = 0;
 	period = 0;
-	struct overlay* ol = (struct overlay*) malloc(sizeof(struct overlay));
-	ol->file_name = pwms[pwmNr].bone_name;
-	ol->board_name = "Override Board Name";
-	ol->manufacturer = "Override Manuf";
-	ol->part_number = pwms[pwmNr].bone_name;
-	ol->version = "00A0";
-
-	DeviceTreeOverlay deviceTree;
-	deviceTree.load_device_tree_overlay(ol);
-	ol->file_name = "am33xx_pwm";
-	ol->part_number = "am33xx_pwm";
-	deviceTree.load_device_tree_overlay(ol);
+//	struct overlay* ol = (struct overlay*) malloc(sizeof(struct overlay));
+//	ol->file_name = pwms[pwmNr].bone_name;
+//	ol->board_name = "Override Board Name";
+//	ol->manufacturer = "Override Manuf";
+//	ol->part_number = pwms[pwmNr].bone_name;
+//	ol->version = "00A0";
+//
+//	DeviceTreeOverlay deviceTree;
+//	deviceTree.load_device_tree_overlay(ol);
+//	ol->file_name = "am33xx_pwm";
+//	ol->part_number = "am33xx_pwm";
+//	deviceTree.load_device_tree_overlay(ol);
 }
 
 int PWM::setPolarity(int p) {
