@@ -7,6 +7,38 @@
 - https://debian.beagleboard.org/images/bone-debian-7.9-lxde-4gb-armhf-2015-11-12-4gb.img.xz
 - uitpakken en op sdcard branden dmv: sudo dd bs=1m if=bone-debian-7.9-lxde-4gb-armhf-2015-11-12-4gb.img of=/dev/diskX (waar x jouw sd kaart is)
 - Nadat dit is gelukt plaats je de sdcard in de beaglebone. Hou het bootknopje ingedrukt terwijl je de spanning weer aansluit. Eerst zullen alle leds oplichten en daarna beetje random knipperen. Vervolgens zal je een looplichtje gaan zien. Wanneer alle leds branden (of alles is uit, dan is hij al even klaar) dan is het image op de eMMC geflashed.
+- <A> Nadat dit is gelukt plaats je de sdcard in de beaglebone. Hou het bootknopje ingedrukt terwijl je de spanning weer aansluit. Eerst zullen alle leds oplichten en daarna beetje random knipperen. Vervolgens zal je een looplichtje gaan zien. Wanneer alle leds branden (of alles is uit, dan is hij al even klaar) dan is het image op de eMMC geflashed.
+- Op de bb open file /boot/uEnv.txt haal '#' weg voor regel:
+  ##enable BBB: eMMC Flasher:
+  cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh
+
+  Kijk anders hier: http://elinux.org/Beagleboard:BeagleBoneBlack_Debian#Flashing_eMMC
+- Herhaal stap A
+
+
+# Device tree overlay update
+    $ sudo apt-get install git
+    $ git clone https://github.com/beagleboard/bb.org-overlays
+    $ cd bb.org-overlays/
+    $ ./dtc-overlay.sh
+    $ ./install.sh
+
+# SD card als extra storage.
+De beaglebone black heeft maar 4 Gb schijfruimte. Om de sd card als extra storage te gebruiken ga dan als volgt te werk:
+- boot de bb
+- plaats geforamateerde sdcard
+- mount de sd card
+- maak een uEnv.txt bestand aan in de root dir.
+- vult uEnv.txt met:
+mmcdev=1
+bootpart=1:2
+mmcroot=/dev/mmcblk1p1 ro
+optargs=quiet
+Dit zorgt ervoor dat je de sd card kan laten zitten bij booten en geboot wordt vanaf interne schijf.
+
+# Carmageddon startup script
+Bij booten moeten we een aantal dingen klaar zetten. Oa. device tree overlays (die zeggen hoe io poorten geconfigureerd worden)
+- Copieer carmageddon.sh file naar /etc/profile.d/
 
 # Root gebruiker configureren
 We willen vanuit het programma gewoon over root rechten beschikken. Lekker makkelijk.
@@ -39,10 +71,10 @@ ln /lib/systemd/carmageddon.service carmageddon.service
 - systemctl start carmageddon.service
 - systemctl enable carmageddon.service
 
+# ESP8266 WIFI module
+- om firmware te flashen: https://nodemcu.readthedocs.io/en/dev/en/flash/
+- nodemcu toolchain voor ubuntu, maar kan ook op debian: https://www.htlinux.com/install-esp8266-sdk-toolchain-on-linux-ubuntu-14-10-desktop/
 
-    
-
-    
 # SD card als extra storage.
 De beaglebone black heeft maar 4 Gb schijfruimte. Om de sd card als extra storage te gebruiken ga dan als volgt te werk:
 - boot de bb
