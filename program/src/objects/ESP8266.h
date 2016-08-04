@@ -21,7 +21,7 @@ typedef struct {
 class ESP8266 {
 public:
 	static ESP8266* getInstance();
-	Versions* getVersions();
+	Versions* getStatus();
 	list<string> getAccessPoints();
 	int isConnected();
 private:

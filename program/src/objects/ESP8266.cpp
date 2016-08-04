@@ -33,14 +33,14 @@ bool meetFilter(const string line) {
 	return 0;
 }
 
-Versions* ESP8266::getVersions() {
+Versions* ESP8266::getStatus() {
 	Versions *versions = new Versions();
-	list<string> lines = this->sendMessage("AT+GMR");
-//	lines.remove_if([](const string line){ return true;});
+	list<string> lines = this->sendMessage("status()\n");
 	for (std::list<string>::iterator it=lines.begin(); it!=lines.end(); ++it) {
 		string line = *it;
 		if (line.find("AT") == 0) {
 			versions->board = line;
+
 		}
 		if (line.find("SDK") == 0) {
 			versions->sdk = line;

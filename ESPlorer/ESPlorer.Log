@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748347</millis>
+  <sequence>4</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>Load saved settings: Firmware:NodeMCU</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748351</millis>
+  <sequence>5</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>Snippets: loading...</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748353</millis>
+  <sequence>6</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>Snippets load: Success.</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748448</millis>
+  <sequence>7</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>Set new color theme: Success.</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748450</millis>
+  <sequence>8</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>Load saved settings: DONE.</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748451</millis>
+  <sequence>9</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>Snippets: loading...</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748452</millis>
+  <sequence>10</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>Snippets load: Success.</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748698</millis>
+  <sequence>11</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>Scan system...</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748710</millis>
+  <sequence>12</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>found /dev/cu.Bluetooth-Incoming-Port</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748710</millis>
+  <sequence>13</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>found /dev/cu.Makeblock-ELETSPP</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748711</millis>
+  <sequence>14</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>found /dev/cu.usbmodem1423</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748711</millis>
+  <sequence>15</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>found /dev/tty.usbmodem1423</message>
+</record>
+<record>
+  <date>2016-08-03T19:19:08</date>
+  <millis>1470244748712</millis>
+  <sequence>16</sequence>
+  <logger>ESPlorer.ESPlorer</logger>
+  <level>INFO</level>
+  <class>ESPlorer.ESPlorer</class>
+  <method>log</method>
+  <thread>17</thread>
+  <message>Scan done.</message>
+</record>
+</log>

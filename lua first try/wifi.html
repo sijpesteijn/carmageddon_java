@@ -1,0 +1,7 @@
+<form>
+<select id="wifi_mode"><option value="3">AP (Access Point)</option><option value="2">STA (Station)</option><option value="1">AP+STA</option></select><br/>
+SSID: <input type="text" value="${carma_cfg.ap.ssid}">
+</form>
+<script type="text/javascript">
+    setWifiMode(${wifi_mode});
+</script>

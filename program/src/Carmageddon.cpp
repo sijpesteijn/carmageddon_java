@@ -37,11 +37,11 @@ int main() {
 	syslog(LOG_INFO, "%s", "Starting Carmaggedon...");
 
 	ESP8266 *esp8266 = ESP8266::getInstance(); // We hebben maar een wifi module.
-	Versions *versions = esp8266->getVersions();
-	syslog(LOG_INFO, "Wifi version board: %s sdk: %s", versions->board.c_str(), versions->sdk.c_str());
-	syslog(LOG_INFO, "Wifi connected: %i", esp8266->isConnected());
-
-	esp8266->getAccessPoints();
+	Versions *versions = esp8266->getStatus();
+//	syslog(LOG_INFO, "Wifi version board: %s sdk: %s", versions->board.c_str(), versions->sdk.c_str());
+//	syslog(LOG_INFO, "Wifi connected: %i", esp8266->isConnected());
+//
+//	esp8266->getAccessPoints();
 
 //	pthread_t wifi_thread;
 //	if (pthread_create(&wifi_thread, NULL, wifiThread, NULL))
