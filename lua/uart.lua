@@ -11,4 +11,7 @@ function status()
     print(cjson.encode(carma_cfg))
 end
 
+function alive()
+    print(1)
+end
 

@@ -6,11 +6,11 @@
         "dhcp": "192.168.3.1",
         "gateway":"192.168.3.1",
         "netmask":"255.255.255.0",
-        "connected":false
+        "connected":"false"
     },
     "internet": {
         "ssid":"Gallie",
         "pwd":"2014ACD3467",
-        "connected":false
+        "connected":"false"
     }
 }

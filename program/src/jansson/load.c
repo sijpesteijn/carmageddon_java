@@ -16,10 +16,10 @@
 #include <string.h>
 #include <assert.h>
 
-#include "../../include/jansson/jansson.h"
-#include "../../include/jansson/jansson_private.h"
-#include "../../include/jansson/strbuffer.h"
-#include "../../include/jansson/utf.h"
+#include "jansson.h"
+#include "jansson_private.h"
+#include "strbuffer.h"
+#include "utf.h"
 
 #define STREAM_STATE_OK        0
 #define STREAM_STATE_EOF      -1

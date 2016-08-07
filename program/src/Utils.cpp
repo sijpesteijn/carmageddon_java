@@ -58,5 +58,19 @@ int copyFile(char *srcFile, char *destinationFile) {
 	fclose(target);
 
 	return 0;
+}
 
+json_t* parseRoot(const char *buffer, size_t buflen) {
+	json_t* root;
+	json_error_t error;
+	root = json_loadb(buffer, buflen, 0, &error);
+	if (!root) {
+		syslog(LOG_ERR, "parseRoot: error on line %d: %s", error.line, error.text);
+		return NULL;
+	}
+	if (!json_is_object(root)) {
+		syslog(LOG_ERR, "parseRoot: error commit data is not an object\n");
+		return NULL;
+	}
+	return root;
 }

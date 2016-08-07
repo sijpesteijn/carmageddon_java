@@ -7,7 +7,7 @@
 
 #include <string.h>
 #include <stdint.h>
-#include "../../include/jansson/utf.h"
+#include "utf.h"
 
 int utf8_encode(int32_t codepoint, char *buffer, size_t *size)
 {

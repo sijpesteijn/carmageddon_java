@@ -17,9 +17,9 @@
 #include <stdint.h>
 #endif
 
-#include "../../include/jansson/jansson_config.h"   /* for JSON_INLINE */
-#include "../../include/jansson/jansson_private.h"  /* for container_of() */
-#include "../../include/jansson/hashtable.h"
+#include "jansson_config.h"   /* for JSON_INLINE */
+#include "jansson_private.h"  /* for container_of() */
+#include "hashtable.h"
 
 typedef struct hashtable_list list_t;
 typedef struct hashtable_pair pair_t;
@@ -28,7 +28,7 @@ typedef struct hashtable_bucket bucket_t;
 extern volatile uint32_t hashtable_seed;
 
 /* Implementation of the hash function */
-#include "../../include/jansson/lookup3.h"
+#include "lookup3.h"
 
 #define list_to_pair(list_)  container_of(list_, pair_t, list)
 #define hash_str(key)        ((size_t)hashlittle((key), strlen(key), hashtable_seed))

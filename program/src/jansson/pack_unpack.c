@@ -7,9 +7,9 @@
  */
 
 #include <string.h>
-#include "../../include/jansson/jansson.h"
-#include "../../include/jansson/jansson_private.h"
-#include "../../include/jansson/utf.h"
+#include "jansson.h"
+#include "jansson_private.h"
+#include "utf.h"
 
 typedef struct {
     int line;

@@ -1,5 +1,5 @@
 #include <string.h>
-#include "../../include/jansson/jansson_private.h"
+#include "jansson_private.h"
 
 void jsonp_error_init(json_error_t *error, const char *source)
 {

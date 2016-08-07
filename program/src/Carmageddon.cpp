@@ -22,7 +22,10 @@ using namespace std;
 
 void *wifiThread(void *params) {
 	ESP8266 *esp8266 = ESP8266::getInstance(); // We hebben maar een wifi module.
-	esp8266->getStatus();
+	if (esp8266->isConnectedToSerial() == 1 && esp8266->isConnectedToESP8266() == 1) {
+		ESPConfig config = esp8266->getConfig();
+		printf("B %s.\n", config.internet_ssid.c_str());
+	}
 	pthread_exit(NULL);
 }
 

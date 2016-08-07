@@ -23,10 +23,10 @@
 #include <stdint.h>
 #endif
 
-#include "../../include/jansson/jansson.h"
-#include "../../include/jansson/hashtable.h"
-#include "../../include/jansson/jansson_private.h"
-#include "../../include/jansson/utf.h"
+#include "jansson.h"
+#include "hashtable.h"
+#include "jansson_private.h"
+#include "utf.h"
 
 /* Work around nonstandard isnan() and isinf() implementations */
 #ifndef isnan
