@@ -21,66 +21,25 @@ ESP8266* ESP8266::getInstance() {
 
 ESP8266::ESP8266() {
 	syslog(LOG_INFO, "%s", "Setting up the esp8266 wifi module.");
-	this->uart = new UART(uart4, B115200);
-	syslog(LOG_INFO, "%s", "uart started");
-}
-
-int ESP8266::isConnected() {
-	return 1;
-}
-
-bool meetFilter(const string line) {
-	return 0;
-}
-
-Versions* ESP8266::getStatus() {
-	Versions *versions = new Versions();
-	list<string> lines = this->sendMessage("status()\n");
-	for (std::list<string>::iterator it=lines.begin(); it!=lines.end(); ++it) {
-		string line = *it;
-		if (line.find("AT") == 0) {
-			versions->board = line;
-
-		}
-		if (line.find("SDK") == 0) {
-			versions->sdk = line;
-		}
+	if (this->serial.Open(DEVICE, 115200) != 1) {
+		syslog(LOG_ERR, "Error opening serial port %s", DEVICE);
 	}
-	return versions;
 }
 
-list<string> ESP8266::getAccessPoints() {
-	list<string> accesspoints;
-	list<string> lines = this->sendMessage("AT+CWLAP");
-	for (std::list<string>::iterator it=lines.begin(); it!=lines.end(); ++it) {
-		string line = *it;
-//		printf("%s.\n", line.c_str());
-	}
-	return accesspoints;
+void ESP8266::getStatus() {
+	std::string status = this->callFunction("status()");
+	printf("%s", status.c_str());
 }
 
-list<string> ESP8266::sendMessage(string cmd) {
-	list<string> names;
-	this->uart->sendData(cmd.append("\r\n"));
-	while(1) {
-	string msg = this->uart->readData();
-	syslog(LOG_INFO, "m:%i %s.\n", msg.length(), msg.c_str());
-	int start = 0, end;
-	while ((end = msg.find('\n', start)) > 0) {
-		if (end - start > 1) {
-			string line = msg.substr(start, end - 1);
-			int cr = line.find_first_of('\n');
-			if (cr > 0) {
-				line = line.substr(0, cr);
-//				syslog(LOG_INFO, "#:%i f:%i s:%s.\n", line.length(), cr, line.c_str());
-				names.push_back(line);
-	//			printf("%s\n", line.c_str());
-	//			syslog(LOG_INFO, "%d %d\n", start, end);
-			}
-		}
-//		printf("s: %i e: %i\n", start, end);
-		start = end + 1;
+std::string ESP8266::callFunction(std::string func) {
+	std::string funcCall = func + "\n";
+	std::string result;
+	if(this->serial.WriteString(funcCall.c_str()) != 1) {
+		syslog(LOG_ERR, "Error calling function %s from wifi module.", funcCall.c_str());
+	} else {
+		char buffer[4096];
+		this->serial.ReadString(buffer, '\0', 4096, 2000);
+		result = buffer;
 	}
-	}
-	return names;
+	return result.substr(result.find_first_of("\n")+1);
 }

@@ -10,10 +10,5 @@ end
 function status() 
     print(cjson.encode(carma_cfg))
 end
-function cmd_1(value)
-  print("cmd_1("..value..") received")
-end
 
-function cmd_2(value)
-  print("cmd_2("..value..") received")
-end
+

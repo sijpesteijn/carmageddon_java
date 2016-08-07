@@ -8,29 +8,18 @@
 #ifndef OBJECTS_ESP8266_H_
 #define OBJECTS_ESP8266_H_
 
-#include "Uart.h"
-#include <list>
+#include "Serialib.h"
+#include <string>
 
-using namespace std;
-
-typedef struct {
-	std::string board;
-	std::string sdk;
-} Versions;
-
+#define DEVICE "/dev/ttyO4"
 class ESP8266 {
 public:
 	static ESP8266* getInstance();
-	Versions* getStatus();
-	list<string> getAccessPoints();
-	int isConnected();
+	void getStatus();
 private:
 	ESP8266();
-	UART *uart;
-	list<string> sendMessage(std::string cmd);
-
+	Serialib serial;
+	std::string callFunction(std::string func);
 };
-
-
 
 #endif /* OBJECTS_ESP8266_H_ */

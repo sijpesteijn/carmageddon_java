@@ -1,38 +1,10 @@
-/*!
- \file    serialib.cpp
- \brief   Class to manage the serial port
- \author  Philippe Lucidarme (University of Angers) <serialib@googlegroups.com>
- \version 1.2
- \date    28 avril 2011
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE X CONSORTIUM BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-This is a licence-free software, it can be used by anyone who try to build a better world.
- */
-
 #include "Serialib.h"
 
+Serialib::Serialib() {
 
+}
 
-
-/*!
-    \brief      Constructor of the class serialib.
-*/
-// Class constructor
-serialib::serialib()
-{}
-
-
-/*!
-    \brief      Destructor of the class serialib. It close the connection
-*/
-// Class desctructor
-serialib::~serialib()
+Serialib::~Serialib()
 {
     Close();
 }
@@ -87,60 +59,9 @@ serialib::~serialib()
      \return -5 error while writing port parameters
      \return -6 error while writing timeout parameters
   */
-char serialib::Open(const char *Device,const unsigned int Bauds)
+char Serialib::Open(const char *Device,const unsigned int Bauds)
 {
-#if defined (_WIN32) || defined( _WIN64)
 
-    // Open serial port
-    hSerial = CreateFileA(  Device,GENERIC_READ | GENERIC_WRITE,0,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0);
-    if(hSerial==INVALID_HANDLE_VALUE) {
-        if(GetLastError()==ERROR_FILE_NOT_FOUND)
-            return -1;                                                  // Device not found
-        return -2;                                                      // Error while opening the device
-    }
-
-    // Set parameters
-    DCB dcbSerialParams = {0};                                          // Structure for the port parameters
-    dcbSerialParams.DCBlength=sizeof(dcbSerialParams);
-    if (!GetCommState(hSerial, &dcbSerialParams))                       // Get the port parameters
-        return -3;                                                      // Error while getting port parameters
-    switch (Bauds)                                                      // Set the speed (Bauds)
-    {
-    case 110  :     dcbSerialParams.BaudRate=CBR_110; break;
-    case 300  :     dcbSerialParams.BaudRate=CBR_300; break;
-    case 600  :     dcbSerialParams.BaudRate=CBR_600; break;
-    case 1200 :     dcbSerialParams.BaudRate=CBR_1200; break;
-    case 2400 :     dcbSerialParams.BaudRate=CBR_2400; break;
-    case 4800 :     dcbSerialParams.BaudRate=CBR_4800; break;
-    case 9600 :     dcbSerialParams.BaudRate=CBR_9600; break;
-    case 14400 :    dcbSerialParams.BaudRate=CBR_14400; break;
-    case 19200 :    dcbSerialParams.BaudRate=CBR_19200; break;
-    case 38400 :    dcbSerialParams.BaudRate=CBR_38400; break;
-    case 56000 :    dcbSerialParams.BaudRate=CBR_56000; break;
-    case 57600 :    dcbSerialParams.BaudRate=CBR_57600; break;
-    case 115200 :   dcbSerialParams.BaudRate=CBR_115200; break;
-    case 128000 :   dcbSerialParams.BaudRate=CBR_128000; break;
-    case 256000 :   dcbSerialParams.BaudRate=CBR_256000; break;
-    default : return -4;
-}    
-    dcbSerialParams.ByteSize=8;                                         // 8 bit data
-    dcbSerialParams.StopBits=ONESTOPBIT;                                // One stop bit
-    dcbSerialParams.Parity=NOPARITY;                                    // No parity
-    if(!SetCommState(hSerial, &dcbSerialParams))                        // Write the parameters
-        return -5;                                                      // Error while writing
-
-    // Set TimeOut
-    timeouts.ReadIntervalTimeout=0;                                     // Set the Timeout parameters
-    timeouts.ReadTotalTimeoutConstant=MAXDWORD;                         // No TimeOut
-    timeouts.ReadTotalTimeoutMultiplier=0;
-    timeouts.WriteTotalTimeoutConstant=MAXDWORD;
-    timeouts.WriteTotalTimeoutMultiplier=0;
-    if(!SetCommTimeouts(hSerial, &timeouts))                            // Write the parameters
-        return -6;                                                      // Error while writting the parameters
-    return 1;                                                           // Opening successfull
-
-#endif
-#ifdef __linux__    
     struct termios options;                                             // Structure with the device's options
 
 
@@ -176,108 +97,37 @@ char serialib::Open(const char *Device,const unsigned int Bauds)
     options.c_cc[VMIN]=0;                                               // At least on character before satisfy reading
     tcsetattr(fd, TCSANOW, &options);                                   // Activate the settings
     return (1);                                                         // Success
-#endif
 }
 
 
 /*!
      \brief Close the connection with the current device
 */
-void serialib::Close()
+void Serialib::Close()
 {
-#if defined (_WIN32) || defined( _WIN64)
-    CloseHandle(hSerial);
-#endif
-#ifdef __linux__
     close (fd);
-#endif
 }
-
-
-
-
-//___________________________________________
-// ::: Read/Write operation on characters :::
-
-
-
-/*!
-     \brief Write a char on the current serial port
-     \param Byte : char to send on the port (must be terminated by '\0')
-     \return 1 success
-     \return -1 error while writting data
-  */
-char serialib::WriteChar(const char Byte)
+char Serialib::WriteChar(const char Byte)
 {
-#if defined (_WIN32) || defined( _WIN64)
-    DWORD dwBytesWritten;                                               // Number of bytes written
-    if(!WriteFile(hSerial,&Byte,1,&dwBytesWritten,NULL))                // Write the char
-        return -1;                                                      // Error while writing
-    return 1;                                                           // Write operation successfull
-#endif
-#ifdef __linux__
     if (write(fd,&Byte,1)!=1)                                           // Write the char
         return -1;                                                      // Error while writting
     return 1;                                                           // Write operation successfull
-#endif
 }
 
-
-
-//________________________________________
-// ::: Read/Write operation on strings :::
-
-
-/*!
-     \brief Write a string on the current serial port
-     \param String : string to send on the port (must be terminated by '\0')
-     \return 1 success
-     \return -1 error while writting data
-  */
-char serialib::WriteString(const char *String)
+char Serialib::WriteString(const char *String)
 {
-#if defined (_WIN32) || defined( _WIN64)
-    DWORD dwBytesWritten;                                               // Number of bytes written
-    if(!WriteFile(hSerial,String,strlen(String),&dwBytesWritten,NULL))  // Write the string
-        return -1;                                                      // Error while writing
-    return 1;                                                           // Write operation successfull
-#endif
-#ifdef __linux__
     int Lenght=strlen(String);                                          // Lenght of the string
     if (write(fd,String,Lenght)!=Lenght)                                // Write the string
         return -1;                                                      // error while writing
     return 1;                                                           // Write operation successfull
-#endif
 }
 
-// _____________________________________
-// ::: Read/Write operation on bytes :::
-
-
-
-/*!
-     \brief Write an array of data on the current serial port
-     \param Buffer : array of bytes to send on the port
-     \param NbBytes : number of byte to send
-     \return 1 success
-     \return -1 error while writting data
-  */
-char serialib::Write(const void *Buffer, const unsigned int NbBytes)
+char Serialib::Write(const void *Buffer, const unsigned int NbBytes)
 {
-#if defined (_WIN32) || defined( _WIN64)
-    DWORD dwBytesWritten;                                               // Number of byte written
-    if(!WriteFile(hSerial, Buffer, NbBytes, &dwBytesWritten, NULL))     // Write data
-        return -1;                                                      // Error while writing
-    return 1;                                                           // Write operation successfull
-#endif
-#ifdef __linux__
     if (write (fd,Buffer,NbBytes)!=(ssize_t)NbBytes)                              // Write data
         return -1;                                                      // Error while writing
     return 1;                                                           // Write operation successfull
-#endif
 }
-
-
 
 /*!
      \brief Wait for a byte from the serial device and return the data read
@@ -289,20 +139,8 @@ char serialib::Write(const void *Buffer, const unsigned int NbBytes)
      \return -1 error while setting the Timeout
      \return -2 error while reading the byte
   */
-char serialib::ReadChar(char *pByte,unsigned int TimeOut_ms)
+char Serialib::ReadChar(char *pByte,unsigned int TimeOut_ms)
 {
-#if defined (_WIN32) || defined(_WIN64)
-
-    DWORD dwBytesRead = 0;
-    timeouts.ReadTotalTimeoutConstant=TimeOut_ms;                       // Set the TimeOut
-    if(!SetCommTimeouts(hSerial, &timeouts))                            // Write the parameters
-        return -1;                                                      // Error while writting the parameters
-    if(!ReadFile(hSerial,pByte, 1, &dwBytesRead, NULL))                 // Read the byte
-        return -2;                                                      // Error while reading the byte
-    if (dwBytesRead==0) return 0;                                       // Return 1 if the timeout is reached
-    return 1;                                                           // Success
-#endif
-#ifdef __linux__
     TimeOut         Timer;                                              // Timer used for timeout
     Timer.InitTimer();                                                  // Initialise the timer
     while (Timer.ElapsedTime_ms()<TimeOut_ms || TimeOut_ms==0)          // While Timeout is not reached
@@ -313,10 +151,7 @@ char serialib::ReadChar(char *pByte,unsigned int TimeOut_ms)
         }
     }
     return 0;
-#endif
 }
-
-
 
 /*!
      \brief Read a string from the serial device (without TimeOut)
@@ -328,7 +163,7 @@ char serialib::ReadChar(char *pByte,unsigned int TimeOut_ms)
      \return -2 error while reading the byte
      \return -3 MaxNbBytes is reached
   */
-int serialib::ReadStringNoTimeOut(char *String,char FinalChar,unsigned int MaxNbBytes)
+int Serialib::ReadStringNoTimeOut(char *String,char FinalChar,unsigned int MaxNbBytes)
 {
     unsigned int    NbBytes=0;                                          // Number of bytes read
     char            ret;                                                // Returned value from Read
@@ -361,7 +196,7 @@ int serialib::ReadStringNoTimeOut(char *String,char FinalChar,unsigned int MaxNb
      \return -2 error while reading the byte
      \return -3 MaxNbBytes is reached
   */
-int serialib::ReadString(char *String,char FinalChar,unsigned int MaxNbBytes,unsigned int TimeOut_ms)
+int Serialib::ReadString(char *String,char FinalChar,unsigned int MaxNbBytes,unsigned int TimeOut_ms)
 {
     if (TimeOut_ms==0)
         return ReadStringNoTimeOut(String,FinalChar,MaxNbBytes);
@@ -409,19 +244,8 @@ int serialib::ReadString(char *String,char FinalChar,unsigned int MaxNbBytes,uns
      \return -1 error while setting the Timeout
      \return -2 error while reading the byte
   */
-int serialib::Read (void *Buffer,unsigned int MaxNbBytes,unsigned int TimeOut_ms)
+int Serialib::Read (void *Buffer,unsigned int MaxNbBytes,unsigned int TimeOut_ms)
 {
-#if defined (_WIN32) || defined(_WIN64)
-    DWORD dwBytesRead = 0;
-    timeouts.ReadTotalTimeoutConstant=(DWORD)TimeOut_ms;                // Set the TimeOut
-    if(!SetCommTimeouts(hSerial, &timeouts))                            // Write the parameters
-        return -1;                                                      // Error while writting the parameters
-    if(!ReadFile(hSerial,Buffer,(DWORD)MaxNbBytes,&dwBytesRead, NULL))  // Read the bytes from the serial device
-        return -2;                                                      // Error while reading the byte
-    if (dwBytesRead!=(DWORD)MaxNbBytes) return 0;                       // Return 0 if the timeout is reached
-    return 1;                                                           // Success
-#endif
-#ifdef __linux__
     TimeOut          Timer;                                             // Timer used for timeout
     Timer.InitTimer();                                                  // Initialise the timer
     unsigned int     NbByteRead=0;
@@ -437,70 +261,40 @@ int serialib::Read (void *Buffer,unsigned int MaxNbBytes,unsigned int TimeOut_ms
         }
     }
     return 0;                                                           // Timeout reached, return 0
-#endif
 }
 
-
-
-
-// _________________________
-// ::: Special operation :::
-
-
-
-/*!
-    \brief Empty receiver buffer (UNIX only)
-*/
-
-void serialib::FlushReceiver()
+void Serialib::FlushReceiver()
 {
-#ifdef __linux__
     tcflush(fd,TCIFLUSH);
-#endif
 }
-
-
 
 /*!
     \brief  Return the number of bytes in the received buffer (UNIX only)
     \return The number of bytes in the received buffer
 */
-int serialib::Peek()
+int Serialib::Peek()
 {
     int Nbytes=0;
-#ifdef __linux__
     ioctl(fd, FIONREAD, &Nbytes);
-#endif
     return Nbytes;
 }
 
-// ******************************************
-//  Class TimeOut
-// ******************************************
-
-
-/*!
-    \brief      Constructor of the class TimeOut.
-*/
-// Constructor
 TimeOut::TimeOut()
 {}
 
 /*!
-    \brief      Initialise the timer. It writes the current time of the day in the structure PreviousTime.
+    Initialise the timer. It writes the current time of the day in the structure PreviousTime.
 */
-//Initialize the timer
 void TimeOut::InitTimer()
 {
     gettimeofday(&PreviousTime, NULL);
 }
 
 /*!
-    \brief      Returns the time elapsed since initialization.  It write the current time of the day in the structure CurrentTime.
+    Returns the time elapsed since initialization.  It write the current time of the day in the structure CurrentTime.
                 Then it returns the difference between CurrentTime and PreviousTime.
-    \return     The number of microseconds elapsed since the functions InitTimer was called.
+    return     The number of microseconds elapsed since the functions InitTimer was called.
   */
-//Return the elapsed time since initialization
 unsigned long int TimeOut::ElapsedTime_ms()
 {
     struct timeval CurrentTime;
@@ -514,4 +308,3 @@ unsigned long int TimeOut::ElapsedTime_ms()
     }
     return sec*1000+usec/1000;
 }
-
