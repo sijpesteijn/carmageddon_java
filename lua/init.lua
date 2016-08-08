@@ -23,7 +23,7 @@ end
 
 dofile("wifisetup.lua")
 --dofile("uart.lua")
---dofile("serial.lua")
+dofile("serial.lua")
 --dofile("webserver.lua")
 --dofile("gpio.lua")
 --dofile("8x8matrix.lua")
