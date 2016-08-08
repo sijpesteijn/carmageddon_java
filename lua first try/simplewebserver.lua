@@ -1,8 +1,0 @@
-srv=net.createServer(net.TCP,"192.168.3.1") 
-srv:listen(8080,function(conn) 
-    conn:on("receive",function(conn,payload) 
-    print(payload) 
-    conn:send("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1> Carmageddon<BR>Server is working!</h1>")
-    conn:close()
-    end) 
-end)
