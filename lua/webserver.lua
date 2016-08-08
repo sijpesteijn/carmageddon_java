@@ -1,17 +1,30 @@
 print("Setting up web server...")
 
+local client_conn
+
+uart.on("data","\0", 
+    function(data)
+        if string.find(data, "http_response") ~= nil then
+            print("Response recieved: "..data)
+            buf="HTTP/1.0 200\r\nContent-Type: text/html\r\n\r\n"..data
+            client_conn:send(buf);
+            client_conn:close();
+            collectgarbage();
+
+        end
+    end, 1) 
+
 srv=net.createServer(net.TCP)
 srv:listen(8080,function(conn)
     conn:on("receive", function(client,request)
-        local method = string.sub(request,0,string.find(request, " ")-1)
-        local target = string.sub(request,string.find(request," /")+2,string.find(request,"HTTP/")-2)
 
-        print("!"..method.."! !"..target.."!")
-
-        buf="HTTP/1.0 200\r\nContent-Type: text/html\r\n\r\nJa?"
-        client:send(buf);
-
-        client:close();
-        collectgarbage();
+        client_conn=client
+        uart.write(0, "http_request:"..request.."\0")
+        
+--        buf="HTTP/1.0 200\r\nContent-Type: text/html\r\n\r\nJa?"
+--        client:send(buf);
+--
+--        client:close();
+--        collectgarbage();
     end)
 end)

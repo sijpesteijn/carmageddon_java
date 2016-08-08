@@ -1,11 +1,12 @@
 print("Initializing ESP8266...")
 
-local props = file.open("config.json","r")
-if props ~= nil then
+if file.exists("config.json") then
+    local props = file.open("config.json","r")
     local json = file.read()
     carma_cfg = cjson.decode(json)
-else
--- Loading defaults
+end
+
+if not file.exists("config.json") then
     carma_cfg = {}
     carma_cfg.wifi_mode = wifi.SOFTAP
     carma_cfg.ap = {}
@@ -22,8 +23,9 @@ else
 end
 
 dofile("wifisetup.lua")
---dofile("uart.lua")
-dofile("serial.lua")
---dofile("webserver.lua")
---dofile("gpio.lua")
---dofile("8x8matrix.lua")
+--dofile("serial.lua")
+dofile("webserver.lua")
+
+-- some examples
+--dofile("gpio.lua")  -- use the gpio pins to trigger leds
+--dofile("8x8matrix.lua") -- use the i2c bus to trigger led matrix
