@@ -42,7 +42,7 @@ if carma_cfg.wifi_mode == wifi.STATIONAP then
     print("Access point IP:"..wifi.ap.getip());
     print("SSID:"..carma_cfg.ap.ssid);
     print("PWD:"..carma_cfg.ap.pwd);
-    carma_cfg.ap.connected = true;
+    carma_cfg.ap.connected = "true";
     connectAccessPoint()
 elseif carma_cfg.wifi_mode == wifi.SOFTAP then
     print("Wifi mode: SOFTAP")
@@ -51,7 +51,7 @@ elseif carma_cfg.wifi_mode == wifi.SOFTAP then
     print("Access point IP:"..wifi.ap.getip());
     print("SSID:"..carma_cfg.ap.ssid);
     print("PWD:"..carma_cfg.ap.pwd);
-    carma_cfg.ap.connected = true;
+    carma_cfg.ap.connected = "true";
 elseif carma_cfg.wifi_mode == wifi.STATION then
     print("Wifi mode: STATION")
     wifi.setmode(wifi.STATION)
