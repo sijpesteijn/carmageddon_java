@@ -10,21 +10,13 @@ uart.on("data","\0",
             client_conn:send(buf);
             client_conn:close();
             collectgarbage();
-
         end
     end, 1) 
 
 srv=net.createServer(net.TCP)
 srv:listen(8080,function(conn)
     conn:on("receive", function(client,request)
-
         client_conn=client
         uart.write(0, "http_request:"..request.."\0")
-        
---        buf="HTTP/1.0 200\r\nContent-Type: text/html\r\n\r\nJa?"
---        client:send(buf);
---
---        client:close();
---        collectgarbage();
     end)
 end)
