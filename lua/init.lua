@@ -23,7 +23,7 @@ if not file.exists("config.json") then
 end
 
 dofile("wifisetup.lua")
---dofile("serial.lua")
+dofile("uart.lua")
 dofile("webserver.lua")
 
 -- some examples
