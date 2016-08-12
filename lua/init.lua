@@ -9,6 +9,7 @@ end
 if not file.exists("config.json") then
     carma_cfg = {}
     carma_cfg.wifi_mode = wifi.SOFTAP
+    carma_cfg.http_timeout = 10000
     carma_cfg.ap = {}
     carma_cfg.ap.ssid = "Carmageddon"
     carma_cfg.ap.pwd = "vlinderfeest"

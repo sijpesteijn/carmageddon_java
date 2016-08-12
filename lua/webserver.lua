@@ -24,7 +24,7 @@ srv:listen(8080,function(conn)
     conn:on("receive", function(client,request)
         client_conn=client
         uart.write(0, request_prefix..request)
-        tmr.alarm(1, 10000, tmr.ALARM_SINGLE, function() 
+        tmr.alarm(1, carma_cfg.http_timeout, tmr.ALARM_SINGLE, function() 
             buf="HTTP/1.0 555\r\nContent-Type: text/html\r\n\r\n555 - Beaglebone is not responding."
             client_conn:send(buf);
             client_conn:close();
