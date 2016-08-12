@@ -1,11 +1,11 @@
 {
     "wifi_mode":2,
-    "http_timeout":10000,
+    "http_timeout":1000,
     "ap": {
         "ssid":"Carmageddon",
         "pwd":"vlinderfeest",
-        "dhcp": "192.168.3.1",
-        "gateway":"192.168.3.1",
+        "dhcp": "192.168.4.1",
+        "gateway":"192.168.4.1",
         "netmask":"255.255.255.0",
         "connected":"false"
     },

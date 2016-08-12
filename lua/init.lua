@@ -13,8 +13,8 @@ if not file.exists("config.json") then
     carma_cfg.ap = {}
     carma_cfg.ap.ssid = "Carmageddon"
     carma_cfg.ap.pwd = "vlinderfeest"
-    carma_cfg.ap.dhcp = "192.168.3.1"
-    carma_cfg.ap.gateway = "192.168.3.1"
+    carma_cfg.ap.dhcp = "192.168.4.1"
+    carma_cfg.ap.gateway = "192.168.4.1"
     carma_cfg.ap.netmask = "255.255.255.0"
     carma_cfg.ap.connected = "false"
     carma_cfg.internet = {}
