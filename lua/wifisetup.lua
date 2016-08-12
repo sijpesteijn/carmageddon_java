@@ -31,6 +31,7 @@ function connectAccessPoint()
          collectgarbage()
      end 
    end)
+    tmr.unregister(0)
     return cnt
 end
 
