@@ -14,10 +14,21 @@ static int dutyMax= 2000000;
 static int dutyMiddle = 1400000;
 static int dutyMin= 800000;
 
-
 #define STEP 50000
 
-Engine::Engine() {
+EngineEvent::EngineEvent(int throttle) {
+	this->throttle = throttle;
+}
+
+EngineEvent::~EngineEvent() {
+
+}
+
+int EngineEvent::getThrottle() {
+	return this->throttle;
+}
+
+Engine::Engine(EventHandler *eventHandler) {
 	syslog(LOG_INFO, "%s", "Setting up the engine.");
 	int pwmNr = 0;
 	int period = 20000000;
@@ -35,11 +46,12 @@ Engine::Engine() {
 		syslog(LOG_ERR, "Could not start pwm port: %i", pwmNr);
 	}
 	throttle = dutyMiddle;
+	this->eventHandler = eventHandler;
 	syslog(LOG_INFO, "%s", "Here is the engine.");
 }
 
-Engine* Engine::getInstance() {
-	static Engine obj;
+Engine* Engine::getInstance(EventHandler *eventHandler) {
+	static Engine obj(eventHandler);
 	return &obj;
 }
 
@@ -49,6 +61,8 @@ void Engine::setThrottle(int t) {
 	} else {
 		syslog(LOG_DEBUG,"Throttle set to: %i", throttle);
 		throttle = t;
+		Event *event = new EngineEvent(throttle);
+		this->eventHandler->handleEvent(event);
 	}
 }
 
