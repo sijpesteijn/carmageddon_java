@@ -1,6 +1,6 @@
 {
     "wifi_mode":2,
-    "http_timeout":1000,
+    "http_timeout":10000,
     "ap": {
         "ssid":"Carmageddon",
         "pwd":"vlinderfeest",

@@ -1,10 +1,10 @@
-
+uart.setup(0, 115200, 8, 0, 1, 0)
 function reset()
     node.restart()
 end
 
 function getconfig() 
-    print(cjson.encode(carma_cfg))
+    uart.write(0, cjson.encode(carma_cfg))
 end
 
 function setconfig(config)
@@ -15,6 +15,6 @@ function setconfig(config)
     node.restart()
 end
 
-function alive()
-    print(1)
+function ping()
+    print("pong")
 end
