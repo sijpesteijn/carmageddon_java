@@ -74,3 +74,12 @@ json_t* parseRoot(const char *buffer, size_t buflen) {
 	}
 	return root;
 }
+
+std::string getJsonString(json_t *value) {
+	std::string s (json_string_value(value), json_string_length(value));
+	return s;
+}
+
+bool has_suffix(const std::string &str, const std::string &suffix) {
+	return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}

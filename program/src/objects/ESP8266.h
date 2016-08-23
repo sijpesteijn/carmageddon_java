@@ -11,19 +11,22 @@
 #include "Serialib.h"
 #include "EventHandler.h"
 #include <string>
+#include "HttpHandler.h"
+
+using namespace std;
 
 class ESPConfig {
 public:
 	int wifi_mode;
-	std::string internet_ssid;
-	std::string internet_pwd;
+	string internet_ssid;
+	string internet_pwd;
 	int internet_connected;
 
-	std::string ap_ssid;
-	std::string ap_pwd;
-	std::string ap_dhcp;
-	std::string ap_netmask;
-	std::string ap_gateway;
+	string ap_ssid;
+	string ap_pwd;
+	string ap_dhcp;
+	string ap_netmask;
+	string ap_gateway;
 	int ap_connected;
 };
 
@@ -31,21 +34,27 @@ public:
 
 class ESP8266: public EventHandler {
 public:
-	static ESP8266* getInstance(std::string html_root);
+	static ESP8266* getInstance();
 	~ESP8266();
 	int isConnectedToSerial();
 	int isConnectedToESP8266();
-	void startHttpThread();
 	Serialib serial;
 	ESPConfig getConfig();
 	void setConfig(ESPConfig* config);
 	void handleEvent(Event *event);
-	std::string getHtmlRoot();
+	void setHttpHandler(HttpHandler *httphandler);
+	HttpHandler *getHttpHandler();
+	string callFunction(string func, int delay = 5);
+	void restart();
+	void startSerialListenThread();
 private:
 	int connected_to_serial = 0;
-	std::string html_root;
-	ESP8266(std::string html_root);
-	std::string callFunction(std::string func);
+	ESPConfig config;
+	HttpHandler *httphandler;
+	ESP8266();
+	void close();
+	void start();
+	int loadConfig();
 };
 
 #endif /* OBJECTS_ESP8266_H_ */

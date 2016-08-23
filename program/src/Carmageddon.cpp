@@ -17,10 +17,11 @@
 #include "./objects/Steer.h"
 #include "./objects/Engine.h"
 #include "./objects/Camera.h"
+#include "objects/HttpHandler.h"
 
 using namespace std;
 
-const char *HTML_ROOT = "/home/carmageddon/programs/carmageddon/html/";
+const char *HTML_ROOT = "/root/programs/carmageddon/program/html/";
 
 int main(int argc, const char* argv[]) {
 	// Set up syslog. (tail -f /var/log/syslog | grep carmageddon)
@@ -31,11 +32,13 @@ int main(int argc, const char* argv[]) {
 	if (argc > 2) {
 		HTML_ROOT = argv[1];
 	}
-	ESP8266 *esp8266 = ESP8266::getInstance(HTML_ROOT); // We hebben maar een wifi module.
+	HttpHandler *httphandler = new HttpHandler(HTML_ROOT);
+	ESP8266 *esp8266 = ESP8266::getInstance(); // We hebben maar een wifi module.
+	esp8266->setHttpHandler(httphandler);
 	if (esp8266->isConnectedToSerial() && esp8266->isConnectedToESP8266()) {
-		ESPConfig config = esp8266->getConfig();
-		esp8266->startHttpThread();
-		printf("B %s.\n", config.internet_ssid.c_str());
+		printf("SSID: %s.\n", esp8266->getConfig().ap_ssid.c_str());
+		esp8266->startSerialListenThread();
+
 	}
 
 //	Camera *camera = Camera::getInstance(); // We hebben maar een camera.
