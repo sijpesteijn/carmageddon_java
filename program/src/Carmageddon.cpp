@@ -20,32 +20,31 @@
 
 using namespace std;
 
-void *wifiThread(void *params) {
-	ESP8266 *esp8266 = ESP8266::getInstance(); // We hebben maar een wifi module.
-	if (esp8266->isConnectedToSerial() == 1 && esp8266->isConnectedToESP8266() == 1) {
-		ESPConfig config = esp8266->getConfig();
-		printf("B %s.\n", config.internet_ssid.c_str());
-	}
-	pthread_exit(NULL);
-}
+const char *HTML_ROOT = "/home/carmageddon/programs/carmageddon/html/";
 
-int main() {
+int main(int argc, const char* argv[]) {
 	// Set up syslog. (tail -f /var/log/syslog | grep carmageddon)
 	openlog("carmageddon-bbb", LOG_PID | LOG_CONS | LOG_NDELAY | LOG_NOWAIT, LOG_LOCAL0);
 	setlogmask(LOG_UPTO(LOG_DEBUG));
 	syslog(LOG_INFO, "%s", "Starting Carmaggedon...");
 
-	pthread_t wifi_thread;
-	if (pthread_create(&wifi_thread, NULL, wifiThread, NULL))
-		perror("Can't create message_handler thread");
+	if (argc > 2) {
+		HTML_ROOT = argv[1];
+	}
+	ESP8266 *esp8266 = ESP8266::getInstance(HTML_ROOT); // We hebben maar een wifi module.
+	if (esp8266->isConnectedToSerial() && esp8266->isConnectedToESP8266()) {
+		ESPConfig config = esp8266->getConfig();
+		esp8266->startHttpThread();
+		printf("B %s.\n", config.internet_ssid.c_str());
+	}
 
 //	Camera *camera = Camera::getInstance(); // We hebben maar een camera.
 //	syslog(LOG_INFO, "Camera connected: %i", camera->isConnected());
 
-	Engine *engine = Engine::getInstance(); // We hebben maar een motor.
+	Engine *engine = Engine::getInstance(esp8266); // We hebben maar een motor.
 	syslog(LOG_INFO, "Engine throttle: %i", engine->getThrottle());
 
-	Steer *steer = Steer::getInstance(); // We hebben maar een stuur.
+	Steer *steer = Steer::getInstance(esp8266); // We hebben maar een stuur.
 	syslog(LOG_INFO, "Steering wheel angle: %i", steer->getAngle());
 
 //	CPU cpu(camera, steer, engine);

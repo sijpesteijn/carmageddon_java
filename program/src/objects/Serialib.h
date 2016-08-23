@@ -43,12 +43,12 @@ public:
     int ReadString(char *String, char FinalChar, unsigned int MaxNbBytes, const unsigned int TimeOut_ms=NULL);
     char Write(const void *Buffer, const unsigned int NbBytes);
     int Read(void *Buffer,unsigned int MaxNbBytes,const unsigned int TimeOut_ms=NULL);
-    void    FlushReceiver();
-    int     Peek();
+    void FlushReceiver();
+    int Peek();
 
 private:
     int ReadStringNoTimeOut(char *String,char FinalChar,unsigned int MaxNbBytes);
-    int             fd;
+    int fd;
 };
 
 class TimeOut

@@ -15,7 +15,19 @@ static int dutyMin = 1150000;
 
 #define STEP 50000
 
-Steer::Steer() {
+SteerEvent::SteerEvent(int angle) {
+	this->angle = angle;
+}
+
+SteerEvent::~SteerEvent() {
+
+}
+
+int SteerEvent::getAngle() {
+	return this->angle;
+}
+
+Steer::Steer(EventHandler *eventHandler) {
 	int period = 20000000;
 	int pwmNr = 1;
 	pwm = PWM(pwmNr);
@@ -32,13 +44,14 @@ Steer::Steer() {
 		syslog(LOG_ERR, "Could not start pwm port: %s", pwm.getName());
 	}
 	angle = dutyMiddle;
+	this->eventHandler = eventHandler;
 	syslog(LOG_INFO, "%s", "Setting up steering wheel.");
 
 	syslog(LOG_INFO, "%s", "Here is your steering wheel.");
 }
 
-Steer* Steer::getInstance() {
-	static Steer obj;
+Steer* Steer::getInstance(EventHandler *eventHandler) {
+	static Steer obj(eventHandler);
 	return &obj;
 }
 
@@ -48,6 +61,8 @@ void Steer::setAngle(int a) {
 	} else {
 		syslog(LOG_DEBUG, "Steering wheel angle set to: %i.", angle);
 		angle = a;
+		Event *event = new SteerEvent(angle);
+		this->eventHandler->handleEvent(event);
 	}
 }
 

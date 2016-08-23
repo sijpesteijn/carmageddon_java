@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang=''>
+<head>
+	<title>Carmageddon</title>
+	<meta charset='utf-8'>
+</head>
+
+<body>
+
+<pre>
+I used an FT232RL http://www.benlo.com/shop/shop.php?shop=e&for=FT232RL+USB+Serial+3.3V and not a separate LM1117 voltage regulator, but you get the idea. JUST BE SURE TO USE 3.3V other wise you're going to blowup the esp.
+- Download this patch: http://bbs.espressif.com/download/file.php?id=1572 Inside you'll find a file called esp_init_data_default.bin. You will need this file later so save it.
+- Next I used the cloud build service http://nodemcu-build.com/ to create a nodemcu firmware with the modules that I need. You will get an email once it has completed. (Don't forget a donation.) Save it. I saved it next to the esp_init_data_default.bin file.
+- Clone the esptool git repo: git clone https://github.com/themadinventor/esptool
+- cd to the esptool repo
+- Finally I used the following command to flash the esp-12F:
+./esptool.py --port /dev/tty<yours> write_flash 0x00000 ../esp-12/nodemcu-master-14-modules-2016-08-15-17-05-44-float.bin 0x3fc000 ../esp-12/esp_init_data_default.bin -fm=dio -fs=32m
+(Replace <yours> with the usb port you are using. On my mac it's tty.usbserial-A7004kUk. Also your nodemcu build will have a different name.)
+- Disconnect the GPIO0 and GPIO2 and connect the GPIO0 to 3.3v.
+
+That should do the trick. I hope you'll be succesful too. - See more at: http://www.esp8266.com/viewtopic.php?f=23&t=11328#sthash.Sct6IrGk.dpuf
+</pre>
+
+</body>

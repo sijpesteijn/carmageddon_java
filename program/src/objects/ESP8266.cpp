@@ -6,32 +6,90 @@
  */
 
 #include "ESP8266.h"
+#include "Steer.h"
+#include "Engine.h"
 #include "../jansson/jansson.h"
 #include "../Utils.h"
 #include <syslog.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <string>
+#include <pthread.h>
+
 using namespace std;
 
-ESP8266* ESP8266::getInstance() {
-	static ESP8266 obj;
+void *httpThread(void *params) {
+	ESP8266 *esp8266 = (ESP8266 *) params;
+	syslog(LOG_INFO, "%s", "Setting up the http thread.");
+	while (esp8266->isConnectedToSerial() && esp8266->isConnectedToESP8266()) {
+//		esp8266->getConfig();
+		syslog(LOG_INFO, "%s", "Listing for http requests...");
+		char buffer[4096];
+		if (esp8266->serial.ReadString(buffer, '\n', 4096, 0) > 0) {
+			printf("DATA: %s\n", buffer);
+			int read = 1;
+			char buffer2[4096];
+			while (read == 1 && esp8266->serial.ReadString(buffer2, '\n', 4096, 0) > 0) {
+				printf("DATA2: %s, %i\n", buffer2, strlen(buffer2));
+				if (strlen(buffer2) == 2) {
+					read = 0;
+				}
+			}
+			ifstream infile;
+			string filename;
+			filename = esp8266->getHtmlRoot() + "index.html";
+			printf("Filename: %s\n", filename.c_str());
+			infile.open(filename.c_str());
+			esp8266->serial.WriteString("http_response('Eline heeft een nieuwe fiets')");
+//			esp8266->serial.WriteString("%3Chttp_response%3Emoemoe%3C%2Fhttp_response%3E");
+			esp8266->serial.FlushReceiver();
+		}
+//		usleep(10);
+	}
+	pthread_exit(NULL);
+}
+
+
+ESP8266* ESP8266::getInstance(std::string html_root) {
+	static ESP8266 obj(html_root);
 	return &obj;
 }
 
-ESP8266::ESP8266() {
+ESP8266::ESP8266(std::string html_root) {
 	syslog(LOG_INFO, "%s", "Setting up the esp8266 wifi module.");
+	this->html_root = html_root;
 	if (this->serial.Open(DEVICE, 115200) != 1) {
 		syslog(LOG_ERR, "Error opening serial port %s", DEVICE);
 	} else {
 		this->connected_to_serial = 1;
-		std::string alive = this->callFunction("alive()");
-		if (alive.compare("1") == 0) {
-			this->connected_to_esp8266 = 1;
-		} else {
-			syslog(LOG_ERR, "Error opening connection to ESP8266.");
-		}
+	}
+}
+
+ESP8266::~ESP8266() {
+
+}
+
+EventHandler::~EventHandler() {
+
+}
+
+Event::~Event() {
+
+}
+
+void ESP8266::handleEvent(Event *event) {
+	SteerEvent *steerEvent = dynamic_cast<SteerEvent *>(event);
+	if(steerEvent != NULL) {
+		printf("SteerEvent: %i\n", steerEvent->getAngle());
+		this->serial.WriteString("<event>angle=30</event>");
+	}
+
+	EngineEvent *engineEvent = dynamic_cast<EngineEvent *>(event);
+	if(engineEvent != NULL) {
+		printf("EngineEvent: %i\n", engineEvent->getThrottle());
+		this->serial.WriteString("<event>throttle=10</event>");
 	}
 }
 
@@ -40,7 +98,27 @@ int ESP8266::isConnectedToSerial() {
 }
 
 int ESP8266::isConnectedToESP8266() {
-	return this->connected_to_esp8266;
+	std::string alive = this->callFunction("ping()");
+	if (alive.compare(0, 1, "1") == 0) {
+		return 1;
+	}
+	return 0;
+}
+
+void ESP8266::startHttpThread() {
+	if (this->isConnectedToESP8266()) {
+		pthread_t http_thread;
+		if (pthread_create(&http_thread, NULL, httpThread, this)) {
+			perror("Can't create http thread");
+		}
+	} else {
+		syslog(LOG_ERR, "Error opening connection to ESP8266.");
+	}
+}
+
+
+std::string ESP8266::getHtmlRoot() {
+	return this->html_root;
 }
 
 std::string getString(json_t *value) {
@@ -71,14 +149,11 @@ void ESP8266::setConfig(ESPConfig *config) {
 }
 
 ESPConfig ESP8266::getConfig() {
-	std::string status = this->callFunction("statas()");
-	printf("Status: %s\n", status.c_str());
+	std::string status = this->callFunction("getconfig()");
+//	printf("Status: %s\n", status.c_str());
 	ESPConfig config;
 
 	json_t* root = parseRoot(status.c_str(), status.length());
-	if (root == NULL) {
-		this->connected_to_esp8266 = 0;
-	}
 	json_t *wifi_mode_value = json_object_get(root, "wifi_mode");
 	config.wifi_mode = json_number_value(wifi_mode_value);
 
@@ -88,7 +163,7 @@ ESPConfig ESP8266::getConfig() {
 	json_t *internet_connected_value = json_object_get(internet_value, "connected");
 	config.internet_ssid = getString(internet_ssid_value);
 	config.internet_pwd = getString(internet_pwd_value);
-//	config.internet_connected = getString(internet_connected_value).compare("false") ? 0 : 1;
+	config.internet_connected = getString(internet_connected_value).compare("false") ? 0 : 1;
 
 	json_decref(internet_ssid_value);
 	json_decref(internet_pwd_value);
@@ -106,7 +181,7 @@ ESPConfig ESP8266::getConfig() {
 	config.ap_dhcp = getString(ap_dhcp_value);
 	config.ap_netmask = getString(ap_netmask_value);
 	config.ap_gateway = getString(ap_gateway_value);
-//	config.ap_connected = getString(ap_connected_value).compare("false") ? 0 : 1;
+	config.ap_connected = getString(ap_connected_value).compare("false") ? 0 : 1;
 
 	json_decref(ap_value);
 	json_decref(ap_ssid_value);
@@ -116,12 +191,12 @@ ESPConfig ESP8266::getConfig() {
 	json_decref(ap_gateway_value);
 	json_decref(ap_connected_value);
 
-	this->connected_to_esp8266 = 1;
 	return config;
 }
 
 std::string ESP8266::callFunction(std::string func) {
 	std::string funcCall = func + "\n";
+	printf("Call func request: %s.\n", funcCall.c_str());
 	std::string result;
 	if(this->serial.WriteString(funcCall.c_str()) != 1) {
 		syslog(LOG_ERR, "Error calling function %s from wifi module.", funcCall.c_str());
@@ -129,7 +204,8 @@ std::string ESP8266::callFunction(std::string func) {
 		char buffer[4096];
 		this->serial.ReadString(buffer, '\0', 4096, 2000);
 		result = buffer;
+		printf("Call func response: %s.\n", result.c_str());
 	}
 	int start = result.find_first_of("\n");
-	return result.substr(start+1, (result.length() - start) - 4);
+	return result.substr(start+1, (result.length() - start) - 5);
 }
