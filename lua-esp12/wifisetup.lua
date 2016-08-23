@@ -25,7 +25,7 @@ function connectAccessPoint()
     wifi.sta.connect()
     local cnt = 0
     gpio.mode(0,gpio.OUTPUT);
-    tmr.alarm(0, 1000, 1, function() 
+    tmr.alarm(0, 1000, tmr.ALARM_AUTO, function() 
      if (wifi.sta.getip() == nil) and (cnt < 20) then 
          print("Trying Connect to Router, Waiting...")
          cnt = cnt + 1 
@@ -67,7 +67,7 @@ if carma_cfg.wifi_mode == wifi.STATIONAP then
     carma_cfg.ap.connected = "true";
     connectAccessPoint()
 elseif carma_cfg.wifi_mode == wifi.SOFTAP then
-    print("Wifi mode: SOFTAP (Create an access point "..carma_cfg.ap.ssid..")")
+    print("Wifi mode: SOFTAP (Create an access point: "..carma_cfg.ap.ssid..")")
     wifi.setmode(wifi.SOFTAP)
     cfg = {}
     cfg.ssid=carma_cfg.ap.ssid
@@ -82,7 +82,7 @@ elseif carma_cfg.wifi_mode == wifi.SOFTAP then
     carma_cfg.internet.connected = "false";
     carma_cfg.ap.connected = "true";
 elseif carma_cfg.wifi_mode == wifi.STATION then
-    print("Wifi mode: STATION (Connect to acces point "..carma_cfg.internet.ssid..")")
+    print("Wifi mode: STATION (Connect to acces point: "..carma_cfg.internet.ssid..")")
     wifi.setmode(wifi.STATION)
     carma_cfg.ap.connected="false"
     connectAccessPoint()
