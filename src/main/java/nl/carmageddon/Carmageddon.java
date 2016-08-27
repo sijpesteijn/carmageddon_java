@@ -31,14 +31,14 @@ public class Carmageddon implements WebSocketConfigurer {
     @Bean(name = "pwm22")
     Pwm pwm22() throws IOException {
         if (System.getProperty("os.arch").contains("arm"))
-            return new Pwm(22);
+            return new Pwm(42);
         return new Pwm(0);
     }
 
     @Bean(name = "pwm42")
     Pwm pwm42() throws IOException {
         if (System.getProperty("os.arch").contains("arm"))
-            return new Pwm(42);
+            return new Pwm(22);
         return new Pwm(0);
     }
 

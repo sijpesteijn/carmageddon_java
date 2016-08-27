@@ -3,10 +3,15 @@
 <head>
     <title>Carmageddon</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src='./js/virtualjoystick.js'></script>
+    <link rel="stylesheet" href="./styles/carmageddon.css"/>
 </head>
 <body>
-<p th:text="'Steer connected:' + ${steerconnected}" />
+    <p th:text="'Steer connected:' + ${steerconnected}" />
+    <input type="number" id="limit" value="15" onblur="setThrottleLimit(this.value);"/>
+    <div id="container"></div>
+    <img src="./images/stop.jpg" onclick="stop();"/>
 
-<img src="./stop.jpg" />
+    <script src="./js/carmageddon.js"></script>
 </body>
 </html>

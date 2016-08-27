@@ -19,13 +19,29 @@ public class CarController {
         this.car = car;
     }
 
+    @RequestMapping(path = "/stop", method = RequestMethod.POST)
+    public void stop() {
+        logger.debug("Stop");
+        if (car.getEngine().getThrottle() < 0) {
+            car.getEngine().setThrottle(3);
+            car.getEngine().setThrottle(0);
+        } else {
+            car.getEngine().setThrottle(-3);
+            car.getEngine().setThrottle(0);
+        }
+        car.getSteer().setAngle(0);
+    }
+
+
     @RequestMapping(path = "/steer/{angle}", method = RequestMethod.POST)
     public void setAngle(@PathVariable("angle") int angle) {
+        logger.debug("Angle: " + angle);
         car.getSteer().setAngle(angle);
     }
 
     @RequestMapping(path = "/engine/{throttle}", method = RequestMethod.POST)
     public void setThrottle(@PathVariable("throttle") int throttle) {
+        logger.debug("Throttle: " + throttle);
         car.getEngine().setThrottle(throttle);
     }
 }

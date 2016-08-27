@@ -1,0 +1,17 @@
+body {
+    overflow	: hidden;
+    padding		: 0;
+    margin		: 0;
+    background-color: red;
+}
+
+#container {
+    width: 200px;
+    height: 200px;
+    border: 1px solid black;
+    overflow	: hidden;
+    padding		: 0;
+    margin		: 0;
+    -webkit-user-select	: none;
+    -moz-user-select	: none;
+}
