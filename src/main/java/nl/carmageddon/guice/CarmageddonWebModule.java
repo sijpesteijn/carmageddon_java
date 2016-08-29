@@ -28,19 +28,16 @@ public class CarmageddonWebModule extends ServletModule {
             bind(Pwm.class).annotatedWith(Names.named("PWM42")).to(PwmMock.class);
         }
 
-//        bind(Steer.class);
-//        bind(Engine.class);
-//        bind(Car.class);
-//        bind(CarController.class);
-
-//        bind(CheckWebsocket.class);
-//        bind(StatusWebsocket.class);
-
 //        bind(JacksonJsonProvider.class).in(Singleton.class);
 
         Map parameters = new HashMap();
         parameters.put(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
         parameters.put("com.sun.jersey.config.property.packages", "nl.carmageddon");
         serve("/rest/*").with(GuiceContainer.class, parameters);
+    }
+
+    @Override
+    protected void requestStaticInjection(Class<?>... types) {
+        super.requestStaticInjection(CarmageddonWebsocketConfigurator.class);
     }
 }

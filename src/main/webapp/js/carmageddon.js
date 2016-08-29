@@ -28,11 +28,11 @@ req.onreadystatechange = function() {
 console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
 var joystick	= new VirtualJoystick({
     container	: document.getElementById('container'),
-    baseX		: 200,
-    baseY		: 200,
+    baseX		: 400,
+    baseY		: 400,
     mouseSupport	: true,
     limitStickTravel: true,
-    stickRadius: 100
+    stickRadius: 150
 });
 joystick.addEventListener('touchStart', function(){
     console.log('down');
@@ -53,6 +53,7 @@ var limitThrottle = 15;
 function setThrottleLimit(limit) {
     limitThrottle = limit;
 }
+
 setInterval(function(){
     var angle = Math.round(joystick.deltaX());
     if (angle != currAngle) {
@@ -79,7 +80,7 @@ setInterval(function(){
             currThrottle = throttle;
         }
     }
-}, 1/30 * 1000);
+}, 1000);
 
 function stop() {
     req.open("POST", "./rest/car/stop", true);
@@ -100,8 +101,15 @@ function SetupStatusWebSocket()
 
         ws.onmessage = function (evt)
         {
-            var received_msg = evt.data;
-            console.log("Message is received..." + received_msg);
+            var msg = JSON.parse(evt.data);
+            console.log("Message is received..." + msg);
+            var value = msg.throttle;
+            var outputEl = document.getElementById("throttle");
+            if (value == undefined) {
+                value = msg.angle;
+                outputEl = document.getElementById("angle");
+            }
+            outputEl.innerHTML = value;
         };
 
         ws.onclose = function()

@@ -8,9 +8,11 @@ import com.google.inject.servlet.GuiceServletContextListener;
  * @author Gijs Sijpesteijn
  */
 public class GuiceServletConfig extends GuiceServletContextListener {
+    public static Injector injector;
 
     @Override
     protected Injector getInjector() {
-        return Guice.createInjector(new ConfigurationModule(), new CarmageddonWebModule());
+        injector = Guice.createInjector(new ConfigurationModule(), new CarmageddonWebModule());
+        return injector;
     }
 }

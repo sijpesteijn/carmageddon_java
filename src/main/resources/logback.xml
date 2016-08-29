@@ -1,24 +1,21 @@
-<?xml version="1.0" encoding="US-ASCII"?>
-<configuration>
-	<include resource="org/springframework/boot/logging/logback/base.xml"/>
+<?xml version="1.0" encoding="UTF-8"?>
 
-	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>/tmp/carmageddon.log</file>
+<configuration scan="true">
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+			<charset>utf-8</charset>
+			<Pattern>[%p] %c - %m%n</Pattern>
 		</encoder>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>/tmp/carmageddon-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>100MB</maxFileSize>
-			</timeBasedFileNamingAndTriggeringPolicy>
-			<maxHistory>9</maxHistory>
-		</rollingPolicy>
 	</appender>
 
-	<logger name="nl.carmageddon" level="TRACE"/>
+	<logger name="org.eclipse" level="INFO"/>
 
-	<root level="INFO">
-		<appender-ref ref="file"/>
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+		<resetJUL>true</resetJUL>
+	</contextListener>
+
+	<root level="ERROR">
+		<appender-ref ref="CONSOLE"/>
 	</root>
+
 </configuration>

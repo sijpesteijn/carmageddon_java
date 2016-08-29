@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="./styles/carmageddon.css"/>
 </head>
 <body>
-    <div id="connection_info">
-
+    <div id="status">
+        Steer angle: <span id="angle"></span> Engine throttle: <span id="throttle"></span>
     </div>
-    <input type="number" id="limit" value="15" onblur="setThrottleLimit(this.value);"/>
+    Throttle limit:<input type="number" value="15" onblur="setThrottleLimit(this.value);" max="120" min="-1"/>
     <div class="touchpad" id="container"></div>
     <img src="./images/stop.png" onclick="stop();" class="panic pointer"/>
 

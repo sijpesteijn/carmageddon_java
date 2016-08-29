@@ -5,11 +5,13 @@ import com.google.inject.name.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import java.util.Observable;
 
 /**
  * @author Gijs Sijpesteijn
  */
+@Singleton
 public class Engine extends Observable {
     private static final Logger log = LoggerFactory.getLogger(Engine.class);
 //    private static int dutyMin= 800000;
@@ -45,7 +47,8 @@ public class Engine extends Observable {
         log.debug("setting throttle: " + throttle);
         this.throttle = dutyMiddle + ( throttle * SPEED_STEP);
         this.pwm.setDuty(this.throttle);
-        notifyObservers(this.throttle);
+        setChanged();
+        notifyObservers(getThrottle());
     }
 
     public void speedUp() {
