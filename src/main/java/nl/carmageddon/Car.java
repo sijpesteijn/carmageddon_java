@@ -1,22 +1,23 @@
 package nl.carmageddon;
 
+import com.google.inject.Inject;
+import nl.carmageddon.domain.Camera;
 import nl.carmageddon.domain.Engine;
 import nl.carmageddon.domain.Steer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 /**
  * @author Gijs Sijpesteijn
  */
-@Controller
 public class Car {
     private Steer steer;
     private Engine engine;
+    private Camera camera;
 
-    @Autowired
-    public Car(Steer steer, Engine engine) {
+    @Inject
+    public Car(Steer steer, Engine engine, Camera camera) {
         this.steer = steer;
         this.engine = engine;
+        this.camera = camera;
     }
 
     public Steer getSteer() {
@@ -25,5 +26,9 @@ public class Car {
 
     public Engine getEngine() {
         return engine;
+    }
+
+    public Camera getCamera() {
+        return camera;
     }
 }

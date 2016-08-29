@@ -1,34 +1,34 @@
 package nl.carmageddon.domain;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.util.Observable;
 
 /**
  * @author Gijs Sijpesteijn
  */
-public class Steer {
+public class Steer extends Observable {
     private static final Logger log = LoggerFactory.getLogger(Steer.class);
-    private static int dutyMax = 1810000;
+//    private static int dutyMin = 1150000;
+//    private static int dutyMax = 1810000;
     private static int dutyMiddle = 1480000;
-    private static int dutyMin = 1150000;
-    private static int ONE_DEGREE =16500;
+    private static int ONE_DEGREE =8250;
 
     private Pwm pwm;
     private int angle;
 
-    public Steer(Pwm pwm) {
-        try {
+    @Inject
+    public Steer(@Named("PWM42") Pwm pwm) {
+        log.debug("PWM Name: " + pwm.getClass().getTypeName());
         this.pwm = pwm;
-            if(this.pwm != null) {
-                this.pwm.setPeriod(20000000);
-                this.pwm.setPolarity(0);
-                this.setAngle(0);
-                this.pwm.start();
-            }
-        } catch (IOException ioe) {
-            log.error("Could not set pwm properties");
+        if(this.pwm != null) {
+            this.pwm.setPeriod(20000000);
+            this.pwm.setPolarity(0);
+            this.setAngle(0);
+            this.pwm.start();
         }
     }
 
@@ -37,19 +37,16 @@ public class Steer {
     }
 
     public void setAngle(int angle) {
-        if (angle < -20) {
-            angle = -20;
+        if (angle < -40) {
+            angle = -40;
         }
-        if (angle > 20) {
-            angle = 20;
+        if (angle > 40) {
+            angle = 40;
         }
         log.debug("setting angle: " + angle);
         this.angle = dutyMiddle + ( angle * ONE_DEGREE);
-        try {
-            this.pwm.setDuty(this.angle);
-        } catch (IOException e) {
-            log.error("Could not set pwm duty.");
-        }
+        this.pwm.setDuty(this.angle);
+        notifyObservers(this.angle);
     }
 
     public void left() {

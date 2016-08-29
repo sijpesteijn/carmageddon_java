@@ -7,10 +7,12 @@
     <link rel="stylesheet" href="./styles/carmageddon.css"/>
 </head>
 <body>
-    <p th:text="'Steer connected:' + ${steerconnected}" />
+    <div id="connection_info">
+
+    </div>
     <input type="number" id="limit" value="15" onblur="setThrottleLimit(this.value);"/>
-    <div id="container"></div>
-    <img src="./images/stop.jpg" onclick="stop();"/>
+    <div class="touchpad" id="container"></div>
+    <img src="./images/stop.png" onclick="stop();" class="panic pointer"/>
 
     <script src="./js/carmageddon.js"></script>
 </body>

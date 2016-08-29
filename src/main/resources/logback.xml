@@ -3,12 +3,12 @@
 	<include resource="org/springframework/boot/logging/logback/base.xml"/>
 
 	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>target/carmageddon.log</file>
+		<file>/tmp/carmageddon.log</file>
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>target/carmageddon-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<fileNamePattern>/tmp/carmageddon-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
 				<maxFileSize>100MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
@@ -17,8 +17,6 @@
 	</appender>
 
 	<logger name="nl.carmageddon" level="TRACE"/>
-
-	<logger name="org.springframework" level="WARN"/>
 
 	<root level="INFO">
 		<appender-ref ref="file"/>

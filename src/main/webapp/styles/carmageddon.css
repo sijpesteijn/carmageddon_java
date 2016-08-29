@@ -5,6 +5,18 @@ body {
     background-color: red;
 }
 
+.pointer {
+    cursor: pointer;
+}
+
+.touchpad {
+    float: left;
+}
+
+.panic {
+    float: right;
+}
+
 #container {
     width: 200px;
     height: 200px;

@@ -3,23 +3,17 @@ package nl.carmageddon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * @author Gijs Sijpesteijn
  */
-@ServerEndpoint("/status")
-public class StatusWebsocket implements Observer {
-    private static final Logger log = LoggerFactory.getLogger(StatusWebsocket.class);
-
-//    @Inject
-//    public StatusWebsocket(Steer steer, Engine engine) {
-//        steer.addObserver(this);
-//        engine.addObserver(this);
-//    }
+@Singleton
+@ServerEndpoint("/check")
+public class CheckWebsocket {
+    private static final Logger log = LoggerFactory.getLogger(CheckWebsocket.class);
 
     @OnOpen
     public void onOpen(Session session) {
@@ -39,10 +33,5 @@ public class StatusWebsocket implements Observer {
     @OnError
     public void onError(Session session, Throwable throwable) {
         log.debug("Error");
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        System.out.println(arg);
     }
 }

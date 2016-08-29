@@ -1,39 +1,33 @@
 package nl.carmageddon.domain;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.util.Observable;
 
 /**
  * @author Gijs Sijpesteijn
  */
-@Component
-public class Engine {
+public class Engine extends Observable {
     private static final Logger log = LoggerFactory.getLogger(Engine.class);
-    private static int dutyMax= 2000000;
+//    private static int dutyMin= 800000;
+//    private static int dutyMax= 2000000;
     private static int dutyMiddle = 1400000;
-    private static int dutyMin= 800000;
-    private static int SPEED_STEP =10000;
+    private static int SPEED_STEP =5000;
 
     private Pwm pwm;
     private int throttle;
 
-    @Autowired
-    public Engine(@Qualifier("pwm22") Pwm pwm) {
-        try {
-            this.pwm = pwm;
-            if (this.pwm != null) {
-                this.pwm.setPeriod(20000000);
-                this.pwm.setPolarity(0);
-                this.setThrottle(0);
-                this.pwm.start();
-            }
-        } catch (IOException ioe) {
-            log.error("Could not set pwm properties");
+    @Inject
+    public Engine(@Named("PWM22") Pwm pwm) {
+        this.pwm = pwm;
+        if (this.pwm != null) {
+            this.pwm.setPeriod(20000000);
+            this.pwm.setPolarity(0);
+            this.setThrottle(0);
+            this.pwm.start();
         }
     }
 
@@ -42,19 +36,16 @@ public class Engine {
     }
 
     public void setThrottle(int throttle) {
-        if (throttle < -60) {
-            throttle = -60;
+        if (throttle < -120) {
+            throttle = -120;
         }
-        if (throttle > 60) {
-            throttle = 60;
+        if (throttle > 120) {
+            throttle = 120;
         }
         log.debug("setting throttle: " + throttle);
         this.throttle = dutyMiddle + ( throttle * SPEED_STEP);
-        try {
-            this.pwm.setDuty(this.throttle);
-        } catch (IOException e) {
-            log.error("Could not set pwm duty.");
-        }
+        this.pwm.setDuty(this.throttle);
+        notifyObservers(this.throttle);
     }
 
     public void speedUp() {
