@@ -87,6 +87,8 @@ function stop() {
     req.send();
 }
 
+var connectedWithBB = false;
+
 function SetupStatusWebSocket()
 {
     if ("WebSocket" in window)
@@ -97,6 +99,7 @@ function SetupStatusWebSocket()
         ws.onopen = function()
         {
             // Web Socket is connected, send data using send()
+            connectedWithBB = true;
         };
 
         ws.onmessage = function (evt)
@@ -114,6 +117,7 @@ function SetupStatusWebSocket()
 
         ws.onclose = function()
         {
+            connectedWithBB = false;
             // websocket is closed.
             console.log("Connection is closed...");
         };

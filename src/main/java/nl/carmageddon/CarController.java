@@ -25,7 +25,7 @@ public class CarController {
     @POST
     @Path(value = "/stop")
     public void stop() {
-        logger.debug("Stop");
+        System.out.println("Stop");
         if (car.getEngine().getThrottle() < 0) {
             car.getEngine().setThrottle(0);
             car.getEngine().setThrottle(3);
@@ -39,14 +39,14 @@ public class CarController {
     @POST
     @Path(value = "/steer/{angle}")
     public void setAngle(@PathParam("angle") int angle) {
-        logger.debug("Angle: " + angle);
+        System.out.println("Angle: " + angle);
         car.getSteer().setAngle(angle);
     }
 
     @POST
     @Path(value = "/engine/{throttle}")
     public void setThrottle(@PathParam("throttle") int throttle) {
-        logger.debug("Throttle: " + throttle);
+        System.out.println("Throttle: " + throttle);
         car.getEngine().setThrottle(throttle);
     }
 }

@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Singleton;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Gijs Sijpesteijn
@@ -14,24 +16,31 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint("/check")
 public class CheckWebsocket {
     private static final Logger log = LoggerFactory.getLogger(CheckWebsocket.class);
+    List<Session> sessions = new ArrayList<>();
 
     @OnOpen
     public void onOpen(Session session) {
-        log.debug("Open");
+        sessions.add(session);
+        System.out.println("Session added: " + session.toString());
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        log.debug("Message");
+//        System.out.println("Message: " + message + " from session: " + session.toString());
+        if (message.equals("ping")) {
+            session.getAsyncRemote().sendText("pong");
+        }
     }
 
     @OnClose
     public void onClose(CloseReason reason, Session session) {
-        log.debug("Close");
+        sessions.remove(session);
+        System.out.println("Session closed. Reason: " + reason.getReasonPhrase() + " session: " + session.toString());
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
-        log.debug("Error");
+        sessions.remove(session);
+        System.out.println("Session error. Session: " + session.toString());
     }
 }

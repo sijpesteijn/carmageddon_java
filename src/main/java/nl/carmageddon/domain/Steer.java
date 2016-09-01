@@ -35,7 +35,8 @@ public class Steer extends Observable {
 
     public void wobbleWheels() {
         try {
-            long delay = 500;
+            System.out.println("Whobbling.");
+            long delay = 1000;
             for (int i = 0; i <= 20; i++) {
                 this.setAngle(i);
                 Thread.sleep(delay);
@@ -46,7 +47,6 @@ public class Steer extends Observable {
             for (int i = -20; i <= 0; i++) {
                 this.setAngle(i);
             }
-            System.out.println("Whobbling.");
         } catch (InterruptedException ie) {
           log.debug("No whobbling.");
         }
