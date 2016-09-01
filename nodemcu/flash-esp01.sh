@@ -1,1 +1,0 @@
-./esptool/esptool.py --port /dev/tty.usbserial-A7004kUk write_flash 0x00000 ./esp-01/nodemcu-master-10-modules-2016-08-03-12-40-27-float.bin

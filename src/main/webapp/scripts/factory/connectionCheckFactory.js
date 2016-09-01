@@ -22,6 +22,9 @@
                     connection.onError(function (error) {
                         callback(error);
                     })
+                },
+                reconnect: function () {
+                    connection = $websocket($location.absUrl().replace(/http/g,'ws') + 'check');
                 }
             }
         })
