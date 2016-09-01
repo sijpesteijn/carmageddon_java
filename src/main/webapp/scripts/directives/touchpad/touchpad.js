@@ -29,7 +29,7 @@
                     throttle: throttle
                 }, {},
                 function (success) {
-                    console.debug('throttle send', success);
+                    // console.debug('throttle send', success);
                 },
                 function (error) {
                     console.error('throttle update failed', error);
@@ -43,7 +43,7 @@
                         angle: $scope.angle
                     }, {},
                     function (success) {
-                        console.debug('angle send', success);
+                        // console.debug('angle send', success);
                     },
                     function (error) {
                         console.error('angle update failed', error);
