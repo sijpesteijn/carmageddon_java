@@ -26,7 +26,6 @@ public class CheckWebsocket {
 
     @OnMessage
     public void onMessage(String message, Session session) {
-//        System.out.println("Message: " + message + " from session: " + session.toString());
         if (message.equals("ping")) {
             session.getAsyncRemote().sendText("pong");
         }

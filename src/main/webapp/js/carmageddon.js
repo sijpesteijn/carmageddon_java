@@ -61,7 +61,7 @@ setInterval(function(){
         req.send();
         currAngle = angle;
     }
-    var throttle = Math.round(joystick.deltaY());
+    var throttle = -1 * Math.round(joystick.deltaY());
     if (limitThrottle > 0 && throttle > limitThrottle) {
         throttle = limitThrottle;
         if(currThrottle != throttle) {
