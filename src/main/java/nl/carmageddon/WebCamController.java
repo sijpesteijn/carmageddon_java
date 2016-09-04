@@ -37,11 +37,15 @@ public class WebCamController {
                 }
             });
         }
-        logger.debug("Using webcam " + webcam.getName());
-        webcam.open();
+        if (webcam != null) {
+            logger.debug("Using webcam " + webcam.getName());
+            webcam.open();
 
-        // Testing: Capture webcam and save.
-        ImageIO.write(webcam.getImage(), "PNG", new File("capture.png"));
+            // Testing: Capture webcam and save.
+            ImageIO.write(webcam.getImage(), "PNG", new File("capture.png"));
+        } else {
+            logger.error("No webcam detected.");
+        }
     }
 
     @POST

@@ -1,8 +1,0 @@
-[Unit]
-Description=Carmageddon
-After=syslog.target network.target
-[Service]
-Type=simple
-ExecStart=/usr/bin/carmageddon.sh
-[Install]
-WantedBy=multi-user.target
