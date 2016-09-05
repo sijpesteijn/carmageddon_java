@@ -21,6 +21,7 @@ public class Steer extends Observable {
 
     private Pwm pwm;
     private int angle;
+    private boolean connected;
 
     @Inject
     public Steer(@Named("PWM42") Pwm pwm) {
@@ -28,7 +29,9 @@ public class Steer extends Observable {
         if(this.pwm != null) {
             this.pwm.setPeriod(20000000);
             this.pwm.setPolarity(0);
+            this.connected = true;
             this.setAngle(0);
+            this.connected = false;
             this.pwm.start();
         }
     }
@@ -57,13 +60,17 @@ public class Steer extends Observable {
     }
 
     public void setAngle(int angle) {
+        if (!connected) {
+            log.error("I won't set the angle, because no clients are connected.");
+            return;
+        }
         if (angle < -40) {
             angle = -40;
         }
         if (angle > 40) {
             angle = 40;
         }
-        log.debug("setting angle: " + angle);
+        log.debug("Setting angle: " + angle);
         this.angle = dutyMiddle + ( angle * ONE_DEGREE);
         this.pwm.setDuty(this.angle);
         setChanged();
@@ -78,5 +85,12 @@ public class Steer extends Observable {
     public void right() {
         int right = this.getAngle() + 1;
         setAngle(right);
+    }
+
+    public void setConnected(boolean connected) {
+        if (!connected) {
+            setAngle(0);
+        }
+        this.connected = connected;
     }
 }

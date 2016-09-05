@@ -1,5 +1,6 @@
 package nl.carmageddon.domain;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,6 +20,12 @@ public class SteerTest {
 
     @InjectMocks
     private Steer steer;
+
+    @Before
+    public void setup() {
+        steer.setConnected(true);
+    }
+
 
     @Test
     public void getAngle() throws Exception {

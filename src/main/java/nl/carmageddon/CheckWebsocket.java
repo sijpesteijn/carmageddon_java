@@ -1,8 +1,11 @@
 package nl.carmageddon;
 
+import nl.carmageddon.domain.Car;
+import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
@@ -13,15 +16,21 @@ import java.util.List;
  * @author Gijs Sijpesteijn
  */
 @Singleton
-@ServerEndpoint("/check")
+@ServerEndpoint(value = "/check", configurator = CarmageddonWebsocketConfigurator.class)
 public class CheckWebsocket {
     private static final Logger log = LoggerFactory.getLogger(CheckWebsocket.class);
     List<Session> sessions = new ArrayList<>();
+    private Car car;
+
+    @Inject
+    public CheckWebsocket(Car car) {
+        this.car = car;
+    }
 
     @OnOpen
     public void onOpen(Session session) {
         sessions.add(session);
-        System.out.println("Session added: " + session.toString());
+        checkConnectedClients();
     }
 
     @OnMessage
@@ -34,12 +43,20 @@ public class CheckWebsocket {
     @OnClose
     public void onClose(CloseReason reason, Session session) {
         sessions.remove(session);
-        System.out.println("Session closed. Reason: " + reason.getReasonPhrase() + " session: " + session.toString());
+        checkConnectedClients();
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
         sessions.remove(session);
-        System.out.println("Session error. Session: " + session.toString());
+        checkConnectedClients();
+    }
+
+    private void checkConnectedClients() {
+        if (sessions.isEmpty()) {
+            car.setConnected(false);
+        } else {
+            car.setConnected(true);
+        }
     }
 }

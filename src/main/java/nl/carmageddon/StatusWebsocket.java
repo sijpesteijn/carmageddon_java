@@ -37,7 +37,6 @@ public class StatusWebsocket implements Observer {
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
-        log.debug("Open");
         if (sessions.isEmpty()) {
             steer.wobbleWheels();
         }
@@ -46,21 +45,19 @@ public class StatusWebsocket implements Observer {
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        log.debug("Message");
     }
 
     @OnClose
     public void onClose(CloseReason reason, Session session) {
-        log.debug("Close");
         sessions.remove(session);
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
-        log.debug("Error");
         sessions.remove(session);
     }
 
+    // TODO: sessions zijn soms gesloten na een timeout.
     @Override
     public void update(Observable o, Object arg) {
         String key = "throttle";
