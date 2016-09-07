@@ -17,10 +17,12 @@ public class Engine extends Observable {
 //    private static int dutyMin= 800000;
 //    private static int dutyMax= 2000000;
     private static int dutyMiddle = 1400000;
+    private static int MAX_THROTTLE = 120;
     private static int SPEED_STEP = 5000;
 
     private Pwm pwm;
     private int throttle;
+    private int throttleLimit = 20;
     private boolean connected;
 
     @Inject
@@ -40,23 +42,24 @@ public class Engine extends Observable {
         return (throttle - dutyMiddle)/SPEED_STEP;
     }
 
-    // TODO Check of stap niet te groot is. soms stopt het programma op bb als je abrupt van max naar min gaat.
+    // TODO Check of stap niet te groot is. soms stopt de bb als je abrupt van max naar min gaat.
+    // Misschien wordt er dan te veel vermogen gevraagd voor de motor en is er niet genoeg voor de bb.
     public void setThrottle(int throttle) {
         if (!connected) {
             log.error("I won't set the throttle, because no clients are connected.");
             return;
         }
-        if (throttle < -120) {
-            throttle = -120;
+        if (throttle < -throttleLimit) {
+            throttle = -throttleLimit;
         }
-        if (throttle > 120) {
-            throttle = 120;
+        if (throttle > throttleLimit) {
+            throttle = throttleLimit;
         }
         log.debug("Setting throttle: " + throttle);
         this.throttle = dutyMiddle + ( throttle * SPEED_STEP);
         this.pwm.setDuty(this.throttle);
         setChanged();
-        notifyObservers(getThrottle());
+        notifyObservers();
     }
 
     public void speedUp() {
@@ -74,5 +77,14 @@ public class Engine extends Observable {
             setThrottle(0);
         }
         this.connected = connected;
+    }
+
+    public int getThrottleLimit() {
+        return throttleLimit;
+    }
+
+    public void setThrottleLimit(int throttleLimit) {
+        if (throttleLimit <= MAX_THROTTLE)
+            this.throttleLimit = throttleLimit;
     }
 }

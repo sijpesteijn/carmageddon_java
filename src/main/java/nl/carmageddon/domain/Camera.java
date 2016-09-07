@@ -1,21 +1,19 @@
 package nl.carmageddon.domain;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.inject.Singleton;
 
 /**
  * @author Gijs Sijpesteijn
  */
+@Singleton
 public class Camera {
-    private static final Logger log = LoggerFactory.getLogger(Camera.class);
+    private int id;
 
-    public Camera() {
+    public int getId() {
+        return id;
+    }
 
-//        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-//        VideoCapture camera = new VideoCapture(0);
-//        camera.open(0);
-//        Mat frame = new Mat();
-//        camera.read(frame);
-//        Highgui.imwrite("camera.jpg", frame);
+    public void setId(int id) {
+        this.id = id;
     }
 }

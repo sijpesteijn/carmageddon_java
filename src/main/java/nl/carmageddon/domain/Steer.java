@@ -38,8 +38,8 @@ public class Steer extends Observable {
 
     public void wobbleWheels() {
         try {
-            System.out.println("Whobbling.");
-            long delay = 1000;
+            log.debug("Whobbling.");
+            long delay = 100;
             for (int i = 0; i <= 20; i++) {
                 this.setAngle(i);
                 Thread.sleep(delay);
@@ -74,7 +74,7 @@ public class Steer extends Observable {
         this.angle = dutyMiddle + ( angle * ONE_DEGREE);
         this.pwm.setDuty(this.angle);
         setChanged();
-        notifyObservers(getAngle());
+        notifyObservers();
     }
 
     public void left() {

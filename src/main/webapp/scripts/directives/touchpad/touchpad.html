@@ -1,8 +1,4 @@
 <div class="touchpad">
-    <div id="status">
-        Steer angle: {{ angle }} Engine throttle: {{ throttle }}
-    </div>
-    <img src="./images/stop.png" ng-click="stop();" class="panic pointer"/>
+    <div>Throttle limit: <input type="number" ng-model="throttleLimit" value="throttleLimit" ng-blur="updateThrottleLimit()"> ( -1 = no limit )</div>
     <div id="touchpad"></div>
-    <div class="bevelBox"></div>
 </div>

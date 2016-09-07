@@ -1,8 +1,0 @@
-<div class="settings">
-    <img src="./images/settings.png" ng-click="show = !show"/>
-    <div class="edit" ng-if="show">
-        Settings:
-        Throttle limit: <input type="number" ng-model="throttleLimit" ng-blur="sendEvent()"> ( -1 = no limit )
-        <button ng-click="save()">Save</button>
-    </div>
-</div>

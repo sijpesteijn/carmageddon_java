@@ -2,13 +2,18 @@ package nl.carmageddon.domain;
 
 import com.google.inject.Inject;
 
+import javax.inject.Singleton;
+import java.util.Observable;
+
 /**
  * @author Gijs Sijpesteijn
  */
-public class Car {
+@Singleton
+public class Car extends Observable {
     private Steer steer;
     private Engine engine;
     private Camera camera;
+    private Mode mode = Mode.disabled;
     private boolean connected;
 
     @Inject
@@ -26,9 +31,7 @@ public class Car {
         return engine;
     }
 
-    public Camera getCamera() {
-        return camera;
-    }
+    public Camera getCamera() { return camera; }
 
     public void setConnected(boolean connected) {
         this.connected = connected;
@@ -38,5 +41,15 @@ public class Car {
 
     public boolean isConnected() {
         return connected;
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+        setChanged();
+        notifyObservers();
     }
 }

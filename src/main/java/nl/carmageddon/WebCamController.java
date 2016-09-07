@@ -3,7 +3,9 @@ package nl.carmageddon;
 import org.apache.commons.configuration.Configuration;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,8 +77,51 @@ public class WebCamController {
     @Path(value = "/snapshot")
     @Produces(MediaType.TEXT_HTML)
     public void makeSnapShot(@Context HttpServletResponse response) throws IOException {
+        int H_MIN = 0;
+        int H_MAX = 256;
+        int S_MIN = 0;
+        int S_MAX = 256;
+        int V_MIN = 0;
+        int V_MAX = 256;
         Mat frame = new Mat();
         camera.read(frame);
+
+        Mat hsv = new Mat();
+        Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_RGB2HSV);
+
+        Mat threshold = new Mat();
+        Core.inRange(hsv, new Scalar(H_MIN, S_MIN, V_MIN,1), new Scalar(H_MAX,S_MAX,V_MAX,1), threshold);
+
+        //      Imgproc.GaussianBlur(threshold, threshold,new Size(3,3), 1.5);
+
+        Mat circles = new Mat();
+
+        Imgproc.HoughCircles(threshold, circles, Imgproc.CV_HOUGH_GRADIENT, 2, threshold.height() / 4, 100, 50, 10, 400);
+
+//            /*Drawing image to frame*/
+//        MatOfByte imgBytes = new MatOfByte();
+//
+//        Highgui.imencode(".png", threshold, imgBytes);
+//
+//        byte[] byteData = imgBytes.toArray();
+//
+//        InputStream in = new ByteArrayInputStream(byteData);
+//
+//        display = scale(ImageIO.read(in), this.getWidth(), this.getHeight());
+//
+//        for (int i = 0; i < circles.cols(); i++){
+//
+//            double[] vecCircle = circles.get(0, i);
+//
+//            int x = (int) vecCircle[0];
+//            int y = (int) vecCircle[1];
+//            int r = (int) vecCircle[2];
+//
+//            drawCircle(display.createGraphics(), x, y, r);
+//
+//        }
+
+
         Imgcodecs.imwrite(System.getProperty("java.io.tmpdir") + "/snapshot.jpeg", frame);
 
         ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();

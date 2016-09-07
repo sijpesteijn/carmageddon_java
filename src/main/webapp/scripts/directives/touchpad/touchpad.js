@@ -40,7 +40,7 @@
             var currAngle = Math.round(joystick.deltaX());
             if (currAngle != $scope.angle) {
                 $resource('./rest/car/steer/:angle').save({
-                        angle: $scope.angle
+                        angle: currAngle
                     }, {},
                     function (success) {
                         // console.debug('angle send', success);
@@ -50,7 +50,7 @@
                     });
                 $scope.angle = currAngle;
             }
-            var currThrottle = Math.round(joystick.deltaY());
+            var currThrottle = -1 * Math.round(joystick.deltaY());
             if ($scope.throttleLimit > 0 && currThrottle > $scope.throttleLimit) {
                 currThrottle = $scope.throttleLimit;
                 if ($scope.throttle != currThrottle) {
@@ -71,26 +71,15 @@
             }
         }, 1 / 30 * 1000);
 
-        joystick.addEventListener('touchstart', onTouchStart, false);
-        joystick.addEventListener('touchend', onTouchEnd, false);
-        joystick.addEventListener('mousemove', onTouchStart, false);
-        joystick.addEventListener('mouseup', onTouchEnd, false);
-
-        function onTouchStart() {
-            console.log('Start');
-        }
-
-        function onTouchEnd() {
-            console.log('End');
-        }
-
-        $scope.stop = function() {
-            $resource('./rest/car/stop').save({}, {},
+        $scope.updateThrottleLimit = function () {
+            $resource('./rest/car/engine/throttleLimit/:throttleLimit').save({
+                    throttleLimit: $scope.throttleLimit
+                }, {},
                 function (success) {
-                    console.debug('stop send', success);
+                    // console.debug('throttleLimit send', success);
                 },
                 function (error) {
-                    console.error('stop update failed', error);
+                    console.error('throttleLimit update failed', error);
                 });
         }
     }

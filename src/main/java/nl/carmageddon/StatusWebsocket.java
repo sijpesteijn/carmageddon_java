@@ -1,8 +1,8 @@
 package nl.carmageddon;
 
-import nl.carmageddon.domain.Engine;
-import nl.carmageddon.domain.Steer;
+import nl.carmageddon.domain.Car;
 import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,28 +23,34 @@ import java.util.Observer;
 @ServerEndpoint(value = "/status", configurator = CarmageddonWebsocketConfigurator.class)
 public class StatusWebsocket implements Observer {
     private static final Logger log = LoggerFactory.getLogger(StatusWebsocket.class);
-    private final Steer steer;
-    private final Engine engine;
     private List<Session> sessions = new ArrayList<>();
+    private Car car;
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Inject
-    public StatusWebsocket(Steer steer, Engine engine) {
-        this.steer = steer;
-        this.engine = engine;
-        steer.addObserver(this);
-        engine.addObserver(this);
+    public StatusWebsocket(Car car) {
+        this.car = car;
+        this.car.addObserver(this);
+        this.car.getSteer().addObserver(this);
+        this.car.getEngine().addObserver(this);
     }
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
-        if (sessions.isEmpty()) {
-            steer.wobbleWheels();
-        }
+//        misschien in een aparte thread. Kost zo te veel tijd.
+//        if (sessions.isEmpty()) {
+//            this.car.getSteer().wobbleWheels();
+//        }
+        String json = mapper.writeValueAsString(this.car);
+        session.getAsyncRemote().sendText(json);
         sessions.add(session);
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
+        if (message.equals("ping")) {
+            session.getAsyncRemote().sendText("pong");
+        }
     }
 
     @OnClose
@@ -57,13 +63,14 @@ public class StatusWebsocket implements Observer {
         sessions.remove(session);
     }
 
-    // TODO: sessions zijn soms gesloten na een timeout.
     @Override
     public void update(Observable o, Object arg) {
-        String key = "throttle";
-        if (o instanceof Steer)
-            key = "angle";
-        for (Session session : sessions)
-            session.getAsyncRemote().sendText("{\"" + key + "\":\"" + arg + "\"}");
+        try {
+            String json = mapper.writeValueAsString(this.car);
+            for (Session session : sessions)
+                session.getAsyncRemote().sendText(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

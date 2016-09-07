@@ -13,14 +13,22 @@
     <link rel="stylesheet" href="./css/carmageddon.css"/>
 </head>
 <body>
+<header>
+    <connection-check></connection-check>
+    <car-status></car-status>
+    <car-mode></car-mode>
+</header>
+<div ng-if="carMode == 'disabled'">De auto is uitgeschakeld.</div>
+<touchpad ng-if="carMode == 'manual'"></touchpad>
+<autonomous ng-if="carMode == 'autonomous'"></autonomous>
 
-<connection-check></connection-check>
-<touchpad></touchpad>
-<settings></settings>
+<panic-button></panic-button>
 
 <script src='./scripts/app.js'></script>
 
-<script src='./scripts/directives/settings/settings.js'></script>
+<script src='./scripts/directives/autonomous/autonomous.js'></script>
+<script src='./scripts/directives/carStatus/carStatus.js'></script>
+<script src='./scripts/directives/panicButton/panicButton.js'></script>
 <script src='./scripts/directives/connectionCheck/connectionCheck.js'></script>
 <script src='./scripts/directives/touchpad/touchpad.js'></script>
 </body>
