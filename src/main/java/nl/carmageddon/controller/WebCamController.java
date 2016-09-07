@@ -33,6 +33,7 @@ public class WebCamController {
     private VideoCapture camera;
     private File video;
     final int chunk_size = 1024 * 1024; // 1MB chunks
+    private int webcamId = 0;
 
     @Inject
     public WebCamController(Configuration configuration) throws IOException {
@@ -42,24 +43,24 @@ public class WebCamController {
             System.setProperty("java.library.path", libPath + ":" + opencvPath);
         }
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        openCamera(0);
+        openCamera();
         URL url = this.getClass().getResource("/output.mp4");
         video = new File(url.getFile());
     }
 
     @POST
     @Path(value = "/use/{id}")
-    public String useWebCam(@PathParam("id") int id) {
-        return String.valueOf(openCamera(id));
+    public void useWebCam(@PathParam("id") int id) {
+        this.webcamId = id;
     }
 
-    private boolean openCamera(int id) {
+    private boolean openCamera() {
         if (camera != null && camera.isOpened()) {
             camera.release();
         }
-        camera = new VideoCapture(id);
+        camera = new VideoCapture(webcamId);
         if (!camera.isOpened()) {
-            logger.error("No webcam with id " + id + " found!");
+            logger.error("No webcam with id " + webcamId + " found!");
             return false;
         }
         return true;
@@ -76,6 +77,7 @@ public class WebCamController {
     @Produces(MediaType.TEXT_HTML)
     public void makeSnapShot(@Context HttpServletResponse response) throws IOException {
         Mat frame = new Mat();
+        openCamera();
         camera.read(frame);
 
         Imgcodecs.imwrite(System.getProperty("java.io.tmpdir") + "/snapshot.jpeg", frame);
@@ -95,6 +97,7 @@ public class WebCamController {
         responseOutputStream.write(imgByte);
         responseOutputStream.flush();
         responseOutputStream.close();
+        camera.release();
     }
 
     @GET
@@ -141,12 +144,6 @@ public class WebCamController {
                 .header(HttpHeaders.CONTENT_LENGTH, streamer.getLenth())
                 .header(HttpHeaders.LAST_MODIFIED, new Date(video.lastModified()));
         return res.build();
-    }
-
-    @PUT
-    @Path(value = "/data/{data}")
-    public void setData(@PathParam("data") String data) {
-        System.out.println("put data: " + data);
     }
 
     public class MediaStreamer implements StreamingOutput {

@@ -2,6 +2,7 @@ package nl.carmageddon.controller;
 
 import nl.carmageddon.domain.Car;
 import nl.carmageddon.domain.Mode;
+import nl.carmageddon.service.AutonomousService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,10 +19,12 @@ import javax.ws.rs.core.Response;
 public class CarController {
     private static Logger logger = LoggerFactory.getLogger(CarController.class);
     private Car car;
+    private AutonomousService autonomousService;
 
     @Inject
-    public CarController(Car car) {
+    public CarController(Car car, AutonomousService autonomousService) {
         this.car = car;
+        this.autonomousService = autonomousService;
     }
 
     @POST
@@ -72,6 +75,10 @@ public class CarController {
     @POST
     @Path(value = "/autonomous/")
     public Response startAutonomous() {
-        return Response.status(Response.Status.NO_CONTENT).build();
+        if (autonomousService.startRace()) {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } else {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
