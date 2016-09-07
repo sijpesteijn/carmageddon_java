@@ -45,12 +45,14 @@ public class EngineTest {
 
     @Test
     public void setMaxThrottle() throws Exception {
+        engine.setThrottleLimit(120);
         engine.setThrottle(130);
         assertEquals(120, engine.getThrottle());
     }
 
     @Test
     public void setMinThrottle() throws Exception {
+        engine.setThrottleLimit(120);
         engine.setThrottle(-130);
         assertEquals(-120, engine.getThrottle());
     }

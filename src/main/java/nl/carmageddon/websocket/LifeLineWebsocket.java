@@ -1,4 +1,4 @@
-package nl.carmageddon;
+package nl.carmageddon.websocket;
 
 import nl.carmageddon.domain.Car;
 import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
@@ -16,14 +16,14 @@ import java.util.List;
  * @author Gijs Sijpesteijn
  */
 @Singleton
-@ServerEndpoint(value = "/check", configurator = CarmageddonWebsocketConfigurator.class)
-public class CheckWebsocket {
-    private static final Logger log = LoggerFactory.getLogger(CheckWebsocket.class);
+@ServerEndpoint(value = "/lifeline", configurator = CarmageddonWebsocketConfigurator.class)
+public class LifeLineWebsocket {
+    private static final Logger log = LoggerFactory.getLogger(LifeLineWebsocket.class);
     List<Session> sessions = new ArrayList<>();
     private Car car;
 
     @Inject
-    public CheckWebsocket(Car car) {
+    public LifeLineWebsocket(Car car) {
         this.car = car;
     }
 

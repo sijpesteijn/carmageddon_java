@@ -8,11 +8,11 @@
     function autonomousController($scope, websocketFactory) {
         $scope.racing = false;
         $scope.connected = false;
-        var websocket = websocketFactory.create('status');
+        var websocket = websocketFactory.create('autonomous/status');
 
         websocket.onMessage(function (message) {
             if (message.data !== 'pong') {
-                console.log('car status: ' + message.data);
+                console.log('autonomous status: ' + message.data);
                 var car = angular.fromJson(message.data);
                 $scope.connected = car.connected;
             }

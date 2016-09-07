@@ -1,4 +1,4 @@
-package nl.carmageddon;
+package nl.carmageddon.controller;
 
 import nl.carmageddon.domain.Car;
 import nl.carmageddon.domain.Mode;
@@ -66,6 +66,12 @@ public class CarController {
     @Path(value = "/engine/throttleLimit/{throttleLimit}")
     public Response setThrottleLimit(@PathParam("throttleLimit") int throttleLimit) {
         car.getEngine().setThrottleLimit(throttleLimit);
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+    @POST
+    @Path(value = "/autonomous/")
+    public Response startAutonomous() {
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 }

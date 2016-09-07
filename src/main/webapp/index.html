@@ -14,10 +14,10 @@
 </head>
 <body>
 <header>
-    <connection-check></connection-check>
+    <lifeline></lifeline>
     <car-status></car-status>
-    <car-mode></car-mode>
 </header>
+
 <div ng-if="carMode == 'disabled'">De auto is uitgeschakeld.</div>
 <touchpad ng-if="carMode == 'manual'"></touchpad>
 <autonomous ng-if="carMode == 'autonomous'"></autonomous>
@@ -29,7 +29,7 @@
 <script src='./scripts/directives/autonomous/autonomous.js'></script>
 <script src='./scripts/directives/carStatus/carStatus.js'></script>
 <script src='./scripts/directives/panicButton/panicButton.js'></script>
-<script src='./scripts/directives/connectionCheck/connectionCheck.js'></script>
+<script src='./scripts/directives/lifeline/lifeline.js'></script>
 <script src='./scripts/directives/touchpad/touchpad.js'></script>
 </body>
 </html>

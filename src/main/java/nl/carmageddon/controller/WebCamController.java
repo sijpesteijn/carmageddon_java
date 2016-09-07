@@ -1,4 +1,4 @@
-package nl.carmageddon;
+package nl.carmageddon.controller;
 
 import org.apache.commons.configuration.Configuration;
 import org.opencv.core.Core;

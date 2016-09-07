@@ -10,7 +10,7 @@
         $scope.car;
         $scope.modes = ['disabled','manual','autonomous'];
 
-        var websocket = websocketFactory.create('status');
+        var websocket = websocketFactory.create('car/status');
 
         websocket.onMessage(function (message) {
             if (message.data !== 'pong') {

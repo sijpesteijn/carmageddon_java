@@ -1,4 +1,4 @@
-package nl.carmageddon;
+package nl.carmageddon.websocket;
 
 import nl.carmageddon.domain.Car;
 import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
@@ -20,15 +20,15 @@ import java.util.Observer;
  * @author Gijs Sijpesteijn
  */
 @Singleton
-@ServerEndpoint(value = "/status", configurator = CarmageddonWebsocketConfigurator.class)
-public class StatusWebsocket implements Observer {
-    private static final Logger log = LoggerFactory.getLogger(StatusWebsocket.class);
+@ServerEndpoint(value = "/car/status", configurator = CarmageddonWebsocketConfigurator.class)
+public class CarStatusWebsocket implements Observer {
+    private static final Logger log = LoggerFactory.getLogger(CarStatusWebsocket.class);
     private List<Session> sessions = new ArrayList<>();
     private Car car;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Inject
-    public StatusWebsocket(Car car) {
+    public CarStatusWebsocket(Car car) {
         this.car = car;
         this.car.addObserver(this);
         this.car.getSteer().addObserver(this);
