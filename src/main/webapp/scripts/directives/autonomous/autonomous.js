@@ -17,7 +17,16 @@
                 var info = angular.fromJson(message.data);
                 $scope.connected = info.connected;
                 $scope.racing = info.racing;
-                $scope.msgs.push(info.message);
+                if ($scope.msgs.length > 0) {
+                    var last = $scope.msgs[$scope.msgs.length-1];
+                    if (last.msg.indexOf(info.message) == 0) {
+                        last.count++;
+                    } else {
+                        $scope.msgs.push({msg: info.message, count: 1 });
+                    }
+                } else {
+                    $scope.msgs.push({msg: info.message, count: 1 });
+                }
             }
         });
 
@@ -28,7 +37,6 @@
                 },
                 function (error) {
                     console.error('mode update failed', error);
-                    $scope.msgs.push(error);
                 });
 
         };

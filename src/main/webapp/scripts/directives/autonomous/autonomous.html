@@ -2,5 +2,5 @@
     AUTONOMOUS
     <button ng-click="startRace()" ng-disabled="!connected || racing">START RACE</button>
 
-    <ul><li ng-repeat="msg in msgs">{{msg}}</li></ul>
+    <ul><li ng-repeat="msg in msgs track by $index">{{ msg.msg }} <span ng-if="msg.count >= 1">[{{msg.count}}]</span></li></ul>
 </div>

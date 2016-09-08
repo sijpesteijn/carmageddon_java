@@ -31,6 +31,7 @@ public class CarController {
     @Path(value = "/panic")
     public void stop() {
         logger.debug("Panic");
+        autonomousService.stopRace();
         car.getEngine().setThrottle(0);
         car.getSteer().setAngle(0);
         car.setMode(Mode.disabled);

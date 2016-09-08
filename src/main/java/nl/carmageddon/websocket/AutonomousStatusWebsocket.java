@@ -1,7 +1,6 @@
 package nl.carmageddon.websocket;
 
 import nl.carmageddon.domain.AutonomousStatus;
-import nl.carmageddon.domain.Car;
 import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
 import nl.carmageddon.service.AutonomousService;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -27,22 +26,20 @@ public class AutonomousStatusWebsocket implements Observer{
     private static final Logger log = LoggerFactory.getLogger(AutonomousStatusWebsocket.class);
     List<Session> sessions = new ArrayList<>();
     private ObjectMapper mapper = new ObjectMapper();
-    private Car car;
     private AutonomousService autonomousService;
 
     @Inject
-    public AutonomousStatusWebsocket(Car car, AutonomousService autonomousService) {
-        this.car = car;
+    public AutonomousStatusWebsocket(AutonomousService autonomousService) {
         this.autonomousService = autonomousService;
-        autonomousService.addObserver(this);
+        this.autonomousService.addObserver(this);
     }
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
+        log.debug("Session added " + session.toString());
         sessions.add(session);
         String json = mapper.writeValueAsString(autonomousService.getStatus());
         session.getAsyncRemote().sendText(json);
-        sessions.add(session);
     }
 
     @OnMessage
