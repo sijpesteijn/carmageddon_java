@@ -42,10 +42,13 @@ public class WebCamController {
             String opencvPath = "./main/resources/";
             System.setProperty("java.library.path", libPath + ":" + opencvPath);
         }
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        try {
+            System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        } catch (Exception e) {
+            logger.debug(e.getMessage());
+            e.printStackTrace();
+        }
         openCamera();
-        URL url = this.getClass().getResource("/output.mp4");
-        video = new File(url.getFile());
     }
 
     @POST
@@ -64,12 +67,6 @@ public class WebCamController {
             return false;
         }
         return true;
-    }
-
-    @POST
-    @Path(value = "/capture")
-    public void startCapture() {
-
     }
 
     @GET
@@ -104,6 +101,9 @@ public class WebCamController {
     @Path(value = "/stream")
     @Produces("video/mp4")
     public Response stream(@HeaderParam("range") String range) throws IOException {
+        URL url = this.getClass().getResource("/output.mp4");
+        video = new File(url.getFile());
+
         if (range == null) {
             StreamingOutput streamer = output -> {
 
