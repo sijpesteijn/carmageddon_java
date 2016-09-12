@@ -1,5 +1,9 @@
 package nl.carmageddon.domain;
 
+import org.opencv.videoio.VideoCapture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Singleton;
 
 /**
@@ -7,6 +11,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class Camera {
+    private static Logger logger = LoggerFactory.getLogger(Camera.class);
+    private VideoCapture camera;
     private int id;
 
     public int getId() {
@@ -16,4 +22,21 @@ public class Camera {
     public void setId(int id) {
         this.id = id;
     }
+
+    public VideoCapture getCamera() {
+        if (camera != null && camera.isOpened()) {
+            camera.release();
+        }
+        camera = new VideoCapture(id);
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (!camera.isOpened()) {
+            logger.error("No webcam with id " + id + " found!");
+        }
+        return camera;
+    }
+
 }

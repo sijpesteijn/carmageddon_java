@@ -1,9 +1,9 @@
 package nl.carmageddon.controller;
 
-import org.apache.commons.configuration.Configuration;
-import org.opencv.core.Core;
+import nl.carmageddon.domain.Car;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,43 +30,19 @@ import java.util.Date;
 @Path("webcam")
 public class WebCamController {
     private static Logger logger = LoggerFactory.getLogger(CarController.class);
-    private VideoCapture camera;
     private File video;
     final int chunk_size = 1024 * 1024; // 1MB chunks
-    private int webcamId = 0;
+    private Car car;
 
     @Inject
-    public WebCamController(Configuration configuration) throws IOException {
-        if (!System.getProperty("os.arch").contains("arm")) {
-            String libPath = System.getProperty("java.library.path");
-            String opencvPath = "./main/resources/";
-            System.setProperty("java.library.path", libPath + ":" + opencvPath);
-        }
-        try {
-            System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        } catch (Exception e) {
-            logger.debug(e.getMessage());
-            e.printStackTrace();
-        }
-        openCamera();
+    public WebCamController(Car car) {
+        this.car = car;
     }
 
     @POST
     @Path(value = "/use/{id}")
     public void useWebCam(@PathParam("id") int id) {
-        this.webcamId = id;
-    }
-
-    private boolean openCamera() {
-        if (camera != null && camera.isOpened()) {
-            camera.release();
-        }
-        camera = new VideoCapture(webcamId);
-        if (!camera.isOpened()) {
-            logger.error("No webcam with id " + webcamId + " found!");
-            return false;
-        }
-        return true;
+        this.car.getCamera().setId(id);
     }
 
     @GET
@@ -74,13 +50,13 @@ public class WebCamController {
     @Produces(MediaType.TEXT_HTML)
     public void makeSnapShot(@Context HttpServletResponse response) throws IOException {
         Mat frame = new Mat();
-        openCamera();
+        VideoCapture camera = car.getCamera().getCamera();
         camera.read(frame);
-
+//        doFunnyStuff(frame);
         Imgcodecs.imwrite(System.getProperty("java.io.tmpdir") + "/snapshot.jpeg", frame);
 
+        // Send image to client
         ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
-
         BufferedImage image = ImageIO.read(new File(System.getProperty("java.io.tmpdir") + "/snapshot.jpeg"));
         ImageIO.write(image, "jpeg", jpegOutputStream);
 
@@ -95,6 +71,50 @@ public class WebCamController {
         responseOutputStream.flush();
         responseOutputStream.close();
         camera.release();
+    }
+
+    private void doFunnyStuff(Mat image) {
+//        Imgproc.blur(image, image, new Size(7, 7));
+//        Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2HSV);
+
+//        Mat mask = new Mat();
+//        Scalar minValues = new Scalar(0, 0, 0);
+//        Scalar maxValues = new Scalar(180, 255, 1);
+//        Core.inRange(image, minValues, maxValues, mask);
+
+//        Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(24, 24));
+//        Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(12, 12));
+//
+//        Imgproc.erode(mask, image, erodeElement);
+//        Imgproc.erode(mask, image, erodeElement);
+//
+//        Imgproc.dilate(mask, image, dilateElement);
+//        Imgproc.dilate(mask, image, dilateElement);
+        Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2GRAY);
+//        image.convertTo(image, -1, 2, 50);
+
+    }
+
+    @GET
+    @Path(value = "/traffic")
+    @Produces(MediaType.TEXT_HTML)
+    public void trafficLightSnapshot(@Context HttpServletResponse response) throws IOException {
+
+        // Send image to client
+        ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
+        BufferedImage image = ImageIO.read(new File(System.getProperty("java.io.tmpdir") + "/traffic.jpeg"));
+        ImageIO.write(image, "jpeg", jpegOutputStream);
+
+        byte[] imgByte = jpegOutputStream.toByteArray();
+
+        response.setHeader("Cache-Control", "no-store");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+        response.setContentType("image/jpeg");
+        ServletOutputStream responseOutputStream = response.getOutputStream();
+        responseOutputStream.write(imgByte);
+        responseOutputStream.flush();
+        responseOutputStream.close();
     }
 
     @GET
