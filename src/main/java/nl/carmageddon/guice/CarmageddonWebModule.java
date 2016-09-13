@@ -21,9 +21,9 @@ public class CarmageddonWebModule extends ServletModule {
     protected void configureServlets() {
 
         if (System.getProperty("os.arch").contains("arm")) {
-            String libPath = System.getProperty("java.library.path");
-            String opencvPath = "./main/resources/";
-            System.setProperty("java.library.path", libPath + ":" + opencvPath);
+//            String libPath = System.getProperty("java.library.path");
+//            String opencvPath = "./main/resources/";
+//            System.setProperty("java.library.path", libPath + ":" + opencvPath);
 
             bind(Pwm.class).annotatedWith(Names.named("PWM22")).toInstance(new PwmImpl(22));
             bind(Pwm.class).annotatedWith(Names.named("PWM42")).toInstance(new PwmImpl(42));

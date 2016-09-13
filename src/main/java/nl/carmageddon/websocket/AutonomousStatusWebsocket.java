@@ -1,6 +1,6 @@
 package nl.carmageddon.websocket;
 
-import nl.carmageddon.domain.AutonoumousEvent;
+import nl.carmageddon.domain.LookoutResult;
 import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
 import nl.carmageddon.service.AutonomousService;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -38,6 +38,8 @@ public class AutonomousStatusWebsocket implements Observer{
     public void onOpen(Session session) throws IOException {
         log.debug("Session added " + session.toString());
         sessions.add(session);
+        String json = mapper.writeValueAsString(autonomousService.getStatus());
+        session.getAsyncRemote().sendText(json);
     }
 
     @OnMessage
@@ -59,7 +61,7 @@ public class AutonomousStatusWebsocket implements Observer{
 
     @Override
     public void update(Observable o, Object arg) {
-        AutonoumousEvent status = (AutonoumousEvent) arg;
+        LookoutResult status = (LookoutResult) arg;
         try {
             String json = mapper.writeValueAsString(status);
             for (Session session : sessions)

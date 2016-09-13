@@ -1,5 +1,6 @@
 package nl.carmageddon.domain;
 
+import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public class Camera {
 
     public VideoCapture getCamera() {
         if (camera != null && camera.isOpened()) {
-            camera.release();
+            return camera;
         }
         camera = new VideoCapture(id);
         try {
@@ -39,4 +40,16 @@ public class Camera {
         return camera;
     }
 
+    public Mat mageSnapshot() {
+        Mat snapshot = new Mat();
+        getCamera().read(snapshot);
+        return snapshot;
+    }
+
+    public byte[] makeSnapshot() {
+        Mat snapshot = mageSnapshot();
+        byte[] bytes = new byte[(int) (snapshot.total() * snapshot.channels())];
+        snapshot.get(0, 0, bytes);
+        return bytes;
+    }
 }

@@ -1,6 +1,7 @@
 package nl.carmageddon.service;
 
 import nl.carmageddon.domain.CPU;
+import nl.carmageddon.domain.LookoutResult;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -40,5 +41,9 @@ public class AutonomousService {
 
     public void stopRace() {
         this.cpu.setRacing(false);
+    }
+
+    public LookoutResult getStatus() {
+        return this.cpu.getStatus();
     }
 }

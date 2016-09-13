@@ -36,7 +36,7 @@ public class PwmImpl implements Pwm {
         this.periodPath = this.dirName + "period";
         this.dutyPath = this.dirName + "duty";
         this.polarityPath = this.dirName + "polarity";
-        this.runPath = this.dirName + "run";
+        this.runPath = this.dirName + "start";
     }
 
     private String getFullDirectoryName(PwmResource pwmResource) {
