@@ -24,7 +24,7 @@ public class LookoutResult {
     }
 
     public boolean sucess() {
-        return status == AutonomousStatus.TRAFFIC_LIGHT_FOUND || status == AutonomousStatus.CAR_READY_TO_RACE ||
+        return status == AutonomousStatus.TRAFFIC_LIGHT_FOUND || status == AutonomousStatus.READY_TO_RACE ||
                status == AutonomousStatus.RACE_START || status == AutonomousStatus.RACE_FINISHED;
     }
 }

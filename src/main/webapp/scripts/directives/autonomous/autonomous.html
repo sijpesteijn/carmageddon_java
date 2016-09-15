@@ -1,7 +1,22 @@
 <div class="autonomous">
     AUTONOMOUS
+    <img class="settings" ng-click="showSettings = !showSettings" src="./images/settings.png">
+    <div ng-show="showSettings">
+        Traffic light lower min color:
+        <color-slider rgb="lowerRGBMin"></color-slider>
+        Traffic light lower max color:
+        <color-slider rgb="lowerRGBMax"></color-slider>
+        Traffic light upper min color:
+        <color-slider rgb="upperRGBMin"></color-slider>
+        Traffic light upper max color:
+        <color-slider rgb="upperRGBMax"></color-slider>
+    </div>
     <button ng-click="startRace()" ng-disabled="!readyToRace();">START RACE</button>
 
+    <img id="img">
+    <div style="overflow: auto;height: 300px;">
     <ul><li ng-repeat="msg in msgs track by $index">{{ msg.msg }}
         <span ng-if="msg.count > 1">[{{msg.count}}]</span></li></ul>
+        <canvas id="snapshot" width="514" height="514" style="border:1px solid #CECECE;background-color: white;"></canvas>
+    </div>
 </div>

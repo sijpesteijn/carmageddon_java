@@ -1,5 +1,6 @@
 package nl.carmageddon.websocket;
 
+import com.sun.jersey.core.util.Base64;
 import nl.carmageddon.domain.LookoutResult;
 import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
 import nl.carmageddon.service.AutonomousService;
@@ -11,7 +12,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -61,11 +65,23 @@ public class AutonomousStatusWebsocket implements Observer{
 
     @Override
     public void update(Observable o, Object arg) {
-        LookoutResult status = (LookoutResult) arg;
         try {
+            LookoutResult status = (LookoutResult) arg;
+            byte[] imgBytes = status.getImgBytes();
+            ByteBuffer buffer = null;
+//            if (imgBytes != null) {
+                File fi = new File("./src/main/resources/ready.jpg");
+                imgBytes = Files.readAllBytes(fi.toPath());
+                System.out.println("Send " + imgBytes.length);
+                buffer = ByteBuffer.wrap(Base64.encode(imgBytes));
+//            }
             String json = mapper.writeValueAsString(status);
-            for (Session session : sessions)
+            for (Session session : sessions) {
                 session.getAsyncRemote().sendText(json);
+                if (buffer != null) {
+                    session.getAsyncRemote().sendBinary(buffer);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

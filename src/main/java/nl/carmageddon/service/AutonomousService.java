@@ -1,5 +1,6 @@
 package nl.carmageddon.service;
 
+import nl.carmageddon.domain.AutonomousSettings;
 import nl.carmageddon.domain.CPU;
 import nl.carmageddon.domain.LookoutResult;
 
@@ -45,5 +46,15 @@ public class AutonomousService {
 
     public LookoutResult getStatus() {
         return this.cpu.getStatus();
+    }
+
+    public void useSettings(AutonomousSettings settings) {
+        if(this.cpu.isRacing()) {
+            this.cpu.useSettings(settings);
+        }
+    }
+
+    public AutonomousSettings getSettings() {
+        return this.cpu.getSettings();
     }
 }

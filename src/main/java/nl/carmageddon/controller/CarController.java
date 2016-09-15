@@ -72,14 +72,4 @@ public class CarController {
         car.getEngine().setThrottleLimit(throttleLimit);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
-
-    @POST
-    @Path(value = "/autonomous/")
-    public Response startAutonomous() {
-        if (autonomousService.startRace()) {
-            return Response.status(Response.Status.NO_CONTENT).build();
-        } else {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
 }

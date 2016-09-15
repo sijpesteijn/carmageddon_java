@@ -3,6 +3,7 @@ package nl.carmageddon.service;
 import nl.carmageddon.domain.AutonomousStatus;
 import nl.carmageddon.domain.Car;
 import nl.carmageddon.domain.LookoutResult;
+import nl.carmageddon.domain.RGB;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -25,6 +26,10 @@ public class TrafficLightLookout extends Observable implements Lookout {
     private static final Logger log = LoggerFactory.getLogger(TrafficLightLookout.class);
     private long timeout = 10000; // 10 sec
     private Car car;
+    private RGB upperRGBMax;
+    private RGB upperRGBMin;
+    private RGB lowerRGBMax;
+    private RGB lowerRGBMin;
 
     @Inject
     public TrafficLightLookout(Car car) {
@@ -61,7 +66,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
         return result;
     }
 
-    // TODO loopen met een echt webcam beeld tot timeout.
+    // TODO loopen met een echt webcam beeld tot stoplicht gevonden of timeout.
     private LookoutResult trafficLightFound(VideoCapture camera) {
         Mat frame= Imgcodecs
                 .imread("/Users/gijs/programming/java/carmageddon/src/main/resources/circles.jpg", Imgcodecs
@@ -108,4 +113,19 @@ public class TrafficLightLookout extends Observable implements Lookout {
         return frame;
     }
 
+    public void setUpperRGBMax(RGB upperRGBMax) {
+        this.upperRGBMax = upperRGBMax;
+    }
+
+    public void setUpperRGBMin(RGB upperRGBMin) {
+        this.upperRGBMin = upperRGBMin;
+    }
+
+    public void setLowerRGBMax(RGB lowerRGBMax) {
+        this.lowerRGBMax = lowerRGBMax;
+    }
+
+    public void setLowerRGBMin(RGB lowerRGBMin) {
+        this.lowerRGBMin = lowerRGBMin;
+    }
 }

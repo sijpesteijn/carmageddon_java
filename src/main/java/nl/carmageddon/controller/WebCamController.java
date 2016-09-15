@@ -48,7 +48,7 @@ public class WebCamController {
     @GET
     @Path(value = "/snapshot")
     @Produces(MediaType.TEXT_HTML)
-    public void makeSnapShot(@Context HttpServletResponse response) throws IOException {
+    public String makeSnapShot(@Context HttpServletResponse response) throws IOException {
         Mat frame = new Mat();
         VideoCapture camera = car.getCamera().getCamera();
         camera.read(frame);
@@ -71,6 +71,7 @@ public class WebCamController {
         responseOutputStream.flush();
         responseOutputStream.close();
         camera.release();
+        return "";
     }
 
     private void doFunnyStuff(Mat image) {
@@ -98,7 +99,7 @@ public class WebCamController {
     @GET
     @Path(value = "/traffic")
     @Produces(MediaType.TEXT_HTML)
-    public void trafficLightSnapshot(@Context HttpServletResponse response) throws IOException {
+    public String trafficLightSnapshot(@Context HttpServletResponse response) throws IOException {
 
         // Send image to client
         ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
@@ -115,6 +116,7 @@ public class WebCamController {
         responseOutputStream.write(imgByte);
         responseOutputStream.flush();
         responseOutputStream.close();
+        return "";
     }
 
     @GET

@@ -28,7 +28,10 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
         endpoint = ep;
         var splits = $location.absUrl().split('/');
         var url = 'ws://' + splits[2] + '/' + splits[3] + '/' + endpoint;
-        connection = $websocket(url);
+        connection = $websocket(url, undefined , {
+            binaryType: "arraybuffer"
+        });
+
         connection.onOpen(function () {
             tries = 0;
             connected = true;

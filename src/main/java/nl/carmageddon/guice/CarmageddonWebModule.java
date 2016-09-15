@@ -9,6 +9,7 @@ import nl.carmageddon.domain.PwmImpl;
 import nl.carmageddon.domain.PwmMock;
 import org.opencv.core.Core;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,10 +22,6 @@ public class CarmageddonWebModule extends ServletModule {
     protected void configureServlets() {
 
         if (System.getProperty("os.arch").contains("arm")) {
-//            String libPath = System.getProperty("java.library.path");
-//            String opencvPath = "./main/resources/";
-//            System.setProperty("java.library.path", libPath + ":" + opencvPath);
-
             bind(Pwm.class).annotatedWith(Names.named("PWM22")).toInstance(new PwmImpl(22));
             bind(Pwm.class).annotatedWith(Names.named("PWM42")).toInstance(new PwmImpl(42));
         } else {
@@ -33,11 +30,14 @@ public class CarmageddonWebModule extends ServletModule {
         }
 
         try {
+            Field loadedLibraryNames = ClassLoader.class.getDeclaredField("loadedLibraryNames");
+            loadedLibraryNames.setAccessible(true);
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+//        bind(JacksonJsonProvider.class).in(Singleton.class);
         Map parameters = new HashMap();
         parameters.put(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
         parameters.put("com.sun.jersey.config.property.packages", "nl.carmageddon");
