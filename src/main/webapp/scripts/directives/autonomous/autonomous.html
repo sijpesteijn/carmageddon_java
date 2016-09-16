@@ -3,13 +3,13 @@
     <img class="settings" ng-click="showSettings = !showSettings" src="./images/settings.png">
     <div ng-show="showSettings">
         Traffic light lower min color:
-        <color-slider rgb="lowerRGBMin"></color-slider>
+        <color-slider rgb="lowerHSVMin"></color-slider>
         Traffic light lower max color:
-        <color-slider rgb="lowerRGBMax"></color-slider>
+        <color-slider rgb="lowerHSVMax"></color-slider>
         Traffic light upper min color:
-        <color-slider rgb="upperRGBMin"></color-slider>
+        <color-slider rgb="upperHSVMin"></color-slider>
         Traffic light upper max color:
-        <color-slider rgb="upperRGBMax"></color-slider>
+        <color-slider rgb="upperHSVMax"></color-slider>
     </div>
     <button ng-click="startRace()" ng-disabled="!readyToRace();">START RACE</button>
 
@@ -17,6 +17,5 @@
     <div style="overflow: auto;height: 300px;">
     <ul><li ng-repeat="msg in msgs track by $index">{{ msg.msg }}
         <span ng-if="msg.count > 1">[{{msg.count}}]</span></li></ul>
-        <canvas id="snapshot" width="514" height="514" style="border:1px solid #CECECE;background-color: white;"></canvas>
     </div>
 </div>

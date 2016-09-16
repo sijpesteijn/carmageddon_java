@@ -4,40 +4,40 @@ package nl.carmageddon.domain;
  * @author Gijs Sijpesteijn
  */
 public class AutonomousSettings {
-    private RGB lowerRGBMin;
-    private RGB lowerRGBMax;
-    private RGB upperRGBMin;
-    private RGB upperRGBMax;
+    private HSV lowerHSVMin;
+    private HSV lowerHSVMax;
+    private HSV upperHSVMin;
+    private HSV upperHSVMax;
 
-    public void setLowerRGBMin(RGB lowerRGBMin) {
-        this.lowerRGBMin = lowerRGBMin;
+    public void setLowerHSVMin(HSV lowerHSVMin) {
+        this.lowerHSVMin = lowerHSVMin;
     }
 
-    public void setLowerRGBMax(RGB lowerRGBMax) {
-        this.lowerRGBMax = lowerRGBMax;
+    public void setLowerHSVMax(HSV lowerHSVMax) {
+        this.lowerHSVMax = lowerHSVMax;
     }
 
-    public void setUpperRGBMin(RGB upperRGBMin) {
-        this.upperRGBMin = upperRGBMin;
+    public void setUpperHSVMin(HSV upperHSVMin) {
+        this.upperHSVMin = upperHSVMin;
     }
 
-    public void setUpperRGBMax(RGB upperRGBMax) {
-        this.upperRGBMax = upperRGBMax;
+    public void setUpperHSVMax(HSV upperHSVMax) {
+        this.upperHSVMax = upperHSVMax;
     }
 
-    public RGB getLowerRGBMin() {
-        return lowerRGBMin;
+    public HSV getLowerHSVMin() {
+        return lowerHSVMin;
     }
 
-    public RGB getLowerRGBMax() {
-        return lowerRGBMax;
+    public HSV getLowerHSVMax() {
+        return lowerHSVMax;
     }
 
-    public RGB getUpperRGBMin() {
-        return upperRGBMin;
+    public HSV getUpperHSVMin() {
+        return upperHSVMin;
     }
 
-    public RGB getUpperRGBMax() {
-        return upperRGBMax;
+    public HSV getUpperHSVMax() {
+        return upperHSVMax;
     }
 }

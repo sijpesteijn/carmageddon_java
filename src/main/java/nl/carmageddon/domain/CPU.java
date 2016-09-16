@@ -36,6 +36,10 @@ public class CPU extends Observable implements Observer {
         this.settings = loadSettings(configuration);
         this.car = car;
         this.trafficLightLookout = trafficLightLookout;
+        this.trafficLightLookout.setLowerHSVMin(settings.getLowerHSVMin());
+        this.trafficLightLookout.setLowerHSVMax(settings.getLowerHSVMax());
+        this.trafficLightLookout.setUpperHSVMin(settings.getUpperHSVMin());
+        this.trafficLightLookout.setUpperHSVMax(settings.getUpperHSVMax());
         this.trafficLightLookout.addObserver(this);
         this.lookouts.add(this.trafficLightLookout);
         this.straightTrackLookout = straightTrackLookout;
@@ -46,29 +50,29 @@ public class CPU extends Observable implements Observer {
     // TODO dit moet makkelijker kunnen
     private AutonomousSettings loadSettings(Configuration configuration) {
         AutonomousSettings settings = new AutonomousSettings();
-        RGB lowerRGBMin = new RGB();
-        lowerRGBMin.setRed(configuration.getInt("trafficlight.lowerbound.min_rgb.red"));
-        lowerRGBMin.setGreen(configuration.getInt("trafficlight.lowerbound.min_rgb.green"));
-        lowerRGBMin.setBlue(configuration.getInt("trafficlight.lowerbound.min_rgb.blue"));
-        settings.setLowerRGBMin(lowerRGBMin);
+        HSV lowerHSVMin = new HSV();
+        lowerHSVMin.setHue(configuration.getInt("trafficlight.lowerbound.min_hsv.h"));
+        lowerHSVMin.setSaturation(configuration.getInt("trafficlight.lowerbound.min_hsv.h"));
+        lowerHSVMin.setValue(configuration.getInt("trafficlight.lowerbound.min_hsv.v"));
+        settings.setLowerHSVMin(lowerHSVMin);
 
-        RGB lowerRGBMax = new RGB();
-        lowerRGBMax.setRed(configuration.getInt("trafficlight.lowerbound.max_rgb.red"));
-        lowerRGBMax.setGreen(configuration.getInt("trafficlight.lowerbound.max_rgb.green"));
-        lowerRGBMax.setBlue(configuration.getInt("trafficlight.lowerbound.max_rgb.blue"));
-        settings.setLowerRGBMax(lowerRGBMax);
+        HSV lowerHSVMax = new HSV();
+        lowerHSVMax.setHue(configuration.getInt("trafficlight.lowerbound.max_hsv.h"));
+        lowerHSVMax.setSaturation(configuration.getInt("trafficlight.lowerbound.max_hsv.s"));
+        lowerHSVMax.setValue(configuration.getInt("trafficlight.lowerbound.max_hsv.v"));
+        settings.setLowerHSVMax(lowerHSVMax);
 
-        RGB upperRGBMin = new RGB();
-        upperRGBMin.setRed(configuration.getInt("trafficlight.upperbound.min_rgb.red"));
-        upperRGBMin.setGreen(configuration.getInt("trafficlight.upperbound.min_rgb.green"));
-        upperRGBMin.setBlue(configuration.getInt("trafficlight.upperbound.min_rgb.blue"));
-        settings.setUpperRGBMin(upperRGBMin);
+        HSV upperHSVMin = new HSV();
+        upperHSVMin.setHue(configuration.getInt("trafficlight.upperbound.min_hsv.h"));
+        upperHSVMin.setSaturation(configuration.getInt("trafficlight.upperbound.min_hsv.s"));
+        upperHSVMin.setValue(configuration.getInt("trafficlight.upperbound.min_hsv.v"));
+        settings.setUpperHSVMin(upperHSVMin);
 
-        RGB upperRGBMax = new RGB();
-        upperRGBMax.setRed(configuration.getInt("trafficlight.upperbound.max_rgb.red"));
-        upperRGBMax.setGreen(configuration.getInt("trafficlight.upperbound.max_rgb.green"));
-        upperRGBMax.setBlue(configuration.getInt("trafficlight.upperbound.max_rgb.blue"));
-        settings.setUpperRGBMax(upperRGBMax);
+        HSV upperHSVMax = new HSV();
+        upperHSVMax.setHue(configuration.getInt("trafficlight.upperbound.max_hsv.h"));
+        upperHSVMax.setSaturation(configuration.getInt("trafficlight.upperbound.max_hsv.s"));
+        upperHSVMax.setValue(configuration.getInt("trafficlight.upperbound.max_hsv.v"));
+        settings.setUpperHSVMax(upperHSVMax);
 
         return settings;
     }
@@ -84,12 +88,6 @@ public class CPU extends Observable implements Observer {
                 notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, null));
             }
         }
-//        if (!racing && !finished) {
-//            this.currentLookout.stop();
-//            notifyClients(new AutonomousEvent(AutonomousStatus.CAR_STOPPED, null, racing, false));
-//        } else {
-//            notifyClients(new AutonomousEvent(AutonomousStatus.RACE_FINISHED, null, racing, false));
-//        }
     }
 
     private void notifyClients(LookoutResult event) {
@@ -119,10 +117,10 @@ public class CPU extends Observable implements Observer {
     }
 
     public void useSettings(AutonomousSettings settings) {
-        this.trafficLightLookout.setLowerRGBMin(settings.getLowerRGBMin());
-        this.trafficLightLookout.setLowerRGBMax(settings.getLowerRGBMax());
-        this.trafficLightLookout.setUpperRGBMin(settings.getUpperRGBMin());
-        this.trafficLightLookout.setUpperRGBMax(settings.getUpperRGBMax());
+        this.trafficLightLookout.setLowerHSVMin(settings.getLowerHSVMin());
+        this.trafficLightLookout.setLowerHSVMax(settings.getLowerHSVMax());
+        this.trafficLightLookout.setUpperHSVMin(settings.getUpperHSVMin());
+        this.trafficLightLookout.setUpperHSVMax(settings.getUpperHSVMax());
     }
 
     public AutonomousSettings getSettings() {

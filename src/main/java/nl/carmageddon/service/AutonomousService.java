@@ -49,7 +49,7 @@ public class AutonomousService {
     }
 
     public void useSettings(AutonomousSettings settings) {
-        if(this.cpu.isRacing()) {
+        if(!this.cpu.isRacing()) {
             this.cpu.useSettings(settings);
         }
     }

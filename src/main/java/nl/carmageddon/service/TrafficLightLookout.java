@@ -3,7 +3,7 @@ package nl.carmageddon.service;
 import nl.carmageddon.domain.AutonomousStatus;
 import nl.carmageddon.domain.Car;
 import nl.carmageddon.domain.LookoutResult;
-import nl.carmageddon.domain.RGB;
+import nl.carmageddon.domain.HSV;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -16,6 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Observable;
 
 /**
@@ -26,10 +29,10 @@ public class TrafficLightLookout extends Observable implements Lookout {
     private static final Logger log = LoggerFactory.getLogger(TrafficLightLookout.class);
     private long timeout = 10000; // 10 sec
     private Car car;
-    private RGB upperRGBMax;
-    private RGB upperRGBMin;
-    private RGB lowerRGBMax;
-    private RGB lowerRGBMin;
+    private HSV upperHSVMax;
+    private HSV upperHSVMin;
+    private HSV lowerHSVMax;
+    private HSV lowerHSVMin;
 
     @Inject
     public TrafficLightLookout(Car car) {
@@ -68,9 +71,11 @@ public class TrafficLightLookout extends Observable implements Lookout {
 
     // TODO loopen met een echt webcam beeld tot stoplicht gevonden of timeout.
     private LookoutResult trafficLightFound(VideoCapture camera) {
-        Mat frame= Imgcodecs
-                .imread("/Users/gijs/programming/java/carmageddon/src/main/resources/circles.jpg", Imgcodecs
-                        .CV_LOAD_IMAGE_COLOR);
+//        Mat frame= Imgcodecs
+//                .imread("/Users/gijs/programming/java/carmageddon/src/main/resources/circles.jpg", Imgcodecs
+//                        .CV_LOAD_IMAGE_COLOR);
+        Mat frame = new Mat();
+        camera.read(frame);
         Mat original = frame.clone();
         // Filter noise
         Imgproc.medianBlur(frame, frame, 3);
@@ -84,8 +89,15 @@ public class TrafficLightLookout extends Observable implements Lookout {
         }
         Imgcodecs.imwrite("capture.jpg", original);
 
-        byte[] bytes = new byte[(int) (original.total() * original.channels())];
+        // TODO betere manier om image naar byte array om te zetten.
+        byte[] bytes = new byte[original.cols() * original.rows() * original.channels()];
         original.get(0, 0, bytes);
+        File fi = new File("capture.jpg");
+        try {
+            bytes = Files.readAllBytes(fi.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (circles.total() > 1) { // TODO dit is waarschijnlijk juist fout.
             return new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_FOUND, bytes);
         } else {
@@ -100,12 +112,12 @@ public class TrafficLightLookout extends Observable implements Lookout {
     private Mat onlyRedCircles(Mat frame) {
         Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
         Imgcodecs.imwrite("hsv.jpg", frame);
-        Scalar minValues = new Scalar(10, 100, 100);
-        Scalar maxValues = new Scalar(12, 255, 255);
+        Scalar minValues = getScalar(lowerHSVMin); // new Scalar(10, 100, 100);
+        Scalar maxValues = getScalar(lowerHSVMax); //new Scalar(12, 255, 255);
         Mat lower = new Mat();
         Core.inRange(frame, minValues, maxValues, lower);
-        minValues = new Scalar(0, 100, 100);
-        maxValues = new Scalar(9, 255, 255);
+        minValues = getScalar(upperHSVMin); // new Scalar(0, 100, 100);
+        maxValues = getScalar(upperHSVMax); // new Scalar(9, 255, 255);
         Mat upper = new Mat();
         Core.inRange(frame, minValues, maxValues, upper);
         Core.addWeighted(lower, 1.0, upper, 1.0, 0.0, frame);
@@ -113,19 +125,23 @@ public class TrafficLightLookout extends Observable implements Lookout {
         return frame;
     }
 
-    public void setUpperRGBMax(RGB upperRGBMax) {
-        this.upperRGBMax = upperRGBMax;
+    private Scalar getScalar(HSV HSV) {
+        return new Scalar(HSV.getHue(), HSV.getSaturation(), HSV.getValue());
     }
 
-    public void setUpperRGBMin(RGB upperRGBMin) {
-        this.upperRGBMin = upperRGBMin;
+    public void setUpperHSVMax(HSV upperHSVMax) {
+        this.upperHSVMax = upperHSVMax;
     }
 
-    public void setLowerRGBMax(RGB lowerRGBMax) {
-        this.lowerRGBMax = lowerRGBMax;
+    public void setUpperHSVMin(HSV upperHSVMin) {
+        this.upperHSVMin = upperHSVMin;
     }
 
-    public void setLowerRGBMin(RGB lowerRGBMin) {
-        this.lowerRGBMin = lowerRGBMin;
+    public void setLowerHSVMax(HSV lowerHSVMax) {
+        this.lowerHSVMax = lowerHSVMax;
+    }
+
+    public void setLowerHSVMin(HSV lowerHSVMin) {
+        this.lowerHSVMin = lowerHSVMin;
     }
 }

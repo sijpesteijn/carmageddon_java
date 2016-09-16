@@ -8,53 +8,35 @@
     function autonomousController($scope, $resource, $timeout, websocketFactory) {
         var websocket = websocketFactory.create('autonomous/status');
         $scope.msgs = [];
-        $scope.lowerRGBMin = {red:10, green:100, blue:100};
-        $scope.lowerRGBMax = {red:12, green:255, blue:255};
-        $scope.upperRGBMin = {red:0,  green:100, blue:100};
-        $scope.upperRGBMax = {red:9, green:255, blue:255};
+        $scope.lowerHSVMin = {hue:10, saturation:100, value:100};
+        $scope.lowerHSVMax = {hue:12, saturation:255, value:255};
+        $scope.upperHSVMin = {hue:0,  saturation:100, value:100};
+        $scope.upperHSVMax = {hue:9, saturation:255, value:255};
         $scope.showSettings = false;
         var updateInterval;
         var lastLookout = angular.undefined;
-        var canvas = document.getElementById("snapshot");
         var image = document.getElementById("img");
-        var context = canvas.getContext("2d");
 
         function init() {
             getSettings();
         }
 
         websocket.onMessage(function (message) {
-            if (!(typeof message.data === 'string')) {
-                console.log('BINAIRY');
-                var blob = message.data;
-
-                var bytes = new Uint8Array(blob);
-                var src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
-                console.log('Received: ' + src);
-                image.src = src;
-                // var imageData = context.createImageData(300,150);
-                //
-                // for (var i=8; i<imageData.data.length; i++) {
-                //     imageData.data[i] = bytes[i];
-                // }
-                // context.putImageData(imageData, 0, 0);
-                //
-                // var img = document.createElement('img');
-                // img.height = canvas.height;
-                // img.width = canvas.width;
-                // img.src = canvas.toDataURL("image/jpg");
-            }
-            if ((typeof message.data === 'string') && message.data !== 'pong') {
-                lastLookout = angular.fromJson(message.data);
-                if ($scope.msgs.length > 0) {
-                    var last = $scope.msgs[$scope.msgs.length-1];
-                    if (last.msg.indexOf(lastLookout.status) == 0) {
-                        last.count++;
+            if (message.data !== 'pong') {
+                if (message.data.indexOf('{') == 0) {
+                    lastLookout = angular.fromJson(message.data);
+                    if ($scope.msgs.length > 0) {
+                        var last = $scope.msgs[$scope.msgs.length - 1];
+                        if (last.msg.indexOf(lastLookout.status) == 0) {
+                            last.count++;
+                        } else {
+                            $scope.msgs.push({msg: lastLookout.status, count: 1});
+                        }
                     } else {
-                        $scope.msgs.push({msg: lastLookout.status, count: 1 });
+                        $scope.msgs.push({msg: lastLookout.status, count: 1});
                     }
                 } else {
-                    $scope.msgs.push({msg: lastLookout.status, count: 1 });
+                    image.src = 'data:image/png;base64,' + message.data;
                 }
             }
         });
@@ -62,6 +44,7 @@
         $scope.startRace = function () {
             $resource('./rest/autonomous/start').save({}, {},
                 function (success) {
+                    $scope.msgs = [];
                 },
                 function (error) {
                     console.error('mode update failed', error);
@@ -90,10 +73,10 @@
             console.log('RGB');
             $resource('./rest/autonomous/settings').save({},
                 {
-                    lowerRGBMin: $scope.lowerRGBMin,
-                    lowerRGBMax: $scope.lowerRGBMax,
-                    upperRGBMin: $scope.upperRGBMin,
-                    upperRGBMax: $scope.upperRGBMax
+                    lowerHSVMin: $scope.lowerHSVMin,
+                    lowerHSVMax: $scope.lowerHSVMax,
+                    upperHSVMin: $scope.upperHSVMin,
+                    upperHSVMax: $scope.upperHSVMax
                 },
                 function (success) {
                 },
@@ -102,32 +85,32 @@
                 });
         }
 
-        $scope.$watchCollection('lowerRGBMin', function() {
-            if ($scope.lowerRGBMin != angular.undefined) {
+        $scope.$watchCollection('lowerHSVMin', function() {
+            if ($scope.lowerHSVMin != angular.undefined) {
                 if (updateInterval != null) {
                     $timeout.cancel(updateInterval);
                 }
                 updateInterval = $timeout(updateSettings, 500);
             }
         }, true);
-        $scope.$watchCollection('lowerRGBMax', function() {
-            if ($scope.lowerRGBMax != angular.undefined) {
+        $scope.$watchCollection('lowerHSVMax', function() {
+            if ($scope.lowerHSVMax != angular.undefined) {
                 if (updateInterval != null) {
                     $timeout.cancel(updateInterval);
                 }
                 updateInterval = $timeout(updateSettings, 500);
             }
         }, true);
-        $scope.$watchCollection('upperRGBMin', function() {
-            if ($scope.upperRGBMin != angular.undefined) {
+        $scope.$watchCollection('upperHSVMin', function() {
+            if ($scope.upperHSVMin != angular.undefined) {
                 if (updateInterval != null) {
                     $timeout.cancel(updateInterval);
                 }
                 updateInterval = $timeout(updateSettings, 500);
             }
         }, true);
-        $scope.$watchCollection('upperRGBMax', function() {
-            if ($scope.upperRGBMax != angular.undefined) {
+        $scope.$watchCollection('upperHSVMax', function() {
+            if ($scope.upperHSVMax != angular.undefined) {
                 if (updateInterval != null) {
                     $timeout.cancel(updateInterval);
                 }

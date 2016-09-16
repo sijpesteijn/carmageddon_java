@@ -1,20 +1,21 @@
 <div class="color_slider">
     <div ng-click="show = !show" class="slider_result pointer" ng-style="result"></div>
-    rgb({{red}},{{green}},{{blue}})
+    hsv({{hue}},{{saturation}}%,{{value}}%)
     <ul ng-show="show">
         <li>
-            <label for="red_slider">
-                <input type="range" min="0" max="255" id="red_slider" ng-model="red" ng-value="red">Rood
+            <label for="h_slider">
+                <input type="range" min="0" max="180" id="h_slider" ng-model="hue" ng-value="hue">HUE
             </label>
         </li>
         <li>
-            <label for="green_slider">
-                <input type="range" min="0" max="255" id="green_slider" ng-model="green" ng-value="green">Groen
+            <label for="s_slider">
+                <input type="range" min="0" max="255" id="s_slider" ng-model="saturation"
+                       ng-value="saturation">Saturation
             </label>
         </li>
         <li>
-            <label for="blue_slider">
-                <input type="range" min="0" max="255" id="blue_slider" ng-model="blue" ng-value="blue">Blauw
+            <label for="v_slider">
+                <input type="range" min="0" max="255" id="v_slider" ng-model="value" ng-value="value">Value
             </label>
         </li>
     </ul>

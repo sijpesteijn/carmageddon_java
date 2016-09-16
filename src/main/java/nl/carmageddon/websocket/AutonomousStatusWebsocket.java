@@ -12,10 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
-import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -68,18 +65,13 @@ public class AutonomousStatusWebsocket implements Observer{
         try {
             LookoutResult status = (LookoutResult) arg;
             byte[] imgBytes = status.getImgBytes();
-            ByteBuffer buffer = null;
-//            if (imgBytes != null) {
-                File fi = new File("./src/main/resources/ready.jpg");
-                imgBytes = Files.readAllBytes(fi.toPath());
-                System.out.println("Send " + imgBytes.length);
-                buffer = ByteBuffer.wrap(Base64.encode(imgBytes));
-//            }
+//            File fi = new File("./src/main/resources/circles.jpg");
+//            imgBytes = Files.readAllBytes(fi.toPath());
             String json = mapper.writeValueAsString(status);
             for (Session session : sessions) {
                 session.getAsyncRemote().sendText(json);
-                if (buffer != null) {
-                    session.getAsyncRemote().sendBinary(buffer);
+                if (imgBytes != null) {
+                    session.getAsyncRemote().sendText(new String(Base64.encode(imgBytes)));
                 }
             }
         } catch (IOException e) {

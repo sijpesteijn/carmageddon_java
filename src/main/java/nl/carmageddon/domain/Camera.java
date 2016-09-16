@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 
+import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_HEIGHT;
+import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_WIDTH;
+
 /**
  * @author Gijs Sijpesteijn
  */
@@ -37,6 +40,8 @@ public class Camera {
         if (!camera.isOpened()) {
             logger.error("No webcam with id " + id + " found!");
         }
+        camera.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+        camera.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
         return camera;
     }
 
