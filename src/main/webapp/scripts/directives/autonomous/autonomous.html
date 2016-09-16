@@ -1,7 +1,14 @@
 <div class="autonomous">
-    AUTONOMOUS
+    <div class="snapshot">
+        <img id="img" height="200px">
+    </div>
+    <div class="status">
+        <button ng-click="startRace()" ng-disabled="!readyToRace();">START RACE</button>
+        <ul><li ng-repeat="msg in msgs track by $index">{{ msg.msg }}
+            <span ng-if="msg.count > 1">[{{msg.count}}]</span></li></ul>
+    </div>
     <img class="settings" ng-click="showSettings = !showSettings" src="./images/settings.png">
-    <div ng-show="showSettings">
+    <div class="settings-overlay" ng-if="showSettings">
         Traffic light lower min color:
         <color-slider rgb="lowerHSVMin"></color-slider>
         Traffic light lower max color:
@@ -10,12 +17,5 @@
         <color-slider rgb="upperHSVMin"></color-slider>
         Traffic light upper max color:
         <color-slider rgb="upperHSVMax"></color-slider>
-    </div>
-    <button ng-click="startRace()" ng-disabled="!readyToRace();">START RACE</button>
-
-    <img id="img">
-    <div style="overflow: auto;height: 300px;">
-    <ul><li ng-repeat="msg in msgs track by $index">{{ msg.msg }}
-        <span ng-if="msg.count > 1">[{{msg.count}}]</span></li></ul>
     </div>
 </div>

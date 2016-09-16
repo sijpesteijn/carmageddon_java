@@ -22,7 +22,7 @@ public class StraightTrackLookout extends Observable implements Lookout {
 
     @Override
     public LookoutResult start() {
-        LookoutResult result = new LookoutResult(AutonomousStatus.RACE_FINISHED, null);
+        LookoutResult result = new LookoutResult(AutonomousStatus.RACE_FINISHED, this.car.getCamera().makeSnapshotInByteArray());
         setChanged();
         notifyObservers(result);
         return result;
@@ -30,7 +30,6 @@ public class StraightTrackLookout extends Observable implements Lookout {
 
     @Override
     public void stop() {
-
     }
 
 }

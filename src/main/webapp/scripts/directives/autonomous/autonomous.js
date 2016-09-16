@@ -3,23 +3,24 @@
 
     app.controller('autonomousCtrl', autonomousController).directive('autonomous', autonomousDirective);
 
-    autonomousController.$inject = ['$scope', '$resource', '$timeout', 'websocketFactory'];
+    autonomousController.$inject = ['$scope', '$resource', '$interval', '$timeout', 'websocketFactory'];
 
-    function autonomousController($scope, $resource, $timeout, websocketFactory) {
-        var websocket = websocketFactory.create('autonomous/status');
+    function autonomousController($scope, $resource, $interval, $timeout, websocketFactory) {
+        var websocket;
         $scope.msgs = [];
         $scope.lowerHSVMin = {hue:10, saturation:100, value:100};
         $scope.lowerHSVMax = {hue:12, saturation:255, value:255};
         $scope.upperHSVMin = {hue:0,  saturation:100, value:100};
         $scope.upperHSVMax = {hue:9, saturation:255, value:255};
         $scope.showSettings = false;
-        var updateInterval;
+        var updateTimeout;
         var lastLookout = angular.undefined;
         var image = document.getElementById("img");
+        var statusInterval;
 
-        function init() {
-            getSettings();
-        }
+        websocket = websocketFactory.create('autonomous/status');
+        getSettings();
+        // statusInterval = $interval(statusUpdate, 10000);
 
         websocket.onMessage(function (message) {
             if (message.data !== 'pong') {
@@ -36,6 +37,7 @@
                         $scope.msgs.push({msg: lastLookout.status, count: 1});
                     }
                 } else {
+                    console.log('New snapshot');
                     image.src = 'data:image/png;base64,' + message.data;
                 }
             }
@@ -45,6 +47,7 @@
             $resource('./rest/autonomous/start').save({}, {},
                 function (success) {
                     $scope.msgs = [];
+                    $interval.cancel(statusInterval);
                 },
                 function (error) {
                     console.error('mode update failed', error);
@@ -54,10 +57,16 @@
         $scope.readyToRace = function() {
             if (lastLookout !== angular.undefined) {
                 var status = lastLookout.status;
-                return status ===  'READY_TO_RACE';
+                if ( status ===  'READY_TO_RACE' ) {
+                    return true;
+                }
             }
             return false;
         };
+
+        function statusUpdate() {
+            websocket.sendMessage('status');
+        }
 
         function getSettings() {
             $resource('./rest/autonomous/settings').get({}, {},
@@ -70,7 +79,6 @@
         }
 
         function updateSettings() {
-            console.log('RGB');
             $resource('./rest/autonomous/settings').save({},
                 {
                     lowerHSVMin: $scope.lowerHSVMin,
@@ -87,38 +95,37 @@
 
         $scope.$watchCollection('lowerHSVMin', function() {
             if ($scope.lowerHSVMin != angular.undefined) {
-                if (updateInterval != null) {
-                    $timeout.cancel(updateInterval);
+                if (updateTimeout != null) {
+                    $timeout.cancel(updateTimeout);
                 }
-                updateInterval = $timeout(updateSettings, 500);
+                updateTimeout = $timeout(updateSettings, 500);
             }
         }, true);
         $scope.$watchCollection('lowerHSVMax', function() {
             if ($scope.lowerHSVMax != angular.undefined) {
-                if (updateInterval != null) {
-                    $timeout.cancel(updateInterval);
+                if (updateTimeout != null) {
+                    $timeout.cancel(updateTimeout);
                 }
-                updateInterval = $timeout(updateSettings, 500);
+                updateTimeout = $timeout(updateSettings, 500);
             }
         }, true);
         $scope.$watchCollection('upperHSVMin', function() {
             if ($scope.upperHSVMin != angular.undefined) {
-                if (updateInterval != null) {
-                    $timeout.cancel(updateInterval);
+                if (updateTimeout != null) {
+                    $timeout.cancel(updateTimeout);
                 }
-                updateInterval = $timeout(updateSettings, 500);
+                updateTimeout = $timeout(updateSettings, 500);
             }
         }, true);
         $scope.$watchCollection('upperHSVMax', function() {
             if ($scope.upperHSVMax != angular.undefined) {
-                if (updateInterval != null) {
-                    $timeout.cancel(updateInterval);
+                if (updateTimeout != null) {
+                    $timeout.cancel(updateTimeout);
                 }
-                updateInterval = $timeout(updateSettings, 500);
+                updateTimeout = $timeout(updateSettings, 500);
             }
         }, true);
 
-        init();
     }
 
     function autonomousDirective() {

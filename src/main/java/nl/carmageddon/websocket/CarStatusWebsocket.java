@@ -37,10 +37,11 @@ public class CarStatusWebsocket implements Observer {
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
-//        misschien in een aparte thread. Kost zo te veel tijd.
+//        misschien in een aparte thread. Deze impl kost zo te veel tijd.
 //        if (sessions.isEmpty()) {
 //            this.car.getSteer().wobbleWheels();
 //        }
+        log.debug("Session added " + session.toString());
         String json = mapper.writeValueAsString(this.car);
         session.getAsyncRemote().sendText(json);
         sessions.add(session);
@@ -54,12 +55,19 @@ public class CarStatusWebsocket implements Observer {
     }
 
     @OnClose
-    public void onClose(CloseReason reason, Session session) {
-        sessions.remove(session);
+    public void onClose(CloseReason reason, Session session) throws IOException {
+        log.debug("Session removed " + session.toString());
+        try {
+            sessions.remove(session);
+            session.close();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
+        log.error("Session removed " + session.toString());
         sessions.remove(session);
     }
 

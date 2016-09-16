@@ -33,6 +33,11 @@
                 });
         };
 
+        $scope.$on('$destroy', function () {
+            console.debug('destroying controller');
+            websocket.close();
+        });
+
     }
 
     function carStatusDirective() {

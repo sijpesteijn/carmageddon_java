@@ -13,25 +13,25 @@
 
         function init() {
             $scope.hue = $scope.rgb.hue;
-            $scope.saturation = $scope.rgb.saturation;
-            $scope.value = $scope.rgb.value;
+            $scope.saturation = Math.round($scope.rgb.saturation/2.55);
+            $scope.value = Math.round($scope.rgb.value/2.55);
         }
 
         $scope.result = { 'background-color' : 'hsl(' + $scope.hue + ',' + $scope.saturation + '%,' + $scope.value + '%)'};
 
-        $scope.$watch('red', function () {
+        $scope.$watch('hue', function () {
             $scope.rgb.hue = $scope.hue;
-            $scope.result = { 'background-color' : 'hsv(' + $scope.hue + ',' + $scope.saturation + '%,' + $scope.value + '%)'};
+            $scope.result = { 'background-color' : 'hsl(' + $scope.hue + ',' + $scope.saturation + '%,' + $scope.value + '%)'};
         });
 
-        $scope.$watch('green', function () {
+        $scope.$watch('saturation', function () {
             $scope.rgb.saturation = $scope.saturation;
-            $scope.result = { 'background-color' : 'hsv(' + $scope.hue + ',' + $scope.saturation + '%,' + $scope.value + '%)'};
+            $scope.result = { 'background-color' : 'hsl(' + $scope.hue + ',' + $scope.saturation + '%,' + $scope.value + '%)'};
         });
 
-        $scope.$watch('blue', function () {
+        $scope.$watch('value', function () {
             $scope.rgb.value = $scope.value;
-            $scope.result = { 'background-color' : 'hsv(' + $scope.hue + ',' + $scope.saturation + '%,' + $scope.value + '%)'};
+            $scope.result = { 'background-color' : 'hsl(' + $scope.hue + ',' + $scope.saturation + '%,' + $scope.value + '%)'};
         });
 
         init();

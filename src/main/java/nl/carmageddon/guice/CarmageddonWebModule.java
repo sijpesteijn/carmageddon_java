@@ -12,6 +12,7 @@ import org.opencv.core.Core;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * @author Gijs Sijpesteijn
@@ -32,12 +33,21 @@ public class CarmageddonWebModule extends ServletModule {
         try {
             Field loadedLibraryNames = ClassLoader.class.getDeclaredField("loadedLibraryNames");
             loadedLibraryNames.setAccessible(true);
-            System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+            final Vector<String> libraries = (Vector<String>) loadedLibraryNames.get(ClassLoader.getSystemClassLoader());
+            String[] names = libraries.toArray(new String[] {});
+            boolean loaded = false;
+            for(String name : names) {
+                if (name.endsWith(Core.NATIVE_LIBRARY_NAME + ".dylib"))
+                    loaded = true;
+            }
+            if (!loaded) {
+                System.out.println("Loading opencv native library.");
+                System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-//        bind(JacksonJsonProvider.class).in(Singleton.class);
         Map parameters = new HashMap();
         parameters.put(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
         parameters.put("com.sun.jersey.config.property.packages", "nl.carmageddon");

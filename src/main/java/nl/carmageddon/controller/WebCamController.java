@@ -4,7 +4,6 @@ import nl.carmageddon.domain.Car;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +48,7 @@ public class WebCamController {
     @Path(value = "/snapshot")
     @Produces(MediaType.TEXT_HTML)
     public String makeSnapShot(@Context HttpServletResponse response) throws IOException {
-        Mat frame = new Mat();
-        VideoCapture camera = car.getCamera().getCamera();
-        camera.read(frame);
+        Mat frame = car.getCamera().makeSnapshot();
 //        doFunnyStuff(frame);
         Imgcodecs.imwrite(System.getProperty("java.io.tmpdir") + "/snapshot.jpeg", frame);
 
@@ -70,7 +67,6 @@ public class WebCamController {
         responseOutputStream.write(imgByte);
         responseOutputStream.flush();
         responseOutputStream.close();
-        camera.release();
         return "";
     }
 

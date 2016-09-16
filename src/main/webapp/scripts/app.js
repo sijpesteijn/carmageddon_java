@@ -20,7 +20,6 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
 
     function websocket(ep) {
         var connection = null;
-        var tries = 0;
         var connected = false;
         var pinger;
         var endpoint;
@@ -33,7 +32,6 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
         });
 
         connection.onOpen(function () {
-            tries = 0;
             connected = true;
             startPinger();
         });
@@ -55,23 +53,35 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
         }
 
         function reconnect() {
-            while (!connected && tries++ < 5) {
-                $timeout(function () {
-                    connect(endpoint)
-                }, 1000);
-            }
+            $timeout(function () {
+                connect(endpoint)
+            }, 1000);
+        }
+
+        function sendMessage(message) {
+            connection.send(message);
         }
 
         this.onMessage = function(callback) {
             connection.onMessage(function (message) {
                 callback(message);
             })
+        };
+
+        function closeConnection() {
+            connection.close();
         }
     }
 
     return {
         create: function (endpoint) {
             return new websocket(endpoint);
+        },
+        sendMessage: function(message) {
+            sendMessage(message);
+        },
+        close: function () {
+            closeConnection();
         }
     }
 

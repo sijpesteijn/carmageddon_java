@@ -113,7 +113,7 @@ public class CPU extends Observable implements Observer {
     }
 
     public LookoutResult getStatus() {
-        return new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshot());
+        return new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshotInByteArray());
     }
 
     public void useSettings(AutonomousSettings settings) {
