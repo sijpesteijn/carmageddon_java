@@ -8,6 +8,8 @@ import nl.carmageddon.domain.Pwm;
 import nl.carmageddon.domain.PwmImpl;
 import nl.carmageddon.domain.PwmMock;
 import org.opencv.core.Core;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -17,14 +19,17 @@ import java.util.Vector;
 /**
  * @author Gijs Sijpesteijn
  */
-public class CarmageddonWebModule extends ServletModule {
+public class CarmageddonServletModule extends ServletModule {
+    private static Logger logger = LoggerFactory.getLogger(CarmageddonServletModule.class);
 
     @Override
     protected void configureServlets() {
 
+        String extentsion = ".dylib";
         if (System.getProperty("os.arch").contains("arm")) {
             bind(Pwm.class).annotatedWith(Names.named("PWM22")).toInstance(new PwmImpl(22));
             bind(Pwm.class).annotatedWith(Names.named("PWM42")).toInstance(new PwmImpl(42));
+            extentsion = ".so";
         } else {
             bind(Pwm.class).annotatedWith(Names.named("PWM22")).to(PwmMock.class);
             bind(Pwm.class).annotatedWith(Names.named("PWM42")).to(PwmMock.class);
@@ -37,11 +42,11 @@ public class CarmageddonWebModule extends ServletModule {
             String[] names = libraries.toArray(new String[] {});
             boolean loaded = false;
             for(String name : names) {
-                if (name.endsWith(Core.NATIVE_LIBRARY_NAME + ".dylib"))
+                if (name.endsWith(Core.NATIVE_LIBRARY_NAME + extentsion))
                     loaded = true;
             }
             if (!loaded) {
-                System.out.println("Loading opencv native library.");
+                logger.debug("Loading opencv native library: " + Core.NATIVE_LIBRARY_NAME + extentsion);
                 System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
             }
         } catch (Exception e) {
@@ -52,10 +57,7 @@ public class CarmageddonWebModule extends ServletModule {
         parameters.put(JSONConfiguration.FEATURE_POJO_MAPPING, "true");
         parameters.put("com.sun.jersey.config.property.packages", "nl.carmageddon");
         serve("/rest/*").with(GuiceContainer.class, parameters);
+        this.requestStaticInjection(CarmageddonWebsocketConfigurator.class);
     }
 
-    @Override
-    protected void requestStaticInjection(Class<?>... types) {
-        super.requestStaticInjection(CarmageddonWebsocketConfigurator.class);
-    }
 }

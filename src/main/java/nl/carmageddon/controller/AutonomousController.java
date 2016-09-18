@@ -31,6 +31,13 @@ public class AutonomousController {
     }
 
     @POST
+    @Path("/stop")
+    public Response stopAutonomous() {
+        autonomousService.stopRace();
+        return Response.ok().build();
+    }
+
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path(value = "/settings")
     public Response saveSettings(AutonomousSettings settings) {

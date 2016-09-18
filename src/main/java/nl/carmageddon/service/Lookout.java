@@ -10,4 +10,6 @@ public interface Lookout {
     LookoutResult start();
 
     void stop();
+
+    LookoutResult getStatus();
 }

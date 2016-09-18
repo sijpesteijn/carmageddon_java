@@ -12,20 +12,30 @@
         $scope.lowerHSVMax = {hue:12, saturation:255, value:255};
         $scope.upperHSVMin = {hue:0,  saturation:100, value:100};
         $scope.upperHSVMax = {hue:9, saturation:255, value:255};
+        $scope.framerate = 5;
+        $scope.racing = false;
         $scope.showSettings = false;
-        var updateTimeout;
+        var updateTimeout = angular.undefined;
+        var framerateInterval;
         var lastLookout = angular.undefined;
         var image = document.getElementById("img");
-        var statusInterval;
 
         websocket = websocketFactory.create('autonomous/status');
         getSettings();
-        // statusInterval = $interval(statusUpdate, 10000);
+
+        $scope.$watch('framerate', function (value) {
+            console.log('framerate ' + value);
+            // if (statusInterval != angular.undefined && value != angular.undefined ) {
+                $interval.cancel(framerateInterval);
+            // }
+            framerateInterval = $interval(statusUpdate, 1000/$scope.framerate);
+        }, true);
 
         websocket.onMessage(function (message) {
             if (message.data !== 'pong') {
                 if (message.data.indexOf('{') == 0) {
                     lastLookout = angular.fromJson(message.data);
+                    $scope.readyToRace();
                     if ($scope.msgs.length > 0) {
                         var last = $scope.msgs[$scope.msgs.length - 1];
                         if (last.msg.indexOf(lastLookout.status) == 0) {
@@ -47,9 +57,22 @@
             $resource('./rest/autonomous/start').save({}, {},
                 function (success) {
                     $scope.msgs = [];
-                    $interval.cancel(statusInterval);
+                    $scope.racing = true;
+                    // $interval.cancel(statusInterval);
                 },
                 function (error) {
+                    $scope.racing = false;
+                    console.error('mode update failed', error);
+                });
+        };
+
+        $scope.stopRace = function () {
+            $resource('./rest/autonomous/stop').save({}, {},
+                function (success) {
+                    $scope.racing = false;
+                },
+                function (error) {
+                    $scope.racing = false;
                     console.error('mode update failed', error);
                 });
         };
@@ -58,6 +81,7 @@
             if (lastLookout !== angular.undefined) {
                 var status = lastLookout.status;
                 if ( status ===  'READY_TO_RACE' ) {
+                    $scope.racing = false;
                     return true;
                 }
             }

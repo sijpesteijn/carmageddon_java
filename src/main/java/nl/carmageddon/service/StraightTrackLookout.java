@@ -14,6 +14,8 @@ import java.util.Observable;
 @Singleton
 public class StraightTrackLookout extends Observable implements Lookout {
     private Car car;
+    private boolean run;
+    private LookoutResult result;
 
     @Inject
     public StraightTrackLookout(Car car) {
@@ -22,14 +24,24 @@ public class StraightTrackLookout extends Observable implements Lookout {
 
     @Override
     public LookoutResult start() {
-        LookoutResult result = new LookoutResult(AutonomousStatus.RACE_FINISHED, this.car.getCamera().makeSnapshotInByteArray());
-        setChanged();
-        notifyObservers(result);
+        run = true;
+        while(run) {
+            result = new LookoutResult(AutonomousStatus.RACE_FINISHED, this.car.getCamera().makeSnapshotInByteArray());
+            setChanged();
+            notifyObservers(result);
+            run = false;
+        }
         return result;
     }
 
     @Override
     public void stop() {
+        run = false;
+    }
+
+    @Override
+    public LookoutResult getStatus() {
+        return result;
     }
 
 }

@@ -66,7 +66,7 @@ public class Camera {
 
     public byte[] getImageBytes(Mat mat) {
         // TODO betere manier om image naar byte array om te zetten.
-        String fileName = "snapshot_" + System.currentTimeMillis() + ".jpg";
+        String fileName = System.getProperty("java.io.tmpdir") + "snapshot_" + System.currentTimeMillis() + ".jpg";
         Imgcodecs.imwrite(fileName, mat);
 
         byte[] bytes = null;

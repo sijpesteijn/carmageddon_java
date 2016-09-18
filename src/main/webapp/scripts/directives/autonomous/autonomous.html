@@ -3,11 +3,12 @@
         <img id="img" height="200px">
     </div>
     <div class="status">
-        <button ng-click="startRace()" ng-disabled="!readyToRace();">START RACE</button>
+        <img class="settings" ng-click="showSettings = !showSettings" src="./images/settings.png">
+        <button class="pointer" ng-click="startRace()" ng-if="!racing" ng-disabled="!readyToRace();">START RACE</button>
+        <button class="pointer" ng-click="stopRace()" ng-if="racing">STOP RACE</button>
         <ul><li ng-repeat="msg in msgs track by $index">{{ msg.msg }}
             <span ng-if="msg.count > 1">[{{msg.count}}]</span></li></ul>
     </div>
-    <img class="settings" ng-click="showSettings = !showSettings" src="./images/settings.png">
     <div class="settings-overlay" ng-if="showSettings">
         Traffic light lower min color:
         <color-slider rgb="lowerHSVMin"></color-slider>
@@ -17,5 +18,11 @@
         <color-slider rgb="upperHSVMin"></color-slider>
         Traffic light upper max color:
         <color-slider rgb="upperHSVMax"></color-slider>
+
+        <label for="framerate_slider">
+            Framerate: <input type="range" min="1" max="20" id="framerate_slider" ng-model="framerate"
+                   ng-value="framerate">
+        </label>
+
     </div>
 </div>

@@ -4,17 +4,22 @@ body {
   color: #333;
   overflow: hidden;
   padding: 0;
-  margin: 0;
+  margin: 5px;
   color: white;
   background-color: black;
 }
 
 header {
   overflow:hidden;
+  margin-bottom: 5px;
 }
 
 .pointer {
   cursor: pointer;
+}
+
+.workarea {
+  overflow: hidden;
 }
 
 .touchpad {
@@ -50,13 +55,19 @@ header {
 .settings {
   float: right;
   cursor: pointer;
-  background-color: #fff;
   height: 36px;
   width: 36px;
 }
 
 .settings-overlay {
   position: relative;
+  float: right;
+  border: 1px solid crimson;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  padding: 12px;
+  margin-left: 5px;
 }
 
 .lifeline {
@@ -64,6 +75,7 @@ header {
   border: 1px solid #CECECE;
   padding: 6px;
   border-radius: 12px;
+  margin-right: 5px;
 
   .heartbeat {
     background: red none repeat scroll 0 0;
@@ -86,6 +98,7 @@ header {
     float: left;
     border: 1px solid #CECECE;
     padding: 6px;
+    margin-right: 5px;
     border-radius: 12px;
     .angle {
       width: 30px;
@@ -108,20 +121,36 @@ header {
 
 .autonomous {
   overflow: hidden;
+  float: left;
 
   .status {
     float: left;
+    border: 1px solid crimson;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding: 4px;
+    width: 200px;
+    height: 196px;
+
     ul {
       list-style-type: none;
       padding-left: 5px;
     }
     button {
-      padding-left: 5px;
+      margin-left: 55px;
+      margin-top: 20px;
+      border-radius: 20px;
+      height: 32px;
     }
   }
 
   .snapshot {
     float: left;
+    border: 1px solid crimson;
+    margin-right: 3px;
+    height: 204px;
+    width: 267px;
   }
 }
 
@@ -130,6 +159,10 @@ header {
   .slider_result {
     width: 20px;
     height: 20px;
+  }
+
+  .slider_list {
+    list-style: none;
   }
 }
 

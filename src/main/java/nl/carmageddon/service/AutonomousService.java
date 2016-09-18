@@ -41,7 +41,7 @@ public class AutonomousService {
     }
 
     public void stopRace() {
-        this.cpu.setRacing(false);
+        this.cpu.stopRacing();
     }
 
     public LookoutResult getStatus() {
@@ -49,9 +49,7 @@ public class AutonomousService {
     }
 
     public void useSettings(AutonomousSettings settings) {
-        if(!this.cpu.isRacing()) {
-            this.cpu.useSettings(settings);
-        }
+        this.cpu.useSettings(settings);
     }
 
     public AutonomousSettings getSettings() {

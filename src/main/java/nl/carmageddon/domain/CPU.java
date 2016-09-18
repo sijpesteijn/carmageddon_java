@@ -23,7 +23,6 @@ public class CPU extends Observable implements Observer {
 
     private AutonomousSettings settings;
     private boolean racing;
-    private Configuration configuration;
     private Car car;
     private Lookout currentLookout;
     private List<Lookout> lookouts = new ArrayList<>();
@@ -85,6 +84,7 @@ public class CPU extends Observable implements Observer {
             result = this.currentLookout.start();
             if (result.getStatus() == AutonomousStatus.RACE_FINISHED) {
                 racing = false;
+                this.currentLookout = null;
                 notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, null));
             }
         }
@@ -99,8 +99,10 @@ public class CPU extends Observable implements Observer {
         return racing;
     }
 
-    public void setRacing(boolean racing) {
-        this.racing = racing;
+    public void stopRacing() {
+        if (this.currentLookout != null)
+            this.currentLookout.stop();
+        this.racing = false;
     }
 
     @Override
@@ -113,7 +115,9 @@ public class CPU extends Observable implements Observer {
     }
 
     public LookoutResult getStatus() {
-        return new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshotInByteArray());
+        if (this.currentLookout == null)
+            return new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshotInByteArray());
+        return this.currentLookout.getStatus();
     }
 
     public void useSettings(AutonomousSettings settings) {

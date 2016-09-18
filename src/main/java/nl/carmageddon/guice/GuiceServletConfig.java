@@ -12,7 +12,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 
     @Override
     protected Injector getInjector() {
-        injector = Guice.createInjector(new ConfigurationModule(), new CarmageddonWebModule());
+        injector = Guice.createInjector(new ConfigurationModule(), new CarmageddonServletModule());
         return injector;
     }
 }

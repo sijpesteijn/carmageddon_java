@@ -14,7 +14,7 @@ public class Car extends Observable {
     private Engine engine;
     private Camera camera;
     private Mode mode = Mode.disabled;
-    private boolean connected;
+    private boolean connected = false;
 
     @Inject
     public Car(Steer steer, Engine engine, Camera camera) {

@@ -58,9 +58,9 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
             }, 1000);
         }
 
-        function sendMessage(message) {
+        this.sendMessage = function(message) {
             connection.send(message);
-        }
+        };
 
         this.onMessage = function(callback) {
             connection.onMessage(function (message) {
@@ -68,7 +68,7 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
             })
         };
 
-        function closeConnection() {
+        this.closeConnection = function() {
             connection.close();
         }
     }
@@ -76,12 +76,6 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
     return {
         create: function (endpoint) {
             return new websocket(endpoint);
-        },
-        sendMessage: function(message) {
-            sendMessage(message);
-        },
-        close: function () {
-            closeConnection();
         }
     }
 

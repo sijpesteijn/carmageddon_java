@@ -18,14 +18,14 @@
     <car-status></car-status>
 </header>
 
-<div class="car-disabled" ng-show="carMode == 'disabled'">De auto is uitgeschakeld.</div>
-<touchpad ng-if="carMode == 'manual'"></touchpad>
-<autonomous ng-if="carMode == 'autonomous'"></autonomous>
-
-<panic-button></panic-button>
+<div class="workarea">
+    <div class="car-disabled" ng-if="carMode == 'disabled'">De auto is uitgeschakeld.</div>
+    <touchpad ng-if="carMode == 'manual'"></touchpad>
+    <autonomous ng-if="carMode == 'autonomous'"></autonomous>
+    <panic-button></panic-button>
+</div>
 
 <script src='./scripts/app.js'></script>
-
 <script src='./scripts/directives/colorslider/colorslider.js'></script>
 <script src='./scripts/directives/autonomous/autonomous.js'></script>
 <script src='./scripts/directives/carStatus/carStatus.js'></script>
