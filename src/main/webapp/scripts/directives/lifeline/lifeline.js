@@ -13,6 +13,11 @@
             $scope.heartbeat = !$scope.heartbeat;
         });
 
+        $scope.$on('$destroy', function () {
+            console.debug('destroying lifeline controller');
+            websocket.closeConnection();
+        });
+
     }
 
     function lifelineDirective() {

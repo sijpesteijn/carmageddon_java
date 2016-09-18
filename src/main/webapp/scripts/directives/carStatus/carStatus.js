@@ -34,8 +34,8 @@
         };
 
         $scope.$on('$destroy', function () {
-            console.debug('destroying controller');
-            websocket.close();
+            console.debug('destroying carstatus controller');
+            websocket.closeConnection();
         });
 
     }

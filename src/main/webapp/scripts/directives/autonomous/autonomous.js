@@ -150,6 +150,11 @@
             }
         }, true);
 
+        $scope.$on('$destroy', function () {
+            console.debug('destroying autonomous controller');
+            websocket.closeConnection();
+        });
+
     }
 
     function autonomousDirective() {

@@ -155,14 +155,25 @@ header {
 }
 
 .color_slider {
+  overflow: hidden;
 
   .slider_result {
+    float: left;
     width: 20px;
     height: 20px;
   }
 
+  .slider_value {
+    float: left;
+  }
+
   .slider_list {
-    list-style: none;
+    margin-top: 5px;
+    ul {
+      list-style: none;
+      padding: 0px;
+      margin-top: 25px;
+    }
   }
 }
 
