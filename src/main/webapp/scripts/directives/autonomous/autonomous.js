@@ -8,50 +8,20 @@
     function autonomousController($scope, $resource, $interval, $timeout, websocketFactory) {
         var websocket;
         $scope.msgs = [];
-        $scope.lowerHSVMin = {hue:10, saturation:100, value:100};
-        $scope.lowerHSVMax = {hue:12, saturation:255, value:255};
-        $scope.upperHSVMin = {hue:0,  saturation:100, value:100};
-        $scope.upperHSVMax = {hue:9, saturation:255, value:255};
+        $scope.lowerHSVMin;
+        $scope.lowerHSVMax;
+        $scope.upperHSVMin;
+        $scope.upperHSVMax;
+        $scope.viewtype;
         $scope.framerate = 5;
         $scope.racing = false;
         $scope.showSettings = false;
+        $scope.tab = 'general';
+        $scope.baw = false;
         var updateTimeout = angular.undefined;
         var framerateInterval;
         var lastLookout = angular.undefined;
         var image = document.getElementById("img");
-
-        websocket = websocketFactory.create('autonomous/status');
-        getSettings();
-
-        $scope.$watch('framerate', function (value) {
-            console.log('framerate ' + value);
-            // if (statusInterval != angular.undefined && value != angular.undefined ) {
-                $interval.cancel(framerateInterval);
-            // }
-            framerateInterval = $interval(statusUpdate, 1000/$scope.framerate);
-        }, true);
-
-        websocket.onMessage(function (message) {
-            if (message.data !== 'pong') {
-                if (message.data.indexOf('{') == 0) {
-                    lastLookout = angular.fromJson(message.data);
-                    $scope.readyToRace();
-                    if ($scope.msgs.length > 0) {
-                        var last = $scope.msgs[$scope.msgs.length - 1];
-                        if (last.msg.indexOf(lastLookout.status) == 0) {
-                            last.count++;
-                        } else {
-                            $scope.msgs.push({msg: lastLookout.status, count: 1});
-                        }
-                    } else {
-                        $scope.msgs.push({msg: lastLookout.status, count: 1});
-                    }
-                } else {
-                    console.log('New snapshot');
-                    image.src = 'data:image/png;base64,' + message.data;
-                }
-            }
-        });
 
         $scope.startRace = function () {
             $resource('./rest/autonomous/start').save({}, {},
@@ -92,69 +62,125 @@
             websocket.sendMessage('status');
         }
 
+        function buildHsv(hsv) {
+            return 'hsv('+ hsv.hue + ',' + Math.round(hsv.saturation / (255/100)) + '%,' + Math.round(hsv.brightness / (255/100)) + '%)';
+        }
+
         function getSettings() {
             $resource('./rest/autonomous/settings').get({}, {},
-                function (success) {
-                    console.log(success);
+                function (settings) {
+                    $scope.lowerHSVMin = buildHsv(settings.trafficLight.lowerHSVMin);
+                    $scope.lowerHSVMax = buildHsv(settings.trafficLight.lowerHSVMax);
+                    $scope.upperHSVMin = buildHsv(settings.trafficLight.upperHSVMin);
+                    $scope.upperHSVMax = buildHsv(settings.trafficLight.upperHSVMax);
+                    $scope.viewType = settings.viewType;
                 },
                 function (error) {
                     console.error('mode update failed', error);
                 });
         }
 
-        function updateSettings() {
+        $scope.updateViewType = function(viewType) {
+            $scope.viewType = viewType;
+            $scope.updateSettings();
+        };
+
+        $scope.updateSettings = function() {
             $resource('./rest/autonomous/settings').save({},
                 {
-                    lowerHSVMin: $scope.lowerHSVMin,
-                    lowerHSVMax: $scope.lowerHSVMax,
-                    upperHSVMin: $scope.upperHSVMin,
-                    upperHSVMax: $scope.upperHSVMax
+                    viewType: $scope.viewType,
+                    trafficLight: {
+                        lowerHSVMin: getHsv($scope.lowerHSVMin),
+                        lowerHSVMax: getHsv($scope.lowerHSVMax),
+                        upperHSVMin: getHsv($scope.upperHSVMin),
+                        upperHSVMax: getHsv($scope.upperHSVMax)
+                    }
                 },
                 function (success) {
                 },
                 function (error) {
                     console.error('mode update failed', error);
                 });
+        };
+
+        function getHsv(hsv) {
+            var splits = hsv.split(',');
+            var result = {
+                hue: splits[0].split('(')[1],
+                saturation: Math.round(splits[1].substring(0,splits[1].length-1)*(255/100)),
+                brightness: Math.round(splits[2].substring(0,splits[2].length-2)*(255/100))
+            };
+            return result;
         }
 
-        $scope.$watchCollection('lowerHSVMin', function() {
-            if ($scope.lowerHSVMin != angular.undefined) {
+        $scope.options = {
+            format: 'hsv',
+            hue: true,
+            swatch: true
+        };
+
+        $scope.eventApi = {
+            onChange: function(api, color, $event) {
+                var id = api.getElement().attr('id');
+                if (id === 'lowerHSVMin') {
+                    $scope.lowerHSVMin = color;
+                } else if (id === 'lowerHSVMax') {
+                    $scope.lowerHSVMax = color;
+                } else if (id === 'upperHSVMin') {
+                    $scope.upperHSVMin = color;
+                } else {
+                    $scope.upperHSVMax = color;
+                }
                 if (updateTimeout != null) {
                     $timeout.cancel(updateTimeout);
                 }
-                updateTimeout = $timeout(updateSettings, 500);
+                updateTimeout = $timeout($scope.updateSettings, 500);
             }
-        }, true);
-        $scope.$watchCollection('lowerHSVMax', function() {
-            if ($scope.lowerHSVMax != angular.undefined) {
-                if (updateTimeout != null) {
-                    $timeout.cancel(updateTimeout);
-                }
-                updateTimeout = $timeout(updateSettings, 500);
+        };
+
+        $scope.updateFramerate = function(framerate) {
+            $scope.framerate = framerate;
+            console.log('framerate ' + $scope.framerate);
+            if (framerateInterval != angular.undefined) {
+                $interval.cancel(framerateInterval);
             }
-        }, true);
-        $scope.$watchCollection('upperHSVMin', function() {
-            if ($scope.upperHSVMin != angular.undefined) {
-                if (updateTimeout != null) {
-                    $timeout.cancel(updateTimeout);
-                }
-                updateTimeout = $timeout(updateSettings, 500);
-            }
-        }, true);
-        $scope.$watchCollection('upperHSVMax', function() {
-            if ($scope.upperHSVMax != angular.undefined) {
-                if (updateTimeout != null) {
-                    $timeout.cancel(updateTimeout);
-                }
-                updateTimeout = $timeout(updateSettings, 500);
-            }
-        }, true);
+            framerateInterval = $interval(statusUpdate, 1000/$scope.framerate);
+        };
+
+        $scope.getFramerate = function () {
+            return $scope.framerate;
+        };
 
         $scope.$on('$destroy', function () {
             console.debug('destroying autonomous controller');
             websocket.closeConnection();
         });
 
+        websocket = websocketFactory.create('autonomous/status');
+        getSettings();
+        $scope.updateFramerate($scope.framerate);
+
+        websocket.onMessage(function (message) {
+            if (message.data !== 'pong') {
+                if (message.data.indexOf('{') == 0) {
+                    lastLookout = angular.fromJson(message.data);
+                    $scope.readyToRace();
+                    if ($scope.msgs.length > 0) {
+                        var last = $scope.msgs[$scope.msgs.length - 1];
+                        if (last.msg.indexOf(lastLookout.status) == 0) {
+                            last.count++;
+                        } else {
+                            $scope.msgs.push({msg: lastLookout.status, count: 1});
+                        }
+                    } else {
+                        $scope.msgs.push({msg: lastLookout.status, count: 1});
+                    }
+                } else {
+                    // console.log('New snapshot');
+                    image.src = 'data:image/png;base64,' + message.data;
+                }
+            }
+        });
     }
 
     function autonomousDirective() {

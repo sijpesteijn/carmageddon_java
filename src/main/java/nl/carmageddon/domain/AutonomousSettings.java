@@ -4,40 +4,22 @@ package nl.carmageddon.domain;
  * @author Gijs Sijpesteijn
  */
 public class AutonomousSettings {
-    private HSV lowerHSVMin;
-    private HSV lowerHSVMax;
-    private HSV upperHSVMin;
-    private HSV upperHSVMax;
+    private TrafficLightSettings trafficLight;
+    private ViewType viewType;
 
-    public void setLowerHSVMin(HSV lowerHSVMin) {
-        this.lowerHSVMin = lowerHSVMin;
+    public TrafficLightSettings getTrafficLight() {
+        return trafficLight;
     }
 
-    public void setLowerHSVMax(HSV lowerHSVMax) {
-        this.lowerHSVMax = lowerHSVMax;
+    public void setTrafficLight(TrafficLightSettings trafficLight) {
+        this.trafficLight = trafficLight;
     }
 
-    public void setUpperHSVMin(HSV upperHSVMin) {
-        this.upperHSVMin = upperHSVMin;
+    public ViewType getViewType() {
+        return viewType;
     }
 
-    public void setUpperHSVMax(HSV upperHSVMax) {
-        this.upperHSVMax = upperHSVMax;
-    }
-
-    public HSV getLowerHSVMin() {
-        return lowerHSVMin;
-    }
-
-    public HSV getLowerHSVMax() {
-        return lowerHSVMax;
-    }
-
-    public HSV getUpperHSVMin() {
-        return upperHSVMin;
-    }
-
-    public HSV getUpperHSVMax() {
-        return upperHSVMax;
+    public void setViewType(ViewType viewType) {
+        this.viewType = viewType;
     }
 }

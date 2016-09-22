@@ -68,6 +68,50 @@ header {
   border-radius: 10px;
   padding: 12px;
   margin-left: 5px;
+
+  .tabHeader {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+
+    .active {
+      color: crimson;
+    }
+
+    li {
+      float: left;
+
+      a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 16px;
+        text-decoration: none;
+      }
+    }
+  }
+
+
+  .trafficlight-settings {
+
+    input {
+      width: 120px;
+    }
+
+    ul {
+      list-style-type: none;
+    }
+
+    .lower {
+
+    }
+
+    .lower {
+
+    }
+  }
+
 }
 
 .lifeline {
@@ -154,28 +198,6 @@ header {
   }
 }
 
-.color_slider {
-  overflow: hidden;
-
-  .slider_result {
-    float: left;
-    width: 20px;
-    height: 20px;
-  }
-
-  .slider_value {
-    float: left;
-  }
-
-  .slider_list {
-    margin-top: 5px;
-    ul {
-      list-style: none;
-      padding: 0px;
-      margin-top: 25px;
-    }
-  }
-}
 
 input[type=range] {
   -webkit-appearance: none; /* Hides the slider so that custom slider can be made */

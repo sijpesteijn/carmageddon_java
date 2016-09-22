@@ -1,11 +1,7 @@
 package nl.carmageddon.service;
 
-import nl.carmageddon.domain.AutonomousStatus;
-import nl.carmageddon.domain.Car;
-import nl.carmageddon.domain.HSV;
-import nl.carmageddon.domain.LookoutResult;
+import nl.carmageddon.domain.*;
 import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.slf4j.Logger;
@@ -13,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 
 /**
@@ -21,7 +19,7 @@ import java.util.Observable;
 @Singleton
 public class TrafficLightLookout extends Observable implements Lookout {
     private static final Logger log = LoggerFactory.getLogger(TrafficLightLookout.class);
-    private long timeout = 10000; // 10 sec
+    private  byte[] bytes;
     private boolean stop = true;
     private Car car;
     private HSV upperHSVMax;
@@ -29,6 +27,8 @@ public class TrafficLightLookout extends Observable implements Lookout {
     private HSV lowerHSVMax;
     private HSV lowerHSVMin;
     private LookoutResult result;
+
+    private ViewType viewType;
 
     @Inject
     public TrafficLightLookout(Car car) {
@@ -79,23 +79,46 @@ public class TrafficLightLookout extends Observable implements Lookout {
             Imgproc.medianBlur(frame, frame, 3);
             frame = onlyRedObjects(frame);
             Imgproc.GaussianBlur(frame, frame, new Size(9, 9), 2, 2);
-            Mat circles = new Mat();
-            Imgproc.HoughCircles(frame, circles, Imgproc.CV_HOUGH_GRADIENT, 1, frame.rows() / 8, 10, 22, 0, 0);
-            for (int i = 0; i < circles.cols(); i++) {
-                Point center = new Point(circles.get(0, i)[0], circles.get(0, i)[1]);
-                int radius = (int) Math.round(circles.get(0, i)[2]);
-                Imgproc.circle(original, center, radius, new Scalar(0, 255, 0), 5);
-            }
-            byte[] bytes = this.car.getCamera().getImageBytes(original);
-            if (circles.total() == 1) { // TODO dit is waarschijnlijk juist fout.
-                result = new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_FOUND, bytes);
-                found = true;
-            }
-            else {
+            int shapes = findCircles(frame, original);
+            if (this.viewType == ViewType.result)
+                bytes = this.car.getCamera().getImageBytes(original);
+//            int shapes = findContours(frame, original);
+//            if (shapes == 1) { // TODO dit is waarschijnlijk juist fout.
+//                result = new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_FOUND, bytes);
+//                found = true;
+//            }
+//            else {
                 result = new LookoutResult(AutonomousStatus.NO_TRAFFIC_LIGHT, bytes);
-            }
+//            }
         }
         return result;
+    }
+
+    private int findContours(Mat frame, Mat original) {
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(frame, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        for(int i=0; i< contours.size();i++){
+            System.out.println(Imgproc.contourArea(contours.get(i)));
+            if (Imgproc.contourArea(contours.get(i)) > 50 ){
+                Rect rect = Imgproc.boundingRect(contours.get(i));
+                if (rect.height > 28){
+                    Imgproc.rectangle(original, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),
+                                      new Scalar(0,0,255));
+                }
+            }
+        }
+        return contours.size();
+    }
+
+    private int findCircles(Mat frame, Mat original) {
+        Mat circles = new Mat();
+        Imgproc.HoughCircles(frame, circles, Imgproc.CV_HOUGH_GRADIENT, 1, frame.rows() / 8, 10, 22, 0, 0);
+        for (int i = 0; i < circles.cols(); i++) {
+            Point center = new Point(circles.get(0, i)[0], circles.get(0, i)[1]);
+            int radius = (int) Math.round(circles.get(0, i)[2]);
+            Imgproc.circle(original, center, radius, new Scalar(0, 255, 0), 5);
+        }
+        return (int) circles.total();
     }
 
     public void stop() {
@@ -109,7 +132,8 @@ public class TrafficLightLookout extends Observable implements Lookout {
 
     private Mat onlyRedObjects(Mat frame) {
         Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
-        Imgcodecs.imwrite("hsv.jpg", frame);
+        if (this.viewType == ViewType.hue)
+            bytes = this.car.getCamera().getImageBytes(frame);
         Scalar minValues = buildScalar(lowerHSVMin);
         Scalar maxValues = buildScalar(lowerHSVMax);
         Mat lower = new Mat();
@@ -119,12 +143,13 @@ public class TrafficLightLookout extends Observable implements Lookout {
         Mat upper = new Mat();
         Core.inRange(frame, minValues, maxValues, upper);
         Core.addWeighted(lower, 1.0, upper, 1.0, 0.0, frame);
-        Imgcodecs.imwrite("red.jpg", frame);
+        if (this.viewType == ViewType.baw)
+            bytes = this.car.getCamera().getImageBytes(frame);
         return frame;
     }
 
     private Scalar buildScalar(HSV HSV) {
-        return new Scalar(HSV.getHue(), HSV.getSaturation(), HSV.getValue());
+        return new Scalar(HSV.getHue(), HSV.getSaturation(), HSV.getBrightness());
     }
 
     public void setUpperHSVMax(HSV upperHSVMax) {
@@ -141,5 +166,9 @@ public class TrafficLightLookout extends Observable implements Lookout {
 
     public void setLowerHSVMin(HSV lowerHSVMin) {
         this.lowerHSVMin = lowerHSVMin;
+    }
+
+    public void setViewType(ViewType viewType) {
+        this.viewType = viewType;
     }
 }

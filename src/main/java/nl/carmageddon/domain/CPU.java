@@ -35,45 +35,49 @@ public class CPU extends Observable implements Observer {
         this.settings = loadSettings(configuration);
         this.car = car;
         this.trafficLightLookout = trafficLightLookout;
-        this.trafficLightLookout.setLowerHSVMin(settings.getLowerHSVMin());
-        this.trafficLightLookout.setLowerHSVMax(settings.getLowerHSVMax());
-        this.trafficLightLookout.setUpperHSVMin(settings.getUpperHSVMin());
-        this.trafficLightLookout.setUpperHSVMax(settings.getUpperHSVMax());
+        this.trafficLightLookout.setLowerHSVMin(settings.getTrafficLight().getLowerHSVMin());
+        this.trafficLightLookout.setLowerHSVMax(settings.getTrafficLight().getLowerHSVMax());
+        this.trafficLightLookout.setUpperHSVMin(settings.getTrafficLight().getUpperHSVMin());
+        this.trafficLightLookout.setUpperHSVMax(settings.getTrafficLight().getUpperHSVMax());
         this.trafficLightLookout.addObserver(this);
         this.lookouts.add(this.trafficLightLookout);
         this.straightTrackLookout = straightTrackLookout;
         this.straightTrackLookout.addObserver(this);
         this.lookouts.add(this.straightTrackLookout);
+        useSettings(this.settings);
     }
 
-    // TODO dit moet makkelijker kunnen
+    // TODO dit moet ergens anders en makkelijker kunnen
     private AutonomousSettings loadSettings(Configuration configuration) {
-        AutonomousSettings settings = new AutonomousSettings();
+        AutonomousSettings autonomousSettings = new AutonomousSettings();
+        autonomousSettings.setViewType(ViewType.valueOf(configuration.getString("common.viewtype")));
+
+        TrafficLightSettings trafficLightSettings = new TrafficLightSettings();
+        autonomousSettings.setTrafficLight(trafficLightSettings);
         HSV lowerHSVMin = new HSV();
         lowerHSVMin.setHue(configuration.getInt("trafficlight.lowerbound.min_hsv.h"));
-        lowerHSVMin.setSaturation(configuration.getInt("trafficlight.lowerbound.min_hsv.h"));
-        lowerHSVMin.setValue(configuration.getInt("trafficlight.lowerbound.min_hsv.v"));
-        settings.setLowerHSVMin(lowerHSVMin);
+        lowerHSVMin.setSaturation(configuration.getInt("trafficlight.lowerbound.min_hsv.s"));
+        lowerHSVMin.setBrightness(configuration.getInt("trafficlight.lowerbound.min_hsv.v"));
+        trafficLightSettings.setLowerHSVMin(lowerHSVMin);
 
         HSV lowerHSVMax = new HSV();
         lowerHSVMax.setHue(configuration.getInt("trafficlight.lowerbound.max_hsv.h"));
         lowerHSVMax.setSaturation(configuration.getInt("trafficlight.lowerbound.max_hsv.s"));
-        lowerHSVMax.setValue(configuration.getInt("trafficlight.lowerbound.max_hsv.v"));
-        settings.setLowerHSVMax(lowerHSVMax);
+        lowerHSVMax.setBrightness(configuration.getInt("trafficlight.lowerbound.max_hsv.v"));
+        trafficLightSettings.setLowerHSVMax(lowerHSVMax);
 
         HSV upperHSVMin = new HSV();
         upperHSVMin.setHue(configuration.getInt("trafficlight.upperbound.min_hsv.h"));
         upperHSVMin.setSaturation(configuration.getInt("trafficlight.upperbound.min_hsv.s"));
-        upperHSVMin.setValue(configuration.getInt("trafficlight.upperbound.min_hsv.v"));
-        settings.setUpperHSVMin(upperHSVMin);
+        upperHSVMin.setBrightness(configuration.getInt("trafficlight.upperbound.min_hsv.v"));
+        trafficLightSettings.setUpperHSVMin(upperHSVMin);
 
         HSV upperHSVMax = new HSV();
         upperHSVMax.setHue(configuration.getInt("trafficlight.upperbound.max_hsv.h"));
         upperHSVMax.setSaturation(configuration.getInt("trafficlight.upperbound.max_hsv.s"));
-        upperHSVMax.setValue(configuration.getInt("trafficlight.upperbound.max_hsv.v"));
-        settings.setUpperHSVMax(upperHSVMax);
-
-        return settings;
+        upperHSVMax.setBrightness(configuration.getInt("trafficlight.upperbound.max_hsv.v"));
+        trafficLightSettings.setUpperHSVMax(upperHSVMax);
+        return autonomousSettings;
     }
 
     public void race() {
@@ -121,10 +125,11 @@ public class CPU extends Observable implements Observer {
     }
 
     public void useSettings(AutonomousSettings settings) {
-        this.trafficLightLookout.setLowerHSVMin(settings.getLowerHSVMin());
-        this.trafficLightLookout.setLowerHSVMax(settings.getLowerHSVMax());
-        this.trafficLightLookout.setUpperHSVMin(settings.getUpperHSVMin());
-        this.trafficLightLookout.setUpperHSVMax(settings.getUpperHSVMax());
+        this.trafficLightLookout.setLowerHSVMin(settings.getTrafficLight().getLowerHSVMin());
+        this.trafficLightLookout.setLowerHSVMax(settings.getTrafficLight().getLowerHSVMax());
+        this.trafficLightLookout.setUpperHSVMin(settings.getTrafficLight().getUpperHSVMin());
+        this.trafficLightLookout.setUpperHSVMax(settings.getTrafficLight().getUpperHSVMax());
+        this.trafficLightLookout.setViewType(settings.getViewType());
     }
 
     public AutonomousSettings getSettings() {

@@ -6,7 +6,7 @@ package nl.carmageddon.domain;
 public class HSV {
     private int hue;
     private int saturation;
-    private int value;
+    private int brightness;
 
     public int getHue() {
         return hue;
@@ -24,11 +24,11 @@ public class HSV {
         this.saturation = saturation;
     }
 
-    public int getValue() {
-        return value;
+    public int getBrightness() {
+        return brightness;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public void setBrightness(int brightness) {
+        this.brightness = brightness;
     }
 }

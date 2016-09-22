@@ -5,7 +5,8 @@ var app = angular.module('carmageddon', [
     'ngResource',
     'ngSanitize',
     'ngRoute',
-    'ngWebSocket'
+    'ngWebSocket',
+    'color.picker'
 ]);
 
 app.run(function ($rootScope) {
@@ -27,19 +28,22 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
         endpoint = ep;
         var splits = $location.absUrl().split('/');
         var url = 'ws://' + splits[2] + '/' + splits[3] + '/' + endpoint;
-        connection = $websocket(url, undefined , {
-            binaryType: "arraybuffer"
-        });
+
+        this.connect = function() {
+            try {
+                connection = $websocket(url, undefined, {
+                    binaryType: "arraybuffer"
+                });
+            } catch (err) {
+                console.log('Can\'t connect to ' + url + ', err: ' + err);
+            }
+        };
+
+        this.connect();
 
         connection.onOpen(function () {
             connected = true;
             startPinger();
-        });
-
-        connection.onError(function (error) {
-            connected = false;
-            stopPinger();
-            reconnect();
         });
 
         function startPinger() {
@@ -52,20 +56,20 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
             $interval.cancel(pinger);
         }
 
-        function reconnect() {
-            $timeout(function () {
-                connect(endpoint)
-            }, 1000);
-        }
-
-        this.sendMessage = function(message) {
-            connection.send(message);
-        };
+        connection.onError(function(error) {
+            connected = false;
+            stopPinger();
+            // callback(error);
+        });
 
         this.onMessage = function(callback) {
             connection.onMessage(function (message) {
                 callback(message);
             })
+        };
+
+        this.sendMessage = function(message) {
+            connection.send(message);
         };
 
         this.closeConnection = function() {

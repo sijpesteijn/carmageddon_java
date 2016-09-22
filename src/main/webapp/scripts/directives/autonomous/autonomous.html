@@ -10,19 +10,45 @@
             <span ng-if="msg.count > 1">[{{msg.count}}]</span></li></ul>
     </div>
     <div class="settings-overlay" ng-if="showSettings">
-        Traffic light lower min color:
-        <color-slider rgb="lowerHSVMin"></color-slider>
-        Traffic light lower max color:
-        <color-slider rgb="lowerHSVMax"></color-slider>
-        Traffic light upper min color:
-        <color-slider rgb="upperHSVMin"></color-slider>
-        Traffic light upper max color:
-        <color-slider rgb="upperHSVMax"></color-slider>
+        <ul class="tabHeader">
+            <li><a href="#" ng-click="tab='general'" ng-class="{'active': tab == 'general'}">General</a></li>
+            <li><a href="#" ng-click="tab='traffic'" ng-class="{'active': tab == 'traffic'}">Trafficlight</a></li>
+        </ul>
+        <div ng-if="tab == 'traffic'" class="trafficlight-settings">
+            <ul class="lower">
+                <li class="min">min <color-picker id="lowerHSVMin" options="options" event-api="eventApi"
+                                                  ng-model="lowerHSVMin"></color-picker></li>
+                <li class="max">max <color-picker id="lowerHSVMax" options="options" event-api="eventApi"
+                                                  ng-model="lowerHSVMax"></color-picker></li>
+            </ul>
+            <ul class="upper">
+                <li class="min">min <color-picker id="upperHSVMin" options="options" event-api="eventApi"
+                                                  ng-model="upperHSVMin"></color-picker></li>
+                <li class="max">max <color-picker id="upperHSVMax" options="options" event-api="eventApi"
+                                                  ng-model="upperHSVMax"></color-picker></li>
+            </ul>
+        </div>
 
-        <label for="framerate_slider">
-            Framerate: <input type="range" min="1" max="20" id="framerate_slider" ng-model="framerate"
-                   ng-value="framerate">
-        </label>
-
+        <div ng-if="tab == 'general'" class="common-settings">
+            <ul>
+                <li>
+                    <label for="viewtype">
+                        View type
+                        <select id="viewType" ng-model="viewType" ng-change="updateViewType(viewType)">
+                            <option value="result">Result</option>
+                            <option value="hue">HUE</option>
+                            <option value="baw">Black and White</option>
+                        </select>
+                    </label>
+                </li>
+                <li>
+                    <label for="framerate_slider">
+                        Framerate: <input type="range" min="1" max="20" id="framerate_slider" ng-model="framerate"
+                                          ng-change="updateFramerate(framerate)"> {{ getFramerate(); }}
+                        frames per sec.
+                    </label>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
