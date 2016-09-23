@@ -2,6 +2,7 @@ package nl.carmageddon.service;
 
 import nl.carmageddon.domain.*;
 import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
     @Override
     public LookoutResult start() {
         VideoCapture camera = this.car.getCamera().getCamera();
-        LookoutResult result;
+        LookoutResult result = new LookoutResult(AutonomousStatus.NO_TRAFFIC_LIGHT, null);
         if (camera == null || !camera.isOpened()) {
             result = new LookoutResult(AutonomousStatus.NO_CAMERA, null);
             setChanged();
@@ -46,79 +47,99 @@ public class TrafficLightLookout extends Observable implements Lookout {
             return result;
         }
         stop = false;
-        result = lookForTrafficLight();
-        setChanged();
-        if (result.getStatus() == AutonomousStatus.TRAFFIC_LIGHT_FOUND) {
-            notifyObservers(result);
-            return waitForGo();
+        while(!stop) {
+            result = lookForTrafficLight();
+            setChanged();
+            if (result.getStatus() == AutonomousStatus.TRAFFIC_LIGHT_FOUND) {
+                notifyObservers(result);
+                result = waitForGo((TrafficLightLookoutResult) result);
+                if (result.getStatus() == AutonomousStatus.TRAFFICLIGHT_OFF) {
+                    stop = true;
+                }
+            }
+            else {
+                notifyObservers(result);
+                return result;
+            }
         }
-        else {
-            notifyObservers(result);
-            return result;
-        }
-    }
-
-    // TODO wachten tot rode circle weg is.
-    private LookoutResult waitForGo() {
-        LookoutResult result = new LookoutResult(AutonomousStatus.RACE_START, this.car.getCamera().makeSnapshotInByteArray());
-        setChanged();
-        notifyObservers(result);
         return result;
     }
 
-    // TODO loopen met een echt webcam beeld tot stoplicht gevonden of timeout.
+    private LookoutResult waitForGo(TrafficLightLookoutResult trafficLightLookoutResult) {
+        boolean lightsOff = false;
+        int index = 0;
+        List<MatOfPoint> trafficLightLookoutResultShapes = trafficLightLookoutResult.getShapes();
+        result = new LookoutResult(AutonomousStatus.TRAFFICLIGHT_ON, bytes);
+        while(!stop && !lightsOff) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            List<MatOfPoint> shapes = getTrafficLight(index++);
+            if (!trafficLightOff(trafficLightLookoutResultShapes, shapes)) {
+                result = new LookoutResult(AutonomousStatus.TRAFFICLIGHT_ON, bytes);
+            } else {
+                result = new LookoutResult(AutonomousStatus.TRAFFICLIGHT_OFF, bytes);
+                lightsOff = true;
+            }
+            setChanged();
+            notifyObservers(result);
+        }
+        return result;
+    }
+
+    private boolean trafficLightOff(List<MatOfPoint> trafficLightShapes, List<MatOfPoint> shapes) {
+        if (shapes.size() < trafficLightShapes.size())
+            return true;
+        return false;
+    }
+
     private LookoutResult lookForTrafficLight() {
         boolean found = false;
         while(!stop && !found) {
-//        Mat frame= Imgcodecs
-//                .imread("/Users/gijs/programming/java/carmageddon/src/main/resources/circles.jpg", Imgcodecs
-//                        .CV_LOAD_IMAGE_COLOR);
-            Mat frame = this.car.getCamera().makeSnapshot();
-            Mat original = frame.clone();
-            // Filter noise
-            Imgproc.medianBlur(frame, frame, 3);
-            frame = onlyRedObjects(frame);
-            Imgproc.GaussianBlur(frame, frame, new Size(9, 9), 2, 2);
-            int shapes = findCircles(frame, original);
-            if (this.viewType == ViewType.result)
-                bytes = this.car.getCamera().getImageBytes(original);
-//            int shapes = findContours(frame, original);
-//            if (shapes == 1) { // TODO dit is waarschijnlijk juist fout.
-//                result = new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_FOUND, bytes);
-//                found = true;
-//            }
-//            else {
+            List<MatOfPoint> shapes = getTrafficLight(0);
+            if (shapes.size() == 1) {
+                result = new TrafficLightLookoutResult(AutonomousStatus.TRAFFIC_LIGHT_FOUND, bytes, shapes);
+                found = true;
+            }
+            else {
                 result = new LookoutResult(AutonomousStatus.NO_TRAFFIC_LIGHT, bytes);
-//            }
+            }
         }
         return result;
     }
 
-    private int findContours(Mat frame, Mat original) {
+    private List<MatOfPoint> getTrafficLight(int index) {
+        String filename = "/Users/gijs/programming/java/carmageddon/src/main/resources/peer.jpg";
+        if (index > 20) {
+            filename = "/Users/gijs/programming/java/carmageddon/src/main/resources/peer2.jpg";
+        }
+        Mat frame= Imgcodecs
+                .imread(filename, Imgcodecs
+                        .CV_LOAD_IMAGE_COLOR);
+        Mat original = frame.clone();
+        Imgproc.GaussianBlur(frame, frame, new Size(3, 3), 0);
+        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
+        if (this.viewType == ViewType.hue)
+            bytes = this.car.getCamera().getImageBytes(frame);
+        Core.inRange(frame, buildScalar(lowerHSVMin), buildScalar(lowerHSVMax), frame);
+        if (this.viewType == ViewType.baw)
+            bytes = this.car.getCamera().getImageBytes(frame);
+        Mat frameContours = frame.clone();
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(frame, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(frameContours, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         for(int i=0; i< contours.size();i++){
-            System.out.println(Imgproc.contourArea(contours.get(i)));
-            if (Imgproc.contourArea(contours.get(i)) > 50 ){
-                Rect rect = Imgproc.boundingRect(contours.get(i));
-                if (rect.height > 28){
-                    Imgproc.rectangle(original, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),
-                                      new Scalar(0,0,255));
-                }
-            }
+            Rect rect = Imgproc.boundingRect(contours.get(i));
+//            if (rect.height > 20){
+                Imgproc.rectangle(original, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),
+                                  new Scalar(103,255,255));
+//            }
         }
-        return contours.size();
-    }
+        if (this.viewType == ViewType.result)
+            bytes = this.car.getCamera().getImageBytes(original);
 
-    private int findCircles(Mat frame, Mat original) {
-        Mat circles = new Mat();
-        Imgproc.HoughCircles(frame, circles, Imgproc.CV_HOUGH_GRADIENT, 1, frame.rows() / 8, 10, 22, 0, 0);
-        for (int i = 0; i < circles.cols(); i++) {
-            Point center = new Point(circles.get(0, i)[0], circles.get(0, i)[1]);
-            int radius = (int) Math.round(circles.get(0, i)[2]);
-            Imgproc.circle(original, center, radius, new Scalar(0, 255, 0), 5);
-        }
-        return (int) circles.total();
+        return contours;
     }
 
     public void stop() {
@@ -128,24 +149,6 @@ public class TrafficLightLookout extends Observable implements Lookout {
     @Override
     public LookoutResult getStatus() {
         return result;
-    }
-
-    private Mat onlyRedObjects(Mat frame) {
-        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
-        if (this.viewType == ViewType.hue)
-            bytes = this.car.getCamera().getImageBytes(frame);
-        Scalar minValues = buildScalar(lowerHSVMin);
-        Scalar maxValues = buildScalar(lowerHSVMax);
-        Mat lower = new Mat();
-        Core.inRange(frame, minValues, maxValues, lower);
-        minValues = buildScalar(upperHSVMin);
-        maxValues = buildScalar(upperHSVMax);
-        Mat upper = new Mat();
-        Core.inRange(frame, minValues, maxValues, upper);
-        Core.addWeighted(lower, 1.0, upper, 1.0, 0.0, frame);
-        if (this.viewType == ViewType.baw)
-            bytes = this.car.getCamera().getImageBytes(frame);
-        return frame;
     }
 
     private Scalar buildScalar(HSV HSV) {
@@ -170,5 +173,19 @@ public class TrafficLightLookout extends Observable implements Lookout {
 
     public void setViewType(ViewType viewType) {
         this.viewType = viewType;
+    }
+
+    class TrafficLightLookoutResult extends LookoutResult {
+
+        private final List<MatOfPoint> shapes;
+
+        public TrafficLightLookoutResult(AutonomousStatus status, byte[] imgBytes, List<MatOfPoint> shapes) {
+            super(status, imgBytes);
+            this.shapes = shapes;
+        }
+
+        public List<MatOfPoint> getShapes() {
+            return shapes;
+        }
     }
 }
