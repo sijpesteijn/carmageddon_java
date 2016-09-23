@@ -1,9 +1,7 @@
 package nl.carmageddon.service;
 
 import nl.carmageddon.domain.*;
-import nl.carmageddon.domain.Box;
 import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.slf4j.Logger;
@@ -118,15 +116,18 @@ public class TrafficLightLookout extends Observable implements Lookout {
         if (index > 20) {
             filename = "/Users/gijs/programming/java/carmageddon/src/main/resources/peer2.jpg";
         }
-        Mat frame= Imgcodecs
-                .imread(filename, Imgcodecs
-                        .CV_LOAD_IMAGE_COLOR);
+//        Mat frame= Imgcodecs.imread(filename, Imgcodecs.CV_LOAD_IMAGE_COLOR);
+        Mat frame = this.car.getCamera().makeSnapshot();
         Mat original = frame.clone();
         Imgproc.GaussianBlur(frame, frame, new Size(3, 3), 0);
         Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2HSV);
         if (this.viewType == ViewType.hue)
             bytes = this.car.getCamera().getImageBytes(frame);
-        Core.inRange(frame, buildScalar(lowerHSVMin), buildScalar(lowerHSVMax), frame);
+        Mat lower = new Mat();
+        Core.inRange(frame, buildScalar(lowerHSVMin), buildScalar(lowerHSVMax), lower);
+        Mat upper = new Mat();
+        Core.inRange(frame, buildScalar(upperHSVMin), buildScalar(upperHSVMax), upper);
+        Core.addWeighted(lower, 1.0, upper, 1.0, 0.0, frame);
         if (this.viewType == ViewType.baw)
             bytes = this.car.getCamera().getImageBytes(frame);
         Mat frameContours = frame.clone();

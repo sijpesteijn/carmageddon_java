@@ -68,10 +68,14 @@ header {
   border-radius: 10px;
   padding: 12px;
   margin-left: 5px;
+  width: 330px;
+  height: 182px;
 
   .tabHeader {
     list-style-type: none;
     margin: 0;
+    margin-top: -25px;
+    margin-bottom: -6px;
     padding: 0;
     overflow: hidden;
 
@@ -101,14 +105,25 @@ header {
 
     ul {
       list-style-type: none;
+      float: left;
     }
 
-    .lower {
-
+    .colors, .sizes {
+      margin-left: -3px;
     }
 
-    .lower {
+    .min {
+      float: left;
+      width: 30px;
+    }
 
+    .max {
+      float: left;
+      width: 30px;
+    }
+
+    .color-picker-wrapper {
+      float: left;
     }
   }
 
@@ -201,7 +216,7 @@ header {
 
 input[type=range] {
   -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
-  width: 200px; /* Specific width is required for Firefox. */
+  width: 103px; /* Specific width is required for Firefox. */
   background: transparent; /* Otherwise white in Chrome */
 }
 
@@ -214,7 +229,7 @@ input[type=range]:focus {
 }
 
 input[type=range]::-ms-track {
-  width: 200px;
+  width: 103px;
   cursor: pointer;
 
   /* Hides the slider so custom styles can be added */

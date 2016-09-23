@@ -85,7 +85,7 @@ public class CPU extends Observable implements Observer {
         Box maxBox = new Box();
         maxBox.setWidth(configuration.getInt("trafficlight.maxBox.width"));
         maxBox.setHeight(configuration.getInt("trafficlight.maxBox.width"));
-        trafficLightSettings.setMinBox(maxBox);
+        trafficLightSettings.setMaxBox(maxBox);
         return autonomousSettings;
     }
 

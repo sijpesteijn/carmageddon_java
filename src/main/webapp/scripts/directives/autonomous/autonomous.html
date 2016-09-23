@@ -15,37 +15,49 @@
             <li><a href="#" ng-click="tab='traffic'" ng-class="{'active': tab == 'traffic'}">Trafficlight</a></li>
         </ul>
         <div ng-if="tab == 'traffic'" class="trafficlight-settings">
-            <ul class="lower">
-                <li class="min">min <color-picker id="lowerHSVMin" options="options" event-api="eventApi"
-                                                  ng-model="lowerHSVMin"></color-picker></li>
-                <li class="max">max <color-picker id="lowerHSVMax" options="options" event-api="eventApi"
-                                                  ng-model="lowerHSVMax"></color-picker></li>
+            <ul class="tabHeader">
+                <li><a href="#" ng-click="subtab='colors'" ng-class="{'active': subtab == 'colors'}">Colors</a></li>
+                <li><a href="#" ng-click="subtab='sizes'" ng-class="{'active': subtab == 'sizes'}">Sizes</a></li>
             </ul>
-            <!--<ul class="upper">-->
-                <!--<li class="min">min <color-picker id="upperHSVMin" options="options" event-api="eventApi"-->
-                                                  <!--ng-model="upperHSVMin"></color-picker></li>-->
-                <!--<li class="max">max <color-picker id="upperHSVMax" options="options" event-api="eventApi"-->
-                                                  <!--ng-model="upperHSVMax"></color-picker></li>-->
-            <!--</ul>-->
-            <ul class="minBox">
-                <li class="min">width
-                    <input type="number" min="-1" ng-model="minBox.width" ng-change="updateBox()"></li>
-                <li class="max">height
-                    <input type="number" min="-1" ng-model="minBox.height" ng-change="updateBox()"></li>
-            </ul>
-            <ul class="maxBox">
-                <li class="min">width
-                    <input type="number" min="-1" ng-model="maxBox.width" ng-change="updateBox()"></li>
-                <li class="max">height
-                    <input type="number" min="-1" ng-model="maxBox.height" ng-change="updateBox()"></li>
-            </ul>
+            <div class="colors" ng-if="tab == 'traffic' && subtab == 'colors'">
+                Lower limit:
+                <ul class="lower">
+                    <li><div class="min">min</div><color-picker id="lowerHSVMin" options="options"
+                                                                   event-api="eventApi"
+                                                      ng-model="lowerHSVMin"></color-picker></li>
+                    <li><div class="max">max</div> <color-picker id="lowerHSVMax" options="options"
+                                                                   event-api="eventApi"
+                                                      ng-model="lowerHSVMax"></color-picker></li>
+                </ul>
+                Upper limit:
+                <ul class="upper">
+                    <li><div class="min">min</div> <color-picker id="upperHSVMin" options="options"
+                                                                   event-api="eventApi"
+                                                      ng-model="upperHSVMin"></color-picker></li>
+                    <li><div class="max">max</div> <color-picker id="upperHSVMax" options="options"
+                                                                   event-api="eventApi"
+                                                      ng-model="upperHSVMax"></color-picker></li>
+                </ul>
+            </div>
+            <div class="sizes" ng-if="tab == 'traffic' && subtab == 'sizes'">
+                Min size:
+                <ul class="minBox">
+                    <li>width  <input type="number" min="-1" ng-model="minBox.width" ng-change="updateBox()"></li>
+                    <li>height <input type="number" min="-1" ng-model="minBox.height" ng-change="updateBox()"></li>
+                </ul>
+                Max size:
+                <ul class="maxBox">
+                    <li>width  <input type="number" min="-1" ng-model="maxBox.width" ng-change="updateBox()"></li>
+                    <li>height <input type="number" min="-1" ng-model="maxBox.height" ng-change="updateBox()"></li>
+                </ul>
+            </div>
         </div>
 
         <div ng-if="tab == 'general'" class="common-settings">
             <ul>
                 <li>
                     <label for="viewtype">
-                        View type
+                        View type:
                         <select id="viewType" ng-model="viewType" ng-change="updateViewType(viewType)">
                             <option value="result">Result</option>
                             <option value="hue">HUE</option>

@@ -19,6 +19,7 @@
         $scope.racing = false;
         $scope.showSettings = false;
         $scope.tab = 'general';
+        $scope.subtab = 'colors';
         $scope.baw = false;
         var updateTimeout = angular.undefined;
         var framerateInterval;
