@@ -77,6 +77,15 @@ public class CPU extends Observable implements Observer {
         upperHSVMax.setSaturation(configuration.getInt("trafficlight.upperbound.max_hsv.s"));
         upperHSVMax.setBrightness(configuration.getInt("trafficlight.upperbound.max_hsv.v"));
         trafficLightSettings.setUpperHSVMax(upperHSVMax);
+
+        Box minBox = new Box();
+        minBox.setWidth(configuration.getInt("trafficlight.minBox.width"));
+        minBox.setHeight(configuration.getInt("trafficlight.minBox.width"));
+        trafficLightSettings.setMinBox(minBox);
+        Box maxBox = new Box();
+        maxBox.setWidth(configuration.getInt("trafficlight.maxBox.width"));
+        maxBox.setHeight(configuration.getInt("trafficlight.maxBox.width"));
+        trafficLightSettings.setMinBox(maxBox);
         return autonomousSettings;
     }
 
@@ -130,6 +139,8 @@ public class CPU extends Observable implements Observer {
         this.trafficLightLookout.setUpperHSVMin(settings.getTrafficLight().getUpperHSVMin());
         this.trafficLightLookout.setUpperHSVMax(settings.getTrafficLight().getUpperHSVMax());
         this.trafficLightLookout.setViewType(settings.getViewType());
+        this.trafficLightLookout.setMinBoxBox(settings.getTrafficLight().getMinBox());
+        this.trafficLightLookout.setMaxBoxBox(settings.getTrafficLight().getMaxBox());
     }
 
     public AutonomousSettings getSettings() {

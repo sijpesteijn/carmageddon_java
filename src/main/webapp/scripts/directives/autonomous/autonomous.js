@@ -12,6 +12,8 @@
         $scope.lowerHSVMax;
         $scope.upperHSVMin;
         $scope.upperHSVMax;
+        $scope.minBox = { width: 0, height: 0};
+        $scope.maxBox = { width: 0, height: 0};
         $scope.viewtype;
         $scope.framerate = 5;
         $scope.racing = false;
@@ -73,6 +75,10 @@
                     $scope.lowerHSVMax = buildHsv(settings.trafficLight.lowerHSVMax);
                     $scope.upperHSVMin = buildHsv(settings.trafficLight.upperHSVMin);
                     $scope.upperHSVMax = buildHsv(settings.trafficLight.upperHSVMax);
+                    $scope.minBox.width = settings.trafficLight.minBox.width;
+                    $scope.minBox.height = settings.trafficLight.minBox.height;
+                    $scope.maxBox.width = settings.trafficLight.maxBox.width;
+                    $scope.maxBox.height = settings.trafficLight.maxBox.height;
                     $scope.viewType = settings.viewType;
                 },
                 function (error) {
@@ -93,7 +99,9 @@
                         lowerHSVMin: getHsv($scope.lowerHSVMin),
                         lowerHSVMax: getHsv($scope.lowerHSVMax),
                         upperHSVMin: getHsv($scope.upperHSVMin),
-                        upperHSVMax: getHsv($scope.upperHSVMax)
+                        upperHSVMax: getHsv($scope.upperHSVMax),
+                        minBox: $scope.minBox,
+                        maxBox: $scope.maxBox
                     }
                 },
                 function (success) {
@@ -136,6 +144,13 @@
                 }
                 updateTimeout = $timeout($scope.updateSettings, 500);
             }
+        };
+
+        $scope.updateBox = function () {
+            if (updateTimeout != null) {
+                $timeout.cancel(updateTimeout);
+            }
+            updateTimeout = $timeout($scope.updateSettings, 500);
         };
 
         $scope.updateFramerate = function(framerate) {

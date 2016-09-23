@@ -21,11 +21,23 @@
                 <li class="max">max <color-picker id="lowerHSVMax" options="options" event-api="eventApi"
                                                   ng-model="lowerHSVMax"></color-picker></li>
             </ul>
-            <ul class="upper">
-                <li class="min">min <color-picker id="upperHSVMin" options="options" event-api="eventApi"
-                                                  ng-model="upperHSVMin"></color-picker></li>
-                <li class="max">max <color-picker id="upperHSVMax" options="options" event-api="eventApi"
-                                                  ng-model="upperHSVMax"></color-picker></li>
+            <!--<ul class="upper">-->
+                <!--<li class="min">min <color-picker id="upperHSVMin" options="options" event-api="eventApi"-->
+                                                  <!--ng-model="upperHSVMin"></color-picker></li>-->
+                <!--<li class="max">max <color-picker id="upperHSVMax" options="options" event-api="eventApi"-->
+                                                  <!--ng-model="upperHSVMax"></color-picker></li>-->
+            <!--</ul>-->
+            <ul class="minBox">
+                <li class="min">width
+                    <input type="number" min="-1" ng-model="minBox.width" ng-change="updateBox()"></li>
+                <li class="max">height
+                    <input type="number" min="-1" ng-model="minBox.height" ng-change="updateBox()"></li>
+            </ul>
+            <ul class="maxBox">
+                <li class="min">width
+                    <input type="number" min="-1" ng-model="maxBox.width" ng-change="updateBox()"></li>
+                <li class="max">height
+                    <input type="number" min="-1" ng-model="maxBox.height" ng-change="updateBox()"></li>
             </ul>
         </div>
 

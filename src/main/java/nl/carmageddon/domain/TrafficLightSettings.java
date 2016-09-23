@@ -9,6 +9,8 @@ public class TrafficLightSettings {
     private HSV lowerHSVMax;
     private HSV upperHSVMin;
     private HSV upperHSVMax;
+    private Box minBox;
+    private Box maxBox;
 
     public boolean isBlackAndWhite() {
         return blackAndWhite;
@@ -48,5 +50,21 @@ public class TrafficLightSettings {
 
     public void setUpperHSVMax(HSV upperHSVMax) {
         this.upperHSVMax = upperHSVMax;
+    }
+
+    public Box getMinBox() {
+        return minBox;
+    }
+
+    public void setMinBox(Box minBox) {
+        this.minBox = minBox;
+    }
+
+    public Box getMaxBox() {
+        return maxBox;
+    }
+
+    public void setMaxBox(Box maxBox) {
+        this.maxBox = maxBox;
     }
 }

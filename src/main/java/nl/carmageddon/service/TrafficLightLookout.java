@@ -1,6 +1,7 @@
 package nl.carmageddon.service;
 
 import nl.carmageddon.domain.*;
+import nl.carmageddon.domain.Box;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -28,8 +29,10 @@ public class TrafficLightLookout extends Observable implements Lookout {
     private HSV lowerHSVMax;
     private HSV lowerHSVMin;
     private LookoutResult result;
-
     private ViewType viewType;
+    private Box minBoxBox;
+
+    private Box maxBoxBox;
 
     @Inject
     public TrafficLightLookout(Car car) {
@@ -128,18 +131,43 @@ public class TrafficLightLookout extends Observable implements Lookout {
             bytes = this.car.getCamera().getImageBytes(frame);
         Mat frameContours = frame.clone();
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        List<MatOfPoint> inRange = new ArrayList<MatOfPoint>();
         Imgproc.findContours(frameContours, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         for(int i=0; i< contours.size();i++){
             Rect rect = Imgproc.boundingRect(contours.get(i));
-//            if (rect.height > 20){
+            if (contourInRange(rect)){
                 Imgproc.rectangle(original, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),
                                   new Scalar(103,255,255));
-//            }
+                inRange.add(contours.get(i));
+            }
         }
         if (this.viewType == ViewType.result)
             bytes = this.car.getCamera().getImageBytes(original);
 
-        return contours;
+        return inRange;
+    }
+
+    private boolean contourInRange(Rect rect) {
+        boolean inRange = true;
+        int height = this.minBoxBox.getHeight();
+        int width  = this.minBoxBox.getWidth();
+        if (height != -1 && rect.height < height) {
+            inRange &= false;
+        }
+        if (width != -1 && rect.width < width) {
+            inRange &= false;
+        }
+
+        height = this.maxBoxBox.getHeight();
+        width = this.maxBoxBox.getWidth();
+        if (height != -1 && rect.height > height) {
+            inRange &= false;
+        }
+        if (width != -1 && rect.width > width) {
+            inRange &= false;
+        }
+
+        return inRange;
     }
 
     public void stop() {
@@ -173,6 +201,14 @@ public class TrafficLightLookout extends Observable implements Lookout {
 
     public void setViewType(ViewType viewType) {
         this.viewType = viewType;
+    }
+
+    public void setMinBoxBox(Box minBoxBox) {
+        this.minBoxBox = minBoxBox;
+    }
+
+    public void setMaxBoxBox(Box maxBoxBox) {
+        this.maxBoxBox = maxBoxBox;
     }
 
     class TrafficLightLookoutResult extends LookoutResult {
