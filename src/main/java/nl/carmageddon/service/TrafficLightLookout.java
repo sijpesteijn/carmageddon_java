@@ -18,7 +18,7 @@ import java.util.Observable;
  */
 @Singleton
 public class TrafficLightLookout extends Observable implements Lookout {
-    private static final Logger log = LoggerFactory.getLogger(TrafficLightLookout.class);
+    private static final Logger logger = LoggerFactory.getLogger(TrafficLightLookout.class);
     private  byte[] bytes;
     private boolean stop = true;
     private Car car;
@@ -45,8 +45,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
         LookoutResult result = new LookoutResult(AutonomousStatus.NO_TRAFFIC_LIGHT, null);
         if (camera == null || !camera.isOpened()) {
             result = new LookoutResult(AutonomousStatus.NO_CAMERA, null);
-            setChanged();
-            notifyObservers(result);
+            notifyClients(result);
             return result;
         }
         stop = false;
@@ -78,8 +77,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
                 result = new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_OFF, bytes);
                 lightsOff = true;
             }
-            setChanged();
-            notifyObservers(result);
+            notifyClients(result);
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
@@ -101,7 +99,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
-                log.debug("Looking for a traffic light. " + e.getMessage());
+                logger.debug("Looking for a traffic light. " + e.getMessage());
             }
             List<MatOfPoint> shapes = getTrafficLight(0);
             if (shapes.size() == 1) {
@@ -111,8 +109,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
             else {
                 result = new LookoutResult(AutonomousStatus.NO_TRAFFIC_LIGHT, bytes);
             }
-            setChanged();
-            notifyObservers(result);
+            notifyClients(result);
         }
         return result;
     }
@@ -181,11 +178,6 @@ public class TrafficLightLookout extends Observable implements Lookout {
         stop = true;
     }
 
-    @Override
-    public LookoutResult getStatus() {
-        return result;
-    }
-
     private Scalar buildScalar(HSV HSV) {
         return new Scalar(HSV.getHue(), HSV.getSaturation(), HSV.getBrightness());
     }
@@ -235,4 +227,11 @@ public class TrafficLightLookout extends Observable implements Lookout {
             return shapes;
         }
     }
+
+    private void notifyClients(LookoutResult event) {
+        setChanged();
+        notifyObservers(event);
+//        logger.debug(event.getStatus() + " send to clients");
+    }
+
 }

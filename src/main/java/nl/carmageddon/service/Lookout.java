@@ -11,5 +11,4 @@ public interface Lookout {
 
     void stop();
 
-    LookoutResult getStatus();
 }

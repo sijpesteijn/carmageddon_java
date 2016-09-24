@@ -4,6 +4,8 @@ import nl.carmageddon.service.Lookout;
 import nl.carmageddon.service.StraightTrackLookout;
 import nl.carmageddon.service.TrafficLightLookout;
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -23,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Singleton
 public class CPU extends Observable implements Observer {
-
+    private static Logger logger = LoggerFactory.getLogger(CPU.class);
     private AutonomousSettings settings;
     private boolean racing;
     private Car car;
@@ -67,11 +69,14 @@ public class CPU extends Observable implements Observer {
                 }
             }
         }
+        racing = false;
+        startWebcamPushTimer();
     }
 
     private void notifyClients(LookoutResult event) {
         setChanged();
         notifyObservers(event);
+        logger.debug(event.getStatus() + " send to clients");
     }
 
     public boolean isRacing() {
@@ -93,9 +98,6 @@ public class CPU extends Observable implements Observer {
     public void update(Observable o, Object arg) {
         if (arg instanceof LookoutResult) {
             LookoutResult event = (LookoutResult) arg;
-            if (!event.sucess()) {
-                this.racing = false;
-            }
             notifyClients(event);
         }
         // TODO misschien ook een event
@@ -109,7 +111,7 @@ public class CPU extends Observable implements Observer {
     }
 
     private void startWebcamPushTimer() {
-        if(this.statusTimer == null) {
+        if(this.statusTimer == null && this.car.getMode() == Mode.autonomous && !this.racing) {
             this.statusTimer = Executors.newSingleThreadScheduledExecutor();
             this.statusTimer.scheduleAtFixedRate(statusRunner, 0, this.delay, TimeUnit.MILLISECONDS);
         }

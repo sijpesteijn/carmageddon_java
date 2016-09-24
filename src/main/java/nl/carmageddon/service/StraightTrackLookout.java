@@ -26,16 +26,15 @@ public class StraightTrackLookout extends Observable implements Lookout {
     public LookoutResult start() {
         run = true;
         while(run) {
-            car.getEngine().setThrottle(14);
+            car.getEngine().setThrottle(20);
             try {
-                Thread.sleep(100000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             car.getEngine().setThrottle(0);
             result = new LookoutResult(AutonomousStatus.RACE_FINISHED, this.car.getCamera().makeSnapshotInByteArray());
-            setChanged();
-            notifyObservers(result);
+            notifyClients(result);
             run = false;
         }
         return result;
@@ -46,9 +45,11 @@ public class StraightTrackLookout extends Observable implements Lookout {
         run = false;
     }
 
-    @Override
-    public LookoutResult getStatus() {
-        return result;
+    private void notifyClients(LookoutResult event) {
+        setChanged();
+        notifyObservers(event);
+//        logger.debug(event.getStatus() + " send to clients");
     }
+
 
 }
