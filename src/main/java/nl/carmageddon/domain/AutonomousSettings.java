@@ -6,6 +6,7 @@ package nl.carmageddon.domain;
 public class AutonomousSettings {
     private TrafficLightSettings trafficLight;
     private ViewType viewType;
+    private long delay;
 
     public TrafficLightSettings getTrafficLight() {
         return trafficLight;
@@ -21,5 +22,13 @@ public class AutonomousSettings {
 
     public void setViewType(ViewType viewType) {
         this.viewType = viewType;
+    }
+
+    public void setDelay(long delay) {
+        this.delay = delay;
+    }
+
+    public long getDelay() {
+        return delay;
     }
 }

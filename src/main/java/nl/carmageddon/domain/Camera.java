@@ -36,7 +36,7 @@ public class Camera {
         if (camera != null && camera.isOpened()) {
             return camera;
         }
-        camera = new VideoCapture(1);
+        camera = new VideoCapture(id);
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {

@@ -26,6 +26,13 @@ public class StraightTrackLookout extends Observable implements Lookout {
     public LookoutResult start() {
         run = true;
         while(run) {
+            car.getEngine().setThrottle(14);
+            try {
+                Thread.sleep(100000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            car.getEngine().setThrottle(0);
             result = new LookoutResult(AutonomousStatus.RACE_FINISHED, this.car.getCamera().makeSnapshotInByteArray());
             setChanged();
             notifyObservers(result);

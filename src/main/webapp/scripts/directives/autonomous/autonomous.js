@@ -15,14 +15,14 @@
         $scope.minBox = { width: 0, height: 0};
         $scope.maxBox = { width: 0, height: 0};
         $scope.viewtype;
-        $scope.framerate = 5;
+        $scope.delay;
+        $scope.framerate;
         $scope.racing = false;
         $scope.showSettings = false;
         $scope.tab = 'general';
         $scope.subtab = 'colors';
         $scope.baw = false;
         var updateTimeout = angular.undefined;
-        var framerateInterval;
         var lastLookout = angular.undefined;
         var image = document.getElementById("img");
 
@@ -53,9 +53,11 @@
         $scope.readyToRace = function() {
             if (lastLookout !== angular.undefined) {
                 var status = lastLookout.status;
-                if ( status ===  'READY_TO_RACE' ) {
+                if ( status ===  'READY_TO_RACE' || status ===  'RACE_STOPPED') {
                     $scope.racing = false;
                     return true;
+                } else {
+                    $scope.racing = true;
                 }
             }
             return false;
@@ -81,6 +83,8 @@
                     $scope.maxBox.width = settings.trafficLight.maxBox.width;
                     $scope.maxBox.height = settings.trafficLight.maxBox.height;
                     $scope.viewType = settings.viewType;
+                    $scope.delay = settings.delay;
+                    $scope.framerate = 1000/$scope.delay;
                 },
                 function (error) {
                     console.error('mode update failed', error);
@@ -96,6 +100,7 @@
             $resource('./rest/autonomous/settings').save({},
                 {
                     viewType: $scope.viewType,
+                    delay: $scope.delay,
                     trafficLight: {
                         lowerHSVMin: getHsv($scope.lowerHSVMin),
                         lowerHSVMax: getHsv($scope.lowerHSVMax),
@@ -154,13 +159,14 @@
             updateTimeout = $timeout($scope.updateSettings, 500);
         };
 
-        $scope.updateFramerate = function(framerate) {
+        $scope.updateDelay = function(framerate) {
             $scope.framerate = framerate;
-            console.log('framerate ' + $scope.framerate);
-            if (framerateInterval != angular.undefined) {
-                $interval.cancel(framerateInterval);
+            $scope.delay = 1000/framerate;
+            console.log('delay ' + $scope.delay);
+            if (updateTimeout != null) {
+                $timeout.cancel(updateTimeout);
             }
-            framerateInterval = $interval(statusUpdate, 1000/$scope.framerate);
+            updateTimeout = $timeout($scope.updateSettings, 500);
         };
 
         $scope.getFramerate = function () {
@@ -174,7 +180,6 @@
 
         websocket = websocketFactory.create('autonomous/status');
         getSettings();
-        $scope.updateFramerate($scope.framerate);
 
         websocket.onMessage(function (message) {
             if (message.data !== 'pong') {

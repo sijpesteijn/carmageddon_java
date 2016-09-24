@@ -32,6 +32,8 @@ public class TrafficLightLookout extends Observable implements Lookout {
 
     private Box maxBoxBox;
 
+    private long delay;
+
     @Inject
     public TrafficLightLookout(Car car) {
         this.car = car;
@@ -50,16 +52,13 @@ public class TrafficLightLookout extends Observable implements Lookout {
         stop = false;
         while(!stop) {
             result = lookForTrafficLight();
-            setChanged();
             if (result.getStatus() == AutonomousStatus.TRAFFIC_LIGHT_FOUND) {
-                notifyObservers(result);
                 result = waitForGo((TrafficLightLookoutResult) result);
-                if (result.getStatus() == AutonomousStatus.TRAFFICLIGHT_OFF) {
+                if (result.getStatus() == AutonomousStatus.TRAFFIC_LIGHT_OFF) {
                     stop = true;
                 }
             }
             else {
-                notifyObservers(result);
                 return result;
             }
         }
@@ -70,22 +69,22 @@ public class TrafficLightLookout extends Observable implements Lookout {
         boolean lightsOff = false;
         int index = 0;
         List<MatOfPoint> trafficLightLookoutResultShapes = trafficLightLookoutResult.getShapes();
-        result = new LookoutResult(AutonomousStatus.TRAFFICLIGHT_ON, bytes);
+        result = new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_ON, bytes);
         while(!stop && !lightsOff) {
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             List<MatOfPoint> shapes = getTrafficLight(index++);
             if (!trafficLightOff(trafficLightLookoutResultShapes, shapes)) {
-                result = new LookoutResult(AutonomousStatus.TRAFFICLIGHT_ON, bytes);
+                result = new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_ON, bytes);
             } else {
-                result = new LookoutResult(AutonomousStatus.TRAFFICLIGHT_OFF, bytes);
+                result = new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_OFF, bytes);
                 lightsOff = true;
             }
             setChanged();
             notifyObservers(result);
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return result;
     }
@@ -99,6 +98,11 @@ public class TrafficLightLookout extends Observable implements Lookout {
     private LookoutResult lookForTrafficLight() {
         boolean found = false;
         while(!stop && !found) {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                log.debug("Looking for a traffic light. " + e.getMessage());
+            }
             List<MatOfPoint> shapes = getTrafficLight(0);
             if (shapes.size() == 1) {
                 result = new TrafficLightLookoutResult(AutonomousStatus.TRAFFIC_LIGHT_FOUND, bytes, shapes);
@@ -107,6 +111,8 @@ public class TrafficLightLookout extends Observable implements Lookout {
             else {
                 result = new LookoutResult(AutonomousStatus.NO_TRAFFIC_LIGHT, bytes);
             }
+            setChanged();
+            notifyObservers(result);
         }
         return result;
     }
@@ -210,6 +216,10 @@ public class TrafficLightLookout extends Observable implements Lookout {
 
     public void setMaxBoxBox(Box maxBoxBox) {
         this.maxBoxBox = maxBoxBox;
+    }
+
+    public void setDelay(long delay) {
+        this.delay = delay;
     }
 
     class TrafficLightLookoutResult extends LookoutResult {

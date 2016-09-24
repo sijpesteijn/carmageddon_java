@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Car Processing Unit :)
@@ -29,16 +32,19 @@ public class CPU extends Observable implements Observer {
     private TrafficLightLookout trafficLightLookout;
     private StraightTrackLookout straightTrackLookout;
 
+    private ScheduledExecutorService statusTimer;
+    private Runnable statusRunner = () -> {
+        notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshotInByteArray()));
+    };
+    private long delay;
+
     @Inject
     public CPU(Configuration configuration, Car car, TrafficLightLookout trafficLightLookout, StraightTrackLookout
             straightTrackLookout) {
         this.settings = loadSettings(configuration);
         this.car = car;
+        this.car.addObserver(this);
         this.trafficLightLookout = trafficLightLookout;
-        this.trafficLightLookout.setLowerHSVMin(settings.getTrafficLight().getLowerHSVMin());
-        this.trafficLightLookout.setLowerHSVMax(settings.getTrafficLight().getLowerHSVMax());
-        this.trafficLightLookout.setUpperHSVMin(settings.getTrafficLight().getUpperHSVMin());
-        this.trafficLightLookout.setUpperHSVMax(settings.getTrafficLight().getUpperHSVMax());
         this.trafficLightLookout.addObserver(this);
         this.lookouts.add(this.trafficLightLookout);
         this.straightTrackLookout = straightTrackLookout;
@@ -47,10 +53,98 @@ public class CPU extends Observable implements Observer {
         useSettings(this.settings);
     }
 
+    public void race() {
+        racing = true;
+        shutdownWebcamPushTimer();
+        for(Lookout lookout : lookouts) {
+            if (racing) {
+                this.currentLookout = lookout;
+                LookoutResult result = this.currentLookout.start();
+                if (result.getStatus() == AutonomousStatus.RACE_FINISHED) {
+                    racing = false;
+                    this.currentLookout = null;
+                    notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshotInByteArray()));
+                }
+            }
+        }
+    }
+
+    private void notifyClients(LookoutResult event) {
+        setChanged();
+        notifyObservers(event);
+    }
+
+    public boolean isRacing() {
+        return racing;
+    }
+
+    public void stopRacing() {
+        if (this.currentLookout != null) {
+            this.currentLookout.stop();
+            this.currentLookout = null;
+            startWebcamPushTimer();
+            notifyClients(new LookoutResult(AutonomousStatus.RACE_STOPPED, this.car.getCamera()
+                                                                                    .makeSnapshotInByteArray()));
+        }
+        this.racing = false;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (arg instanceof LookoutResult) {
+            LookoutResult event = (LookoutResult) arg;
+            if (!event.sucess()) {
+                this.racing = false;
+            }
+            notifyClients(event);
+        }
+        // TODO misschien ook een event
+        if (arg == null) {
+            if (car.getMode() == Mode.autonomous && this.racing == false) {
+                startWebcamPushTimer();
+            } else if(this.statusTimer != null) {
+                shutdownWebcamPushTimer();
+            }
+        }
+    }
+
+    private void startWebcamPushTimer() {
+        if(this.statusTimer == null) {
+            this.statusTimer = Executors.newSingleThreadScheduledExecutor();
+            this.statusTimer.scheduleAtFixedRate(statusRunner, 0, this.delay, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void shutdownWebcamPushTimer() {
+        this.statusTimer.shutdown();
+        this.statusTimer = null;
+    }
+
+    public void useSettings(AutonomousSettings settings) {
+        this.trafficLightLookout.setLowerHSVMin(settings.getTrafficLight().getLowerHSVMin());
+        this.trafficLightLookout.setLowerHSVMax(settings.getTrafficLight().getLowerHSVMax());
+        this.trafficLightLookout.setUpperHSVMin(settings.getTrafficLight().getUpperHSVMin());
+        this.trafficLightLookout.setUpperHSVMax(settings.getTrafficLight().getUpperHSVMax());
+        this.trafficLightLookout.setViewType(settings.getViewType());
+        this.trafficLightLookout.setDelay(settings.getDelay());
+        this.delay = settings.getDelay();
+        if (car.getMode() == Mode.autonomous && this.racing == false) {
+            shutdownWebcamPushTimer();
+            startWebcamPushTimer();
+        }
+        this.trafficLightLookout.setMinBoxBox(settings.getTrafficLight().getMinBox());
+        this.trafficLightLookout.setMaxBoxBox(settings.getTrafficLight().getMaxBox());
+    }
+
+    public AutonomousSettings getSettings() {
+        return settings;
+    }
+
     // TODO dit moet ergens anders en makkelijker kunnen
     private AutonomousSettings loadSettings(Configuration configuration) {
         AutonomousSettings autonomousSettings = new AutonomousSettings();
         autonomousSettings.setViewType(ViewType.valueOf(configuration.getString("common.viewtype")));
+        autonomousSettings.setDelay(configuration.getLong("common.delay"));
 
         TrafficLightSettings trafficLightSettings = new TrafficLightSettings();
         autonomousSettings.setTrafficLight(trafficLightSettings);
@@ -89,61 +183,4 @@ public class CPU extends Observable implements Observer {
         return autonomousSettings;
     }
 
-    public void race() {
-        racing = true;
-        LookoutResult result;
-        for(Lookout lookout : lookouts) {
-            this.currentLookout = lookout;
-            result = this.currentLookout.start();
-            if (result.getStatus() == AutonomousStatus.RACE_FINISHED) {
-                racing = false;
-                this.currentLookout = null;
-                notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, null));
-            }
-        }
-    }
-
-    private void notifyClients(LookoutResult event) {
-        setChanged();
-        notifyObservers(event);
-    }
-
-    public boolean isRacing() {
-        return racing;
-    }
-
-    public void stopRacing() {
-        if (this.currentLookout != null)
-            this.currentLookout.stop();
-        this.racing = false;
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        LookoutResult event = (LookoutResult) arg;
-        if (!event.sucess()) {
-            this.racing = false;
-        }
-        notifyClients(event);
-    }
-
-    public LookoutResult getStatus() {
-        if (this.currentLookout == null)
-            return new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshotInByteArray());
-        return this.currentLookout.getStatus();
-    }
-
-    public void useSettings(AutonomousSettings settings) {
-        this.trafficLightLookout.setLowerHSVMin(settings.getTrafficLight().getLowerHSVMin());
-        this.trafficLightLookout.setLowerHSVMax(settings.getTrafficLight().getLowerHSVMax());
-        this.trafficLightLookout.setUpperHSVMin(settings.getTrafficLight().getUpperHSVMin());
-        this.trafficLightLookout.setUpperHSVMax(settings.getTrafficLight().getUpperHSVMax());
-        this.trafficLightLookout.setViewType(settings.getViewType());
-        this.trafficLightLookout.setMinBoxBox(settings.getTrafficLight().getMinBox());
-        this.trafficLightLookout.setMaxBoxBox(settings.getTrafficLight().getMaxBox());
-    }
-
-    public AutonomousSettings getSettings() {
-        return settings;
-    }
 }

@@ -2,7 +2,6 @@ package nl.carmageddon.service;
 
 import nl.carmageddon.domain.AutonomousSettings;
 import nl.carmageddon.domain.CPU;
-import nl.carmageddon.domain.LookoutResult;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,6 +25,7 @@ public class AutonomousService {
 
     public boolean startRace() {
         if (!this.cpu.isRacing()) {
+            // Waarom een executor? Aparte thread zodat we direct returnen.
             Runnable cpuRunner = () -> {
                 this.cpu.race();
             };
@@ -42,10 +42,6 @@ public class AutonomousService {
 
     public void stopRace() {
         this.cpu.stopRacing();
-    }
-
-    public LookoutResult getStatus() {
-        return this.cpu.getStatus();
     }
 
     public void useSettings(AutonomousSettings settings) {

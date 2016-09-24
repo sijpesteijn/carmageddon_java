@@ -39,26 +39,12 @@ public class AutonomousStatusWebsocket implements Observer{
     public void onOpen(Session session) throws IOException {
         log.debug("Session added " + session.toString());
         sessions.add(session);
-        sendImage(session);
-    }
-
-    private void sendImage(Session session) throws IOException {
-        LookoutResult lookoutResult = autonomousService.getStatus();
-        String json = mapper.writeValueAsString(lookoutResult);
-        session.getAsyncRemote().sendText(json);
-        byte[] imgBytes = lookoutResult.getImgBytes();
-        if (imgBytes != null) {
-            session.getAsyncRemote().sendText(new String(Base64.encode(imgBytes)));
-        }
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
         if (message.equals("ping")) {
             session.getAsyncRemote().sendText("pong");
-        }
-        if (message.equals("status")) {
-            sendImage(session);
         }
     }
 
@@ -79,12 +65,10 @@ public class AutonomousStatusWebsocket implements Observer{
         try {
             LookoutResult status = (LookoutResult) arg;
             byte[] imgBytes = status.getImgBytes();
-//            File fi = new File("./src/main/resources/circles.jpg");
-//            imgBytes = Files.readAllBytes(fi.toPath());
             String json = mapper.writeValueAsString(status);
             for (Session session : sessions) {
                 session.getAsyncRemote().sendText(json);
-                if (imgBytes != null) {
+                if (imgBytes != null) { // TODO encoding uit de loop
                     session.getAsyncRemote().sendText(new String(Base64.encode(imgBytes)));
                 }
             }
