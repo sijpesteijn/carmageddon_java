@@ -25,7 +25,7 @@ import java.util.Observer;
 @ServerEndpoint(value = "/autonomous/status", configurator = CarmageddonWebsocketConfigurator.class)
 public class AutonomousStatusWebsocket implements Observer{
     private static final Logger log = LoggerFactory.getLogger(AutonomousStatusWebsocket.class);
-    List<Session> sessions = new ArrayList<>();
+    private List<Session> sessions = new ArrayList<>();
     private ObjectMapper mapper = new ObjectMapper();
     private AutonomousService autonomousService;
 

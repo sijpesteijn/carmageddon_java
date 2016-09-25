@@ -169,6 +169,7 @@
             updateTimeout = $timeout($scope.updateSettings, 500);
         };
 
+
         $scope.getFramerate = function () {
             return $scope.framerate;
         };

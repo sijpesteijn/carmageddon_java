@@ -3,6 +3,10 @@ package nl.carmageddon.guice;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
+import nl.carmageddon.domain.Car;
+import nl.carmageddon.service.CPU;
+
+import javax.servlet.ServletContextEvent;
 
 /**
  * @author Gijs Sijpesteijn
@@ -14,5 +18,11 @@ public class GuiceServletConfig extends GuiceServletContextListener {
     protected Injector getInjector() {
         injector = Guice.createInjector(new ConfigurationModule(), new CarmageddonServletModule());
         return injector;
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        CPU cpu = injector.getInstance(CPU.class);
+        cpu.destroy();
     }
 }

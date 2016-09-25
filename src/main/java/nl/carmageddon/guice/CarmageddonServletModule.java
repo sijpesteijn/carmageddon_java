@@ -47,10 +47,14 @@ public class CarmageddonServletModule extends ServletModule {
             }
             if (!loaded) {
                 logger.debug("Loading opencv native library: " + Core.NATIVE_LIBRARY_NAME + extentsion);
-                System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+                try {
+                    System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+                } catch (UnsatisfiedLinkError e) {
+                    logger.error(e.getMessage());
+                }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         Map parameters = new HashMap();

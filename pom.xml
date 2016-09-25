@@ -194,6 +194,12 @@
                                 <include>**/*.css</include>
                             </includes>
                         </scanTargetPattern>
+                        <scanTargetPattern>
+                            <directory>target/classes/</directory>
+                            <includes>
+                                <include>**/*.class</include>
+                            </includes>
+                        </scanTargetPattern>
                     </scanTargetPatterns>
                     <httpConnector>
                         <port>8082</port>

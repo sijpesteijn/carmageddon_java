@@ -59,6 +59,7 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
         connection.onError(function(error) {
             connected = false;
             stopPinger();
+            console.log('Connection stopped' + error);
             // callback(error);
         });
 
@@ -74,6 +75,7 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
 
         this.closeConnection = function() {
             connection.close();
+            console.log('Connection closed');
         }
     }
 

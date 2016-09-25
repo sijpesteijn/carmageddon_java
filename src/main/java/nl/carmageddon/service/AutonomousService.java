@@ -1,7 +1,6 @@
 package nl.carmageddon.service;
 
 import nl.carmageddon.domain.AutonomousSettings;
-import nl.carmageddon.domain.CPU;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

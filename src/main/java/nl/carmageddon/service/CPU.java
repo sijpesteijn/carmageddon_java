@@ -1,8 +1,6 @@
-package nl.carmageddon.domain;
+package nl.carmageddon.service;
 
-import nl.carmageddon.service.Lookout;
-import nl.carmageddon.service.StraightTrackLookout;
-import nl.carmageddon.service.TrafficLightLookout;
+import nl.carmageddon.domain.*;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +34,12 @@ public class CPU extends Observable implements Observer {
 
     private ScheduledExecutorService statusTimer;
     private Runnable statusRunner = () -> {
-        notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshotInByteArray()));
+        if (this.car.getCamera().getCamera().isOpened()) {
+            notifyClients(
+                    new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshotInByteArray()));
+        } else {
+            notifyClients(new LookoutResult(AutonomousStatus.NO_CAMERA, null));
+        }
     };
     private long delay;
 
@@ -118,8 +121,10 @@ public class CPU extends Observable implements Observer {
     }
 
     private void shutdownWebcamPushTimer() {
-        this.statusTimer.shutdown();
-        this.statusTimer = null;
+        if (this.statusTimer != null) {
+            this.statusTimer.shutdown();
+            this.statusTimer = null;
+        }
     }
 
     public void useSettings(AutonomousSettings settings) {
@@ -185,4 +190,16 @@ public class CPU extends Observable implements Observer {
         return autonomousSettings;
     }
 
+    public void destroy() {
+        if (car.getCamera().isOpened()) {
+            System.out.println("** RELEASING CAMERA **");
+            car.getCamera().getCamera().release();
+        }
+        shutdownWebcamPushTimer();
+        if (this.currentLookout != null) {
+            this.currentLookout.stop();
+            this.currentLookout = null;
+        }
+        this.racing = false;
+    }
 }

@@ -1,5 +1,6 @@
 package nl.carmageddon.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
@@ -21,6 +22,7 @@ import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_WIDTH;
 @Singleton
 public class Camera {
     private static Logger logger = LoggerFactory.getLogger(Camera.class);
+    @JsonIgnore
     private VideoCapture camera;
     private int id;
 
@@ -44,9 +46,11 @@ public class Camera {
         }
         if (!camera.isOpened()) {
             logger.error("No webcam with id " + id + " found!");
+            camera = null;
+        } else {
+            camera.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+            camera.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
         }
-        camera.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-        camera.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
         return camera;
     }
 
@@ -79,4 +83,7 @@ public class Camera {
         return bytes;
     }
 
+    public boolean isOpened() {
+        return camera != null;
+    }
 }
