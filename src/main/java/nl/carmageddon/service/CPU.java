@@ -79,7 +79,6 @@ public class CPU extends Observable implements Observer {
     private void notifyClients(LookoutResult event) {
         setChanged();
         notifyObservers(event);
-        logger.debug(event.getStatus() + " send to clients");
     }
 
     public boolean isRacing() {
@@ -141,6 +140,8 @@ public class CPU extends Observable implements Observer {
         }
         this.trafficLightLookout.setMinBoxBox(settings.getTrafficLight().getMinBox());
         this.trafficLightLookout.setMaxBoxBox(settings.getTrafficLight().getMaxBox());
+
+        this.straightTrackLookout.setDelay(settings.getDelay());
     }
 
     public AutonomousSettings getSettings() {

@@ -16,6 +16,7 @@ public class StraightTrackLookout extends Observable implements Lookout {
     private Car car;
     private boolean run;
     private LookoutResult result;
+    private long delay;
 
     @Inject
     public StraightTrackLookout(Car car) {
@@ -27,10 +28,15 @@ public class StraightTrackLookout extends Observable implements Lookout {
         run = true;
         while(run) {
             car.getEngine().setThrottle(20);
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            int index = 0;
+            while(index++ < 10) {
+                result = new LookoutResult(AutonomousStatus.RACING, this.car.getCamera().makeSnapshotInByteArray());
+                notifyClients(result);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             car.getEngine().setThrottle(0);
             result = new LookoutResult(AutonomousStatus.RACE_FINISHED, this.car.getCamera().makeSnapshotInByteArray());
@@ -52,4 +58,7 @@ public class StraightTrackLookout extends Observable implements Lookout {
     }
 
 
+    public void setDelay(long delay) {
+        this.delay = delay;
+    }
 }
