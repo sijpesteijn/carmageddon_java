@@ -1,5 +1,11 @@
 # Carmageddon
 
+# Software
+- mvn sass:watch 
+- mvn jetty:run
+- http://localhost:8082/carmageddon
+
+
 # Koop een beaglebone black
 - https://tweakers.net/pricewatch/466806/beaglebone-black-(4gb-emmc).html
 
