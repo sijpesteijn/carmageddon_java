@@ -14,7 +14,6 @@
 
         websocket.onMessage(function (message) {
             if (message.data !== 'pong') {
-                console.log('car status: ' + message.data);
                 $scope.car = angular.fromJson(message.data);
                 $rootScope.settings.throttleLimit = $scope.car.engine.throttleLimit;
                 $rootScope.carMode = $scope.car.mode;

@@ -104,22 +104,19 @@ public class TrafficLightLookout extends Observable implements Lookout {
             List<MatOfPoint> shapes = getTrafficLight(0);
             if (shapes.size() == 1) {
                 result = new TrafficLightLookoutResult(AutonomousStatus.TRAFFIC_LIGHT_FOUND, bytes, shapes);
+                notifyClients(result);
                 found = true;
             }
             else if (!stop) {
                 result = new LookoutResult(AutonomousStatus.NO_TRAFFIC_LIGHT, bytes);
+                notifyClients(result);
             }
-            notifyClients(result);
         }
         return result;
     }
 
+    // TODO betere detectie. nu te ruim
     private List<MatOfPoint> getTrafficLight(int index) {
-//        String filename = "/Users/gijs/programming/java/carmageddon/src/main/resources/peer.jpg";
-//        if (index > 20) {
-//            filename = "/Users/gijs/programming/java/carmageddon/src/main/resources/peer2.jpg";
-//        }
-//        Mat frame= Imgcodecs.imread(filename, Imgcodecs.CV_LOAD_IMAGE_COLOR);
         Mat frame = this.car.getCamera().makeSnapshot();
         Mat original = frame.clone();
         Imgproc.GaussianBlur(frame, frame, new Size(3, 3), 0);
@@ -231,7 +228,6 @@ public class TrafficLightLookout extends Observable implements Lookout {
     private void notifyClients(LookoutResult event) {
         setChanged();
         notifyObservers(event);
-//        logger.debug(event.getStatus() + " send to clients");
     }
 
 }

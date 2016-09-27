@@ -29,7 +29,7 @@ public class StraightTrackLookout extends Observable implements Lookout {
         while(run) {
             car.getEngine().setThrottle(20);
             int index = 0;
-            while(index++ < 10) {
+            while(run && index++ < 10) {
                 result = new LookoutResult(AutonomousStatus.RACING, this.car.getCamera().makeSnapshotInByteArray());
                 notifyClients(result);
                 try {
@@ -39,8 +39,11 @@ public class StraightTrackLookout extends Observable implements Lookout {
                 }
             }
             car.getEngine().setThrottle(0);
-            result = new LookoutResult(AutonomousStatus.RACE_FINISHED, this.car.getCamera().makeSnapshotInByteArray());
-            notifyClients(result);
+            if (run) {
+                result = new LookoutResult(AutonomousStatus.RACE_FINISHED,
+                                           this.car.getCamera().makeSnapshotInByteArray());
+                notifyClients(result);
+            }
             run = false;
         }
         return result;

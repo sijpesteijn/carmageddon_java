@@ -93,6 +93,8 @@ public class CPU extends Observable implements Observer {
             notifyClients(new LookoutResult(AutonomousStatus.RACE_STOPPED, this.car.getCamera()
                                                                                     .makeSnapshotInByteArray()));
         }
+        this.car.getSteer().setAngle(0);
+        this.car.getEngine().setThrottle(0);
         this.racing = false;
     }
 
