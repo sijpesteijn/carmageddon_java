@@ -60,6 +60,8 @@ public class AutonomousStatusWebsocket implements Observer{
         sessions.remove(session);
     }
 
+    // TODO Bij een reload van jetty watch worden de sessie aangemeld bij de oude websocket.
+    // Ik vermoed dat iets verder in de chain het tegenhoudt. Alleen een probleem bij development.
     @Override
     public void update(Observable o, Object arg) {
         try {

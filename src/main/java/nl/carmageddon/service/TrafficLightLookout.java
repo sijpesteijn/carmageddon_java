@@ -66,11 +66,10 @@ public class TrafficLightLookout extends Observable implements Lookout {
 
     private LookoutResult waitForGo(TrafficLightLookoutResult trafficLightLookoutResult) {
         boolean lightsOff = false;
-        int index = 0;
         List<MatOfPoint> trafficLightLookoutResultShapes = trafficLightLookoutResult.getShapes();
         result = new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_ON, bytes);
         while(!stop && !lightsOff) {
-            List<MatOfPoint> shapes = getTrafficLight(index++);
+            List<MatOfPoint> shapes = getTrafficLight();
             if (!trafficLightOff(trafficLightLookoutResultShapes, shapes)) {
                 result = new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_ON, bytes);
             } else {
@@ -87,8 +86,9 @@ public class TrafficLightLookout extends Observable implements Lookout {
         return result;
     }
 
+    // TODO dit is wel een beetje te radicaal.
     private boolean trafficLightOff(List<MatOfPoint> trafficLightShapes, List<MatOfPoint> shapes) {
-        if (shapes.size() < trafficLightShapes.size())
+        if (shapes.size() == 0)
             return true;
         return false;
     }
@@ -101,7 +101,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
             } catch (InterruptedException e) {
                 logger.debug("Looking for a traffic light. " + e.getMessage());
             }
-            List<MatOfPoint> shapes = getTrafficLight(0);
+            List<MatOfPoint> shapes = getTrafficLight();
             if (shapes.size() == 1) {
                 result = new TrafficLightLookoutResult(AutonomousStatus.TRAFFIC_LIGHT_FOUND, bytes, shapes);
                 notifyClients(result);
@@ -116,7 +116,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
     }
 
     // TODO betere detectie. nu te ruim
-    private List<MatOfPoint> getTrafficLight(int index) {
+    private List<MatOfPoint> getTrafficLight() {
         Mat frame = this.car.getCamera().makeSnapshot();
         Mat original = frame.clone();
         Imgproc.GaussianBlur(frame, frame, new Size(3, 3), 0);

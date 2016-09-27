@@ -48,8 +48,8 @@ public class Camera {
             logger.error("No webcam with id " + id + " found!");
             camera = null;
         } else {
-            camera.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-            camera.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
+            camera.set(CV_CAP_PROP_FRAME_WIDTH, 320);
+            camera.set(CV_CAP_PROP_FRAME_HEIGHT, 240);
         }
         return camera;
     }

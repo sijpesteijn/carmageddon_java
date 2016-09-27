@@ -21,17 +21,15 @@
         $scope.showSettings = false;
         $scope.tab = 'general';
         $scope.subtab = 'colors';
-        $scope.baw = false;
         var updateTimeout = angular.undefined;
         var lastLookout = angular.undefined;
-        var image = document.getElementById("img");
+        var canvas = document.getElementById("webcam");
 
         $scope.startRace = function () {
             $resource('./rest/autonomous/start').save({}, {},
                 function (success) {
                     $scope.msgs = [];
                     $scope.racing = true;
-                    // $interval.cancel(statusInterval);
                 },
                 function (error) {
                     $scope.racing = false;
@@ -62,10 +60,6 @@
             }
             return false;
         };
-
-        function statusUpdate() {
-            websocket.sendMessage('status');
-        }
 
         function buildHsv(hsv) {
             return 'hsv('+ hsv.hue + ',' + Math.round(hsv.saturation / (255/100)) + '%,' + Math.round(hsv.brightness / (255/100)) + '%)';
@@ -199,7 +193,15 @@
                     }
                 } else {
                     // console.log('New snapshot');
-                    image.src = 'data:image/png;base64,' + message.data;
+                    var ctx = canvas.getContext('2d');
+                    var img = new Image();
+                    img.src = 'data:image/png;base64,' + message.data;
+                    img.width = '320px';
+                    img.height = '200px';
+                    img.onload = function () {
+                        ctx.drawImage(img, 0, 0);
+                    };
+                    // image.src = 'data:image/png;base64,' + message.data;
                 }
             }
         });

@@ -10,12 +10,12 @@ import java.util.Observable;
 
 /**
  * @author Gijs Sijpesteijn
+ *
+ *    dutyMin = 1150000 dutyMax = 1810000;
  */
 @Singleton
 public class Steer extends Observable {
     private static final Logger log = LoggerFactory.getLogger(Steer.class);
-//    private static int dutyMin = 1150000;
-//    private static int dutyMax = 1810000;
     private static int dutyMiddle = 1480000;
     private static int ONE_DEGREE = 8250;
 

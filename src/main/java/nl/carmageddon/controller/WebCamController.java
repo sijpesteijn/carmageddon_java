@@ -3,7 +3,6 @@ package nl.carmageddon.controller;
 import nl.carmageddon.domain.Car;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,57 +48,11 @@ public class WebCamController {
     @Produces(MediaType.TEXT_HTML)
     public String makeSnapShot(@Context HttpServletResponse response) throws IOException {
         Mat frame = car.getCamera().makeSnapshot();
-//        doFunnyStuff(frame);
         Imgcodecs.imwrite(System.getProperty("java.io.tmpdir") + "/snapshot.jpeg", frame);
 
         // Send image to client
         ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
         BufferedImage image = ImageIO.read(new File(System.getProperty("java.io.tmpdir") + "/snapshot.jpeg"));
-        ImageIO.write(image, "jpeg", jpegOutputStream);
-
-        byte[] imgByte = jpegOutputStream.toByteArray();
-
-        response.setHeader("Cache-Control", "no-store");
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
-        response.setContentType("image/jpeg");
-        ServletOutputStream responseOutputStream = response.getOutputStream();
-        responseOutputStream.write(imgByte);
-        responseOutputStream.flush();
-        responseOutputStream.close();
-        return "";
-    }
-
-    private void doFunnyStuff(Mat image) {
-//        Imgproc.blur(image, image, new Size(7, 7));
-//        Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2HSV);
-
-//        Mat mask = new Mat();
-//        Scalar minValues = new Scalar(0, 0, 0);
-//        Scalar maxValues = new Scalar(180, 255, 1);
-//        Core.inRange(image, minValues, maxValues, mask);
-
-//        Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(24, 24));
-//        Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(12, 12));
-//
-//        Imgproc.erode(mask, image, erodeElement);
-//        Imgproc.erode(mask, image, erodeElement);
-//
-//        Imgproc.dilate(mask, image, dilateElement);
-//        Imgproc.dilate(mask, image, dilateElement);
-        Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2GRAY);
-//        image.convertTo(image, -1, 2, 50);
-
-    }
-
-    @GET
-    @Path(value = "/traffic")
-    @Produces(MediaType.TEXT_HTML)
-    public String trafficLightSnapshot(@Context HttpServletResponse response) throws IOException {
-
-        // Send image to client
-        ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
-        BufferedImage image = ImageIO.read(new File(System.getProperty("java.io.tmpdir") + "/traffic.jpeg"));
         ImageIO.write(image, "jpeg", jpegOutputStream);
 
         byte[] imgByte = jpegOutputStream.toByteArray();

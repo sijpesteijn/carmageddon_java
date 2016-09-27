@@ -10,12 +10,12 @@ import java.util.Observable;
 
 /**
  * @author Gijs Sijpesteijn
+ *
+ *  dutyMin= 800000 dutyMax= 2000000;
  */
 @Singleton
 public class Engine extends Observable {
     private static final Logger log = LoggerFactory.getLogger(Engine.class);
-//    private static int dutyMin= 800000;
-//    private static int dutyMax= 2000000;
     private static int dutyMiddle = 1400000;
     private static int MAX_THROTTLE = 120;
     private static int SPEED_STEP = 5000;
