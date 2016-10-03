@@ -41,7 +41,7 @@ public class AutonomousController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path(value = "/settings")
     public Response saveSettings(AutonomousSettings settings) {
-            this.autonomousService.useSettings(settings);
+        this.autonomousService.useSettings(settings);
         return Response.ok().build();
     }
 

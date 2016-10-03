@@ -5,5 +5,6 @@ package nl.carmageddon.domain;
  */
 public enum ViewType {
 
-    result,hue, baw;
+    result,hue, baw,
+    canny;
 }

@@ -1,6 +1,16 @@
 <div class="autonomous">
     <div class="snapshot">
-        <canvas id="webcam"></canvas>
+        <img id="webcam">
+        <div id="roi">
+            <div class="roi" style="left: {{settings.trafficLightSettings.roi.x}}px;
+            top: {{settings.trafficLightSettings.roi.y}}px; width:
+            {{settings.trafficLightSettings.roi.width}}px; height: {{settings.trafficLightSettings.roi.height}}px;"></div>
+        </div>
+        <div id="roadRoiHeight">
+            <div class="roadRoiHeight"
+                 style="left:0px;top:{{settings.roadRoiHeight}}px;width:{{settings.cameraDimension.width}}px;
+                height: 1px;"></div>
+        </div>
     </div>
     <div class="status">
         <img class="settings" ng-click="showSettings = !showSettings" src="./images/settings.png">
@@ -41,14 +51,20 @@
             </div>
             <div class="sizes" ng-if="tab == 'traffic' && subtab == 'sizes'">
                 Min size:
-                <ul class="minBox">
-                    <li>width  <input type="number" min="-1" ng-model="minBox.width" ng-change="updateBox()"></li>
-                    <li>height <input type="number" min="-1" ng-model="minBox.height" ng-change="updateBox()"></li>
+                <ul class="minDimension">
+                    <li>width
+                        <input type="number" min="-1" ng-model="settings.trafficLightSettings.minDimension.width"
+                               ng-change="updateDimension()"></li>
+                    <li>height
+                        <input type="number" min="-1" ng-model="settings.trafficLightSettings.minDimension.height"
+                               ng-change="updateDimension()"></li>
                 </ul>
                 Max size:
-                <ul class="maxBox">
-                    <li>width  <input type="number" min="-1" ng-model="maxBox.width" ng-change="updateBox()"></li>
-                    <li>height <input type="number" min="-1" ng-model="maxBox.height" ng-change="updateBox()"></li>
+                <ul class="maxDimension">
+                    <li>width  <input type="number" min="-1"
+                                      ng-model="settings.trafficLightSettings.maxDimension.width"></li>
+                    <li>height <input type="number" min="-1"
+                                      ng-model="settings.trafficLightSettings.maxDimension.height"></li>
                 </ul>
             </div>
         </div>
@@ -58,7 +74,7 @@
                 <li>
                     <label for="viewtype">
                         View type:
-                        <select id="viewType" ng-model="viewType" ng-change="updateViewType(viewType)">
+                        <select id="viewType" ng-model="settings.viewType">
                             <option value="result">Result</option>
                             <option value="hue">HUE</option>
                             <option value="baw">Black and White</option>
@@ -67,9 +83,15 @@
                 </li>
                 <li>
                     <label for="framerate_slider">
-                        Framerate: <input type="range" min="1" max="30" id="framerate_slider" ng-model="framerate"
-                                          ng-change="updateDelay(framerate)"> {{ getFramerate(); }}
-                        frames per sec.
+                        Framerate: <input type="range" min="1" max="30" id="framerate_slider"
+                                          ng-model="framerate" ng-change="updateFramerate(framerate)"> {{ framerate }}
+                        fps.
+                    </label>
+                </li>
+                <li>
+                    <label for="roi_slider">
+                        Road ROI<input type="range" min="1" id="roi_slider" max="{{settings.cameraDimension.height}}"
+                               ng-model="settings.roadRoiHeight" ng-change="delaySettingsUpdate()">
                     </label>
                 </li>
             </ul>

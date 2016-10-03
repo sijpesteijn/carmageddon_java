@@ -1,7 +1,7 @@
 package nl.carmageddon.service;
 
 import nl.carmageddon.domain.*;
-import org.apache.commons.configuration.Configuration;
+import org.opencv.core.Mat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +30,12 @@ public class CPU extends Observable implements Observer {
     private Lookout currentLookout;
     private List<Lookout> lookouts = new ArrayList<>();
     private TrafficLightLookout trafficLightLookout;
-    private StraightTrackLookout straightTrackLookout;
+    private RoadLookout roadLookout;
 
     private ScheduledExecutorService statusTimer;
     private Runnable statusRunner = () -> {
         if (this.car.getCamera().getCamera().isOpened()) {
-            notifyClients(
-                    new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshotInByteArray()));
+            sendReadyToRace();
         } else {
             notifyClients(new LookoutResult(AutonomousStatus.NO_CAMERA, null));
         }
@@ -44,17 +43,17 @@ public class CPU extends Observable implements Observer {
     private long delay;
 
     @Inject
-    public CPU(Configuration configuration, Car car, TrafficLightLookout trafficLightLookout, StraightTrackLookout
-            straightTrackLookout) {
-        this.settings = loadSettings(configuration);
+    public CPU(AutonomousSettings settings, Car car, TrafficLightLookout trafficLightLookout, RoadLookout
+            roadLookout) {
+        this.settings = settings;
         this.car = car;
         this.car.addObserver(this);
         this.trafficLightLookout = trafficLightLookout;
         this.trafficLightLookout.addObserver(this);
         this.lookouts.add(this.trafficLightLookout);
-        this.straightTrackLookout = straightTrackLookout;
-        this.straightTrackLookout.addObserver(this);
-        this.lookouts.add(this.straightTrackLookout);
+        this.roadLookout = roadLookout;
+        this.roadLookout.addObserver(this);
+        this.lookouts.add(this.roadLookout);
         useSettings(this.settings);
     }
 
@@ -68,12 +67,24 @@ public class CPU extends Observable implements Observer {
                 if (result.getStatus() == AutonomousStatus.RACE_FINISHED) {
                     racing = false;
                     this.currentLookout = null;
-                    notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera().makeSnapshotInByteArray()));
+                    sendReadyToRace();
                 }
             }
         }
         racing = false;
         startWebcamPushTimer();
+    }
+
+    private void sendReadyToRace() {
+        Mat snapshot = this.car.getCamera().makeSnapshot();
+        TrafficLightView trafficLightViewview = this.trafficLightLookout.getTrafficLightView(snapshot.clone());
+        logger.debug("Possible traffic lights: " + trafficLightViewview.getFoundRectangles().size());
+        LinesView linesView = this.roadLookout.detectLines(snapshot.clone());
+        logger.debug("Possible roads: " + linesView.getPoints().size());
+        this.trafficLightLookout.addTrafficLightHighlight(trafficLightViewview, snapshot);
+        this.roadLookout.addRoadHighlights(linesView, snapshot);
+        notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera()
+                                                                                .getImageBytes(snapshot)));
     }
 
     private void notifyClients(LookoutResult event) {
@@ -129,73 +140,27 @@ public class CPU extends Observable implements Observer {
     }
 
     public void useSettings(AutonomousSettings settings) {
-        this.trafficLightLookout.setLowerHSVMin(settings.getTrafficLight().getLowerHSVMin());
-        this.trafficLightLookout.setLowerHSVMax(settings.getTrafficLight().getLowerHSVMax());
-        this.trafficLightLookout.setUpperHSVMin(settings.getTrafficLight().getUpperHSVMin());
-        this.trafficLightLookout.setUpperHSVMax(settings.getTrafficLight().getUpperHSVMax());
+        this.trafficLightLookout.setTrafficLightSettings(settings.getTrafficLightSettings());
         this.trafficLightLookout.setViewType(settings.getViewType());
         this.trafficLightLookout.setDelay(settings.getDelay());
+        this.roadLookout.setRoiHeight(settings.getRoadRoiHeight());
+        this.roadLookout.setViewType(settings.getViewType());
+        this.roadLookout.setDelay(settings.getDelay());
+
         this.delay = settings.getDelay();
         if (car.getMode() == Mode.autonomous && this.racing == false) {
             shutdownWebcamPushTimer();
             startWebcamPushTimer();
         }
-        this.trafficLightLookout.setMinBoxBox(settings.getTrafficLight().getMinBox());
-        this.trafficLightLookout.setMaxBoxBox(settings.getTrafficLight().getMaxBox());
 
-        this.straightTrackLookout.setDelay(settings.getDelay());
     }
 
     public AutonomousSettings getSettings() {
         return settings;
     }
 
-    // TODO dit moet ergens anders en makkelijker kunnen
-    private AutonomousSettings loadSettings(Configuration configuration) {
-        AutonomousSettings autonomousSettings = new AutonomousSettings();
-        autonomousSettings.setViewType(ViewType.valueOf(configuration.getString("common.viewtype")));
-        autonomousSettings.setDelay(configuration.getLong("common.delay"));
-
-        TrafficLightSettings trafficLightSettings = new TrafficLightSettings();
-        autonomousSettings.setTrafficLight(trafficLightSettings);
-        HSV lowerHSVMin = new HSV();
-        lowerHSVMin.setHue(configuration.getInt("trafficlight.lowerbound.min_hsv.h"));
-        lowerHSVMin.setSaturation(configuration.getInt("trafficlight.lowerbound.min_hsv.s"));
-        lowerHSVMin.setBrightness(configuration.getInt("trafficlight.lowerbound.min_hsv.v"));
-        trafficLightSettings.setLowerHSVMin(lowerHSVMin);
-
-        HSV lowerHSVMax = new HSV();
-        lowerHSVMax.setHue(configuration.getInt("trafficlight.lowerbound.max_hsv.h"));
-        lowerHSVMax.setSaturation(configuration.getInt("trafficlight.lowerbound.max_hsv.s"));
-        lowerHSVMax.setBrightness(configuration.getInt("trafficlight.lowerbound.max_hsv.v"));
-        trafficLightSettings.setLowerHSVMax(lowerHSVMax);
-
-        HSV upperHSVMin = new HSV();
-        upperHSVMin.setHue(configuration.getInt("trafficlight.upperbound.min_hsv.h"));
-        upperHSVMin.setSaturation(configuration.getInt("trafficlight.upperbound.min_hsv.s"));
-        upperHSVMin.setBrightness(configuration.getInt("trafficlight.upperbound.min_hsv.v"));
-        trafficLightSettings.setUpperHSVMin(upperHSVMin);
-
-        HSV upperHSVMax = new HSV();
-        upperHSVMax.setHue(configuration.getInt("trafficlight.upperbound.max_hsv.h"));
-        upperHSVMax.setSaturation(configuration.getInt("trafficlight.upperbound.max_hsv.s"));
-        upperHSVMax.setBrightness(configuration.getInt("trafficlight.upperbound.max_hsv.v"));
-        trafficLightSettings.setUpperHSVMax(upperHSVMax);
-
-        Box minBox = new Box();
-        minBox.setWidth(configuration.getInt("trafficlight.minBox.width"));
-        minBox.setHeight(configuration.getInt("trafficlight.minBox.width"));
-        trafficLightSettings.setMinBox(minBox);
-        Box maxBox = new Box();
-        maxBox.setWidth(configuration.getInt("trafficlight.maxBox.width"));
-        maxBox.setHeight(configuration.getInt("trafficlight.maxBox.width"));
-        trafficLightSettings.setMaxBox(maxBox);
-        return autonomousSettings;
-    }
-
     public void destroy() {
         if (car.getCamera().isOpened()) {
-            System.out.println("** RELEASING CAMERA **");
             car.getCamera().getCamera().release();
         }
         shutdownWebcamPushTimer();

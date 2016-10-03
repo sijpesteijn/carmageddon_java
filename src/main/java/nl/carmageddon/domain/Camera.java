@@ -7,6 +7,7 @@ import org.opencv.videoio.VideoCapture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import java.io.File;
@@ -22,9 +23,16 @@ import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_WIDTH;
 @Singleton
 public class Camera {
     private static Logger logger = LoggerFactory.getLogger(Camera.class);
+    private final Dimension cameraDimension;
+
     @JsonIgnore
     private VideoCapture camera;
     private int id;
+
+    @Inject
+    public Camera(AutonomousSettings settings) {
+        this.cameraDimension = settings.getCameraDimension();
+    }
 
     public int getId() {
         return id;
@@ -40,7 +48,7 @@ public class Camera {
         }
         camera = new VideoCapture(id);
         try {
-            Thread.sleep(100);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -48,18 +56,19 @@ public class Camera {
             logger.error("No webcam with id " + id + " found!");
             camera = null;
         } else {
-            camera.set(CV_CAP_PROP_FRAME_WIDTH, 320);
-            camera.set(CV_CAP_PROP_FRAME_HEIGHT, 240);
+            camera.set(CV_CAP_PROP_FRAME_WIDTH, cameraDimension.getWidth());
+            camera.set(CV_CAP_PROP_FRAME_HEIGHT, cameraDimension.getHeight());
         }
         return camera;
     }
 
     public Mat makeSnapshot() {
-        Mat snapshot = new Mat();
-        VideoCapture camera = getCamera();
-        camera.read(snapshot);
-//        camera.release();
-        return snapshot;
+//        Mat snapshot = new Mat();
+//        VideoCapture camera = getCamera();
+//        camera.read(snapshot);
+//        return snapshot;
+        Mat img = Imgcodecs.imread("/Users/gijs/programming/java/carmageddon/src/main/resources/ws1.jpg");
+        return img;
     }
 
     public byte[] makeSnapshotInByteArray() {

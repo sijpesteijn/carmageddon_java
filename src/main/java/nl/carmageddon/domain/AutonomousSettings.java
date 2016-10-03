@@ -4,16 +4,18 @@ package nl.carmageddon.domain;
  * @author Gijs Sijpesteijn
  */
 public class AutonomousSettings {
-    private TrafficLightSettings trafficLight;
+    private TrafficLightSettings trafficLightSettings;
     private ViewType viewType;
     private long delay;
+    private Dimension cameraDimension;
+    private int roadRoiHeight;
 
-    public TrafficLightSettings getTrafficLight() {
-        return trafficLight;
+    public TrafficLightSettings getTrafficLightSettings() {
+        return trafficLightSettings;
     }
 
-    public void setTrafficLight(TrafficLightSettings trafficLight) {
-        this.trafficLight = trafficLight;
+    public void setTrafficLightSettings(TrafficLightSettings trafficLightSettings) {
+        this.trafficLightSettings = trafficLightSettings;
     }
 
     public ViewType getViewType() {
@@ -30,5 +32,21 @@ public class AutonomousSettings {
 
     public long getDelay() {
         return delay;
+    }
+
+    public Dimension getCameraDimension() {
+        return cameraDimension;
+    }
+
+    public void setCameraDimension(Dimension cameraDimension) {
+        this.cameraDimension = cameraDimension;
+    }
+
+    public void setRoadRoiHeight(int roadRoiHeight) {
+        this.roadRoiHeight = roadRoiHeight;
+    }
+
+    public int getRoadRoiHeight() {
+        return roadRoiHeight;
     }
 }

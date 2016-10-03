@@ -9,9 +9,9 @@ public class TrafficLightSettings {
     private HSV lowerHSVMax;
     private HSV upperHSVMin;
     private HSV upperHSVMax;
-    private Box minBox;
-    private Box maxBox;
-
+    private Dimension minDimension;
+    private Dimension maxDimension;
+    private ROI roi;
     public boolean isBlackAndWhite() {
         return blackAndWhite;
     }
@@ -52,19 +52,27 @@ public class TrafficLightSettings {
         this.upperHSVMax = upperHSVMax;
     }
 
-    public Box getMinBox() {
-        return minBox;
+    public Dimension getMinDimension() {
+        return minDimension;
     }
 
-    public void setMinBox(Box minBox) {
-        this.minBox = minBox;
+    public void setMinDimension(Dimension minDimension) {
+        this.minDimension = minDimension;
     }
 
-    public Box getMaxBox() {
-        return maxBox;
+    public Dimension getMaxDimension() {
+        return maxDimension;
     }
 
-    public void setMaxBox(Box maxBox) {
-        this.maxBox = maxBox;
+    public void setMaxDimension(Dimension maxDimension) {
+        this.maxDimension = maxDimension;
+    }
+
+    public nl.carmageddon.domain.ROI getRoi() {
+        return roi;
+    }
+
+    public void setRoi(nl.carmageddon.domain.ROI roi) {
+        this.roi = roi;
     }
 }

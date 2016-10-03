@@ -3,27 +3,29 @@
 
     app.controller('autonomousCtrl', autonomousController).directive('autonomous', autonomousDirective);
 
-    autonomousController.$inject = ['$scope', '$resource', '$interval', '$timeout', 'websocketFactory'];
+    autonomousController.$inject = ['$scope', '$resource', '$timeout', 'websocketFactory'];
 
-    function autonomousController($scope, $resource, $interval, $timeout, websocketFactory) {
+    function autonomousController($scope, $resource, $timeout, websocketFactory) {
         var websocket;
-        $scope.msgs = [];
         $scope.lowerHSVMin;
         $scope.lowerHSVMax;
         $scope.upperHSVMin;
         $scope.upperHSVMax;
-        $scope.minBox = { width: 0, height: 0};
-        $scope.maxBox = { width: 0, height: 0};
-        $scope.viewtype;
-        $scope.delay;
+
         $scope.framerate;
+        $scope.settings;
+
+        $scope.msgs = [];
         $scope.racing = false;
         $scope.showSettings = false;
         $scope.tab = 'general';
         $scope.subtab = 'colors';
         var updateTimeout = angular.undefined;
         var lastLookout = angular.undefined;
-        var canvas = document.getElementById("webcam");
+        var roi = document.getElementById("roi");
+        var webcam = document.getElementById("webcam");
+        var offset_x = 3;
+        var offset_y = 40;
 
         $scope.startRace = function () {
             $resource('./rest/autonomous/start').save({}, {},
@@ -61,64 +63,55 @@
             return false;
         };
 
-        function buildHsv(hsv) {
-            return 'hsv('+ hsv.hue + ',' + Math.round(hsv.saturation / (255/100)) + '%,' + Math.round(hsv.brightness / (255/100)) + '%)';
-        }
+        $scope.$watch('settings', function () {
+            $scope.delaySettingsUpdate();
+        }, true);
+
 
         function getSettings() {
+
+            function buildHsv(hsv) {
+                return 'hsv('+ hsv.hue + ',' + Math.round(hsv.saturation / (255/100)) + '%,' + Math.round(hsv.brightness / (255/100)) + '%)';
+            }
+
             $resource('./rest/autonomous/settings').get({}, {},
                 function (settings) {
-                    $scope.lowerHSVMin = buildHsv(settings.trafficLight.lowerHSVMin);
-                    $scope.lowerHSVMax = buildHsv(settings.trafficLight.lowerHSVMax);
-                    $scope.upperHSVMin = buildHsv(settings.trafficLight.upperHSVMin);
-                    $scope.upperHSVMax = buildHsv(settings.trafficLight.upperHSVMax);
-                    $scope.minBox.width = settings.trafficLight.minBox.width;
-                    $scope.minBox.height = settings.trafficLight.minBox.height;
-                    $scope.maxBox.width = settings.trafficLight.maxBox.width;
-                    $scope.maxBox.height = settings.trafficLight.maxBox.height;
-                    $scope.viewType = settings.viewType;
-                    $scope.delay = settings.delay;
-                    $scope.framerate = 1000/$scope.delay;
+                    $scope.lowerHSVMin = buildHsv(settings.trafficLightSettings.lowerHSVMin);
+                    $scope.lowerHSVMax = buildHsv(settings.trafficLightSettings.lowerHSVMax);
+                    $scope.upperHSVMin = buildHsv(settings.trafficLightSettings.upperHSVMin);
+                    $scope.upperHSVMax = buildHsv(settings.trafficLightSettings.upperHSVMax);
+                    $scope.settings = settings;
+                    $scope.framerate = 1000/$scope.settings.delay;
                 },
                 function (error) {
                     console.error('mode update failed', error);
                 });
         }
 
-        $scope.updateViewType = function(viewType) {
-            $scope.viewType = viewType;
-            $scope.updateSettings();
-        };
+        function updateSettings() {
 
-        $scope.updateSettings = function() {
+            function getHsv(hsv) {
+                var splits = hsv.split(',');
+                var result = {
+                    hue: splits[0].split('(')[1],
+                    saturation: Math.round(splits[1].substring(0,splits[1].length-1)*(255/100)),
+                    brightness: Math.round(splits[2].substring(0,splits[2].length-2)*(255/100))
+                };
+                return result;
+            }
+
+            var settings = $scope.settings;
+            settings.trafficLightSettings.lowerHSVMin = getHsv($scope.lowerHSVMin);
+            settings.trafficLightSettings.lowerHSVMax = getHsv($scope.lowerHSVMax);
+            settings.trafficLightSettings.upperHSVMin = getHsv($scope.upperHSVMin);
+            settings.trafficLightSettings.upperHSVMax = getHsv($scope.upperHSVMax);
             $resource('./rest/autonomous/settings').save({},
-                {
-                    viewType: $scope.viewType,
-                    delay: $scope.delay,
-                    trafficLight: {
-                        lowerHSVMin: getHsv($scope.lowerHSVMin),
-                        lowerHSVMax: getHsv($scope.lowerHSVMax),
-                        upperHSVMin: getHsv($scope.upperHSVMin),
-                        upperHSVMax: getHsv($scope.upperHSVMax),
-                        minBox: $scope.minBox,
-                        maxBox: $scope.maxBox
-                    }
-                },
+                settings,
                 function (success) {
                 },
                 function (error) {
                     console.error('mode update failed', error);
                 });
-        };
-
-        function getHsv(hsv) {
-            var splits = hsv.split(',');
-            var result = {
-                hue: splits[0].split('(')[1],
-                saturation: Math.round(splits[1].substring(0,splits[1].length-1)*(255/100)),
-                brightness: Math.round(splits[2].substring(0,splits[2].length-2)*(255/100))
-            };
-            return result;
         }
 
         $scope.options = {
@@ -139,33 +132,21 @@
                 } else {
                     $scope.upperHSVMax = color;
                 }
-                if (updateTimeout != null) {
-                    $timeout.cancel(updateTimeout);
-                }
-                updateTimeout = $timeout($scope.updateSettings, 500);
+                $scope.delaySettingsUpdate();
             }
         };
 
-        $scope.updateBox = function () {
+        $scope.delaySettingsUpdate = function () {
             if (updateTimeout != null) {
                 $timeout.cancel(updateTimeout);
             }
-            updateTimeout = $timeout($scope.updateSettings, 500);
+            updateTimeout = $timeout(updateSettings, 500);
         };
 
-        $scope.updateDelay = function(framerate) {
+        $scope.updateFramerate = function (framerate) {
             $scope.framerate = framerate;
-            $scope.delay = 1000/framerate;
-            console.log('delay ' + $scope.delay);
-            if (updateTimeout != null) {
-                $timeout.cancel(updateTimeout);
-            }
-            updateTimeout = $timeout($scope.updateSettings, 500);
-        };
-
-
-        $scope.getFramerate = function () {
-            return $scope.framerate;
+            $scope.settings.delay = 1000/$scope.framerate;
+            $scope.delaySettingsUpdate();
         };
 
         $scope.$on('$destroy', function () {
@@ -175,6 +156,72 @@
 
         websocket = websocketFactory.create('autonomous/status');
         getSettings();
+
+        function setMousePosition(e) {
+            var ev = e || window.event; //Moz || IE
+            if (ev.pageX) { //Moz
+                mouse.x = ev.pageX + window.pageXOffset;
+                mouse.y = ev.pageY + window.pageYOffset;
+            } else if (ev.clientX) { //IE
+                mouse.x = ev.clientX + document.body.scrollLeft;
+                mouse.y = ev.clientY + document.body.scrollTop;
+            }
+        }
+
+        var mouse = {
+            x: 0,
+            y: 0,
+            startX: 0,
+            startY: 0
+        };
+        var element = null;
+
+        roi.onmousemove = function (e) {
+            setMousePosition(e);
+            if (element !== null) {
+                element.style.width = Math.abs(getMouseX() - mouse.startX) + 'px';
+                element.style.height = Math.abs(getMouseY() - mouse.startY) + 'px';
+                element.style.left = (getMouseX() - mouse.startX < 0) ? getMouseX() + 'px' : mouse.startX + 'px';
+                element.style.top = (getMouseY() - mouse.startY < 0) ? getMouseY() + 'px' : mouse.startY + 'px';
+            }
+        };
+
+        function getMouseX() {
+            return mouse.x - offset_x;
+        }
+
+        function getMouseY() {
+            return mouse.y - offset_y;
+        }
+
+        function getIntValue(str) {
+            return str.substring(0, str.indexOf('p'));
+        }
+
+        roi.onclick = function (e) {
+            if (element !== null) {
+                var roiSettings = $scope.settings.trafficLightSettings.roi;
+                roiSettings.x = getIntValue(element.style.left);
+                roiSettings.y = getIntValue(element.style.top);
+                roiSettings.width = getIntValue(element.style.width);
+                roiSettings.height = getIntValue(element.style.height);
+                $scope.delaySettingsUpdate();
+                element = null;
+                roi.style.cursor = "default";
+            } else {
+                while (roi.firstChild) {
+                    roi.removeChild(roi.firstChild);
+                }
+                mouse.startX = getMouseX();
+                mouse.startY = getMouseY();
+                element = document.createElement('div');
+                element.className = 'roi';
+                element.style.left = getMouseX() + 'px';
+                element.style.top = getMouseY() + 'px';
+                roi.appendChild(element);
+                roi.style.cursor = "crosshair";
+            }
+        };
 
         websocket.onMessage(function (message) {
             if (message.data !== 'pong') {
@@ -192,16 +239,9 @@
                         $scope.msgs.push({msg: lastLookout.status, count: 1});
                     }
                 } else {
-                    // console.log('New snapshot');
-                    var ctx = canvas.getContext('2d');
-                    var img = new Image();
-                    img.src = 'data:image/png;base64,' + message.data;
-                    img.width = '320px';
-                    img.height = '200px';
-                    img.onload = function () {
-                        ctx.drawImage(img, 0, 0);
-                    };
-                    // image.src = 'data:image/png;base64,' + message.data;
+                    webcam.src = 'data:image/png;base64,' + message.data;
+                    webcam.width = $scope.settings.cameraDimension.width + 'px';
+                    webcam.height = $scope.settings.cameraDimension.height + 'px';
                 }
             }
         });
