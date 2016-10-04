@@ -80,7 +80,8 @@ public class CPU extends Observable implements Observer {
         TrafficLightView trafficLightViewview = this.trafficLightLookout.getTrafficLightView(snapshot.clone());
         logger.debug("Possible traffic lights: " + trafficLightViewview.getFoundRectangles().size());
         LinesView linesView = this.roadLookout.detectLines(snapshot.clone());
-        logger.debug("Possible roads: " + linesView.getPoints().size());
+        logger.debug("Possible roads: " + linesView.getRoadLines().size());
+        logger.debug("Possible finish lines: " + linesView.getFinishLines().size());
         this.trafficLightLookout.addTrafficLightHighlight(trafficLightViewview, snapshot);
         this.roadLookout.addRoadHighlights(linesView, snapshot);
         notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera()

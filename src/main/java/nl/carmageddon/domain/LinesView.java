@@ -1,6 +1,5 @@
 package nl.carmageddon.domain;
 
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
 
 import java.util.List;
@@ -12,41 +11,41 @@ public class LinesView {
 
     private Rect roi;
 
-    private List<Point> points;
+    private Line averageLine;
 
-    private Double maxX;
+    private List<Line> roadLines;
 
-    private Double minX;
+    private List<Line> finishLines;
 
     public void setRoi(Rect roi) {
         this.roi = roi;
-    }
-
-    public void setPoints(List<Point> points) {
-        this.points = points;
     }
 
     public Rect getRoi() {
         return roi;
     }
 
-    public List<Point> getPoints() {
-        return points;
+    public void setAverageLine(Line averageLine) {
+        this.averageLine = averageLine;
     }
 
-    public void setMaxX(Double maxX) {
-        this.maxX = maxX;
+    public void setRoadLines(List<Line> roadLines) {
+        this.roadLines = roadLines;
     }
 
-    public void setMinX(Double minX) {
-        this.minX = minX;
+    public void setFinishLines(List<Line> finishLines) {
+        this.finishLines = finishLines;
     }
 
-    public Double getMaxX() {
-        return maxX;
+    public Line getAverageLine() {
+        return averageLine;
     }
 
-    public Double getMinX() {
-        return minX;
+    public List<Line> getRoadLines() {
+        return roadLines;
+    }
+
+    public List<Line> getFinishLines() {
+        return finishLines;
     }
 }

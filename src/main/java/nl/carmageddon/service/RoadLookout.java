@@ -43,7 +43,7 @@ public class RoadLookout extends Observable implements Lookout {
                 result = new LookoutResult(AutonomousStatus.RACING, this.car.getCamera().getImageBytes(snapshot));
                 notifyClients(result);
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(delay);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -95,50 +95,48 @@ public class RoadLookout extends Observable implements Lookout {
         // Find the lines
         Imgproc.HoughLinesP(roiMath, lines, 1, Math.PI / 180, threshold, minLineSize, lineGap);
         List<Point> points = new ArrayList<>();
+        List<Line> roadLines = new ArrayList<>();
+        List<Line> finishLines = new ArrayList<>();
         for (int x = 0; x < lines.rows(); x++) {
             double[] vec = lines.get(x, 0);
             double x1 = vec[0],
-                    y1 = vec[1],
+                    y1 = vec[1] + roi.y,
                     x2 = vec[2],
-                    y2 = vec[3];
+                    y2 = vec[3] + roi.y;
             Point start = new Point(x1, y1);
             Point end = new Point(x2, y2);
 
 
             // filter vertical/horizontal
-//            if (Math.abs(x1 - x2) > 10 && Math.abs(y1 - y2) > 10) {
+            if (Math.abs(x1 - x2) > 10 && Math.abs(y1 - y2) > 10) {
                 points.add(start);
                 points.add(end);
-//                line(canvas, start, end, new Scalar(0, 255, 0), 2);
-//            }
+                roadLines.add(new Line(start, end));
+            } else {
+                finishLines.add(new Line(start, end));
+            }
         }
 
         if (points.size() > 0 ) {
             final Double maxX = points.stream().max(getPointComparator()).map(p -> p.x).get();
             final Double minX = points.stream().min(getPointComparator()).map(p -> p.x).get();
-//            line(canvas, new Point((maxX - minX) / 2, 0), new Point((maxX - minX) / 2, roiMath.height()),
-//                 new Scalar(255, 0, 0), 2);
-            view.setMaxX(maxX);
-            view.setMinX(minX);
+            view.setAverageLine(new Line(new Point((maxX - minX) / 2, roi.y), new Point((maxX - minX) / 2, roi.y + roi.height)));
         }
-        view.setPoints(points);
+        view.setRoadLines(roadLines);
+        view.setFinishLines(finishLines);
         view.setRoi(roi);
         return view;
     }
 
     public void addRoadHighlights(LinesView view, Mat snapshot) {
-        if (view.getPoints().size() > 0) {
-            for (int i = 0; i < view.getPoints().size(); i = i + 2) {
-                Point start = view.getPoints().get(i);
-                start.y = start.y + view.getRoi().y;
-                Point end = view.getPoints().get(i + 1);
-                end.y = end.y + view.getRoi().y;
-                line(snapshot, start, end, new Scalar(0, 255, 0), 2);
-            }
-            line(snapshot, new Point((view.getMaxX() - view.getMinX()) / 2, view.getRoi().y),
-                 new Point((view.getMaxX() - view.getMinX()) / 2, view.getRoi().y + view.getRoi()
-                         .height),
-                 new Scalar(255, 0, 0), 2);
+        if (view.getRoadLines().size() > 0) {
+            view.getRoadLines().forEach(roadLine -> {
+                line(snapshot, roadLine.getStart(), roadLine.getEnd(), new Scalar(0, 255, 0), 2);
+            });
+            view.getFinishLines().forEach(finishLine -> {
+                line(snapshot, finishLine.getStart(), finishLine.getEnd(), new Scalar(255, 255, 0), 2);
+            });
+            line(snapshot, view.getAverageLine().getStart(), view.getAverageLine().getEnd(), new Scalar(255,0,0),2);
         }
     }
 

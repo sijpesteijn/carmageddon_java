@@ -119,7 +119,8 @@ public class TrafficLightLookout extends Observable implements Lookout {
         for(int i=0;i<view.getFoundRectangles().size();i++) {
             Rect rect = view.getFoundRectangles().get(i);
             Imgproc.rectangle(snapshot, new Point(rect.x + view.getRoi().getX(), rect.y + view.getRoi().getY()),
-                              new Point(rect.x + rect.width, rect.y + rect.height),
+                              new Point(rect.x + rect.width + view.getRoi().getX(), rect.y + rect.height + view
+                                      .getRoi().getY()),
                               new Scalar(103, 255, 255));
         }
 
@@ -151,9 +152,6 @@ public class TrafficLightLookout extends Observable implements Lookout {
         for (int i = 0; i < contours.size(); i++) {
             Rect rect = Imgproc.boundingRect(contours.get(i));
             if (contourInRange(rect)) {
-//                Imgproc.rectangle(snapshot, new Point(rect.x + roi.getX(), rect.y + roi.getY()), new Point(rect.x + rect
-//                                          .width + roi.getWidth(), rect.y + rect.height + roi.getHeight()),
-//                                  new Scalar(103, 255, 255));
                 inRange.add(rect);
             }
         }
