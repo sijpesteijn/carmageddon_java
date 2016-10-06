@@ -40,6 +40,7 @@ public class RoadLookout extends Observable implements Lookout {
                 Mat snapshot = this.car.getCamera().makeSnapshot();
                 LinesView linesView = detectLines(snapshot.clone());
                 addRoadHighlights(linesView, snapshot);
+                this.car.getEngine().setThrottle(20);
                 result = new LookoutResult(AutonomousStatus.RACING, this.car.getCamera().getImageBytes(snapshot));
                 notifyClients(result);
                 try {

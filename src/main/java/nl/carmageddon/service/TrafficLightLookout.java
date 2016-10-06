@@ -3,7 +3,6 @@ package nl.carmageddon.service;
 import nl.carmageddon.domain.*;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,14 +33,6 @@ public class TrafficLightLookout extends Observable implements Lookout {
 
     @Override
     public LookoutResult start() {
-        // TODO deze check naar CPU.java
-        VideoCapture camera = this.car.getCamera().getCamera();
-        LookoutResult result = new LookoutResult(AutonomousStatus.NO_TRAFFIC_LIGHT, null);
-        if (camera == null || !camera.isOpened()) {
-            result = new LookoutResult(AutonomousStatus.NO_CAMERA, null);
-            notifyClients(result);
-            return result;
-        }
         stop = false;
         while (!stop) {
             result = lookForTrafficLight();

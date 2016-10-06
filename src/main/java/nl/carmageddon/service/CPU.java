@@ -2,6 +2,7 @@ package nl.carmageddon.service;
 
 import nl.carmageddon.domain.*;
 import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,16 +32,18 @@ public class CPU extends Observable implements Observer {
     private List<Lookout> lookouts = new ArrayList<>();
     private TrafficLightLookout trafficLightLookout;
     private RoadLookout roadLookout;
-
+    private long delay;
+    private ViewType viewType;
     private ScheduledExecutorService statusTimer;
+
     private Runnable statusRunner = () -> {
-        if (this.car.getCamera().getCamera().isOpened()) {
+        if (this.car.getCamera().getCamera() != null && this.car.getCamera().getCamera().isOpened()) {
             sendReadyToRace();
         } else {
             notifyClients(new LookoutResult(AutonomousStatus.NO_CAMERA, null));
         }
     };
-    private long delay;
+
 
     @Inject
     public CPU(AutonomousSettings settings, Car car, TrafficLightLookout trafficLightLookout, RoadLookout
@@ -82,6 +85,12 @@ public class CPU extends Observable implements Observer {
         LinesView linesView = this.roadLookout.detectLines(snapshot.clone());
         logger.debug("Possible roads: " + linesView.getRoadLines().size());
         logger.debug("Possible finish lines: " + linesView.getFinishLines().size());
+        if (viewType == ViewType.hue) {
+            Imgproc.cvtColor(snapshot, snapshot, Imgproc.COLOR_BGR2HSV);
+        }
+        if (viewType == ViewType.baw) {
+            Imgproc.cvtColor(snapshot, snapshot, Imgproc.COLOR_RGB2GRAY, 0);
+        }
         this.trafficLightLookout.addTrafficLightHighlight(trafficLightViewview, snapshot);
         this.roadLookout.addRoadHighlights(linesView, snapshot);
         notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, this.car.getCamera()
@@ -149,6 +158,7 @@ public class CPU extends Observable implements Observer {
         this.roadLookout.setDelay(settings.getDelay());
 
         this.delay = settings.getDelay();
+        this.viewType = settings.getViewType();
         if (car.getMode() == Mode.autonomous && this.racing == false) {
             shutdownWebcamPushTimer();
             startWebcamPushTimer();

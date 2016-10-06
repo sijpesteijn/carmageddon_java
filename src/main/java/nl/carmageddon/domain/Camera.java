@@ -40,6 +40,9 @@ public class Camera {
 
     public void setId(int id) {
         this.id = id;
+        if (camera != null) {
+            camera.release();
+        }
     }
 
     public VideoCapture getCamera() {
@@ -63,12 +66,12 @@ public class Camera {
     }
 
     public Mat makeSnapshot() {
-//        Mat snapshot = new Mat();
-//        VideoCapture camera = getCamera();
-//        camera.read(snapshot);
-//        return snapshot;
-        Mat img = Imgcodecs.imread("/Users/gijs/programming/java/carmageddon/src/main/resources/ws1.jpg");
-        return img;
+        Mat snapshot = new Mat();
+        VideoCapture camera = getCamera();
+        camera.read(snapshot);
+        return snapshot;
+//        Mat img = Imgcodecs.imread("/Users/gijs/programming/java/carmageddon/src/main/resources/ws4.jpg");
+//        return img;
     }
 
     public byte[] makeSnapshotInByteArray() {
@@ -79,7 +82,7 @@ public class Camera {
 
     public byte[] getImageBytes(Mat mat) {
         // TODO betere manier om image naar byte array om te zetten.
-        String fileName = System.getProperty("java.io.tmpdir") + "snapshot_" + System.currentTimeMillis() + ".jpg";
+        String fileName = System.getProperty("java.io.tmpdir") + "/snapshot_" + System.currentTimeMillis() + ".jpg";
         Imgcodecs.imwrite(fileName, mat);
 
         byte[] bytes = null;
