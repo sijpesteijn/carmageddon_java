@@ -22,8 +22,9 @@ public class RoadLookout extends Observable implements Lookout {
     private boolean run;
     private LookoutResult result;
     private long delay;
-    private int roiHeight;
     private ViewType viewType;
+
+    private RoadSettings settings;
 
     @Inject
     public RoadLookout(Car car) {
@@ -83,7 +84,7 @@ public class RoadLookout extends Observable implements Lookout {
         int lineGap = 50;
 
         // Get region to look at
-        Rect roi = new Rect(0, roiHeight, snapshot.width(), snapshot.height() - roiHeight);
+        Rect roi = new Rect(0, settings.getRoadRoiHeight(), snapshot.width(), snapshot.height() - settings.getRoadRoiHeight());
         Mat roiMath = new Mat(snapshot,roi);
 
         // Blur and convert to gray
@@ -91,10 +92,12 @@ public class RoadLookout extends Observable implements Lookout {
         Imgproc.cvtColor(roiMath, roiMath, Imgproc.COLOR_RGB2GRAY, 0);
 
         // Edge detection
-        Imgproc.Canny(roiMath, roiMath, 80, 120, 3, false);
+        Imgproc.Canny(roiMath, roiMath, settings.getCannyThreshold1(), settings.getCannyThreshold2(), settings.getCannyApertureSize(),
+                      false);
 
         // Find the lines
-        Imgproc.HoughLinesP(roiMath, lines, 1, Math.PI / 180, threshold, minLineSize, lineGap);
+        Imgproc.HoughLinesP(roiMath, lines, 1, Math.PI / 180, settings.getLinesThreshold(), settings.getLinesMinLineSize(),
+                            settings.getLinesMaxLineGap());
 
         List<Point> points = new ArrayList<>();
         List<Line> roadLines = new ArrayList<>();
@@ -147,11 +150,11 @@ public class RoadLookout extends Observable implements Lookout {
         return (p1, p2) -> p1.x - p2.x == 0 ? 0 : p1.x - p2.x > 0 ? 1 : -1;
     }
 
-    public void setRoiHeight(int roiHeight) {
-        this.roiHeight = roiHeight;
-    }
-
     public void setViewType(ViewType viewType) {
         this.viewType = viewType;
+    }
+
+    public void setRoadSettings(RoadSettings settings) {
+        this.settings = settings;
     }
 }

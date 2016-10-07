@@ -44,7 +44,6 @@ public class CPU extends Observable implements Observer {
         }
     };
 
-
     @Inject
     public CPU(AutonomousSettings settings, Car car, TrafficLightLookout trafficLightLookout, RoadLookout
             roadLookout) {
@@ -153,7 +152,7 @@ public class CPU extends Observable implements Observer {
         this.trafficLightLookout.setTrafficLightSettings(settings.getTrafficLightSettings());
         this.trafficLightLookout.setViewType(settings.getViewType());
         this.trafficLightLookout.setDelay(settings.getDelay());
-        this.roadLookout.setRoiHeight(settings.getRoadRoiHeight());
+        this.roadLookout.setRoadSettings(settings.getRoadSettings());
         this.roadLookout.setViewType(settings.getViewType());
         this.roadLookout.setDelay(settings.getDelay());
 

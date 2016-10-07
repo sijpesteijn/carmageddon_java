@@ -17,10 +17,6 @@
 - mvn sass:watch 
 - mvn jetty:run
 - http://localhost:8082/carmageddon
-- In Intellij 
-    ga naar Project Structuur->Modules->dependencies
-    + Library 
-
 
 # Met beaglebone
 - Koop een beaglebone black

@@ -23,7 +23,6 @@ public class ConfigurationModule extends AbstractModule {
             cameraDimension.setWidth(configuration.getInt("common.camera.cameraDimension.width"));
             cameraDimension.setHeight(configuration.getInt("common.camera.cameraDimension.height"));
             autonomousSettings.setCameraDimension(cameraDimension);
-            autonomousSettings.setRoadRoiHeight(configuration.getInt("common.road.roi.height"));
 
             TrafficLightSettings trafficLightSettings = new TrafficLightSettings();
             autonomousSettings.setTrafficLightSettings(trafficLightSettings);
@@ -66,6 +65,18 @@ public class ConfigurationModule extends AbstractModule {
             roi.setWidth(configuration.getInt("trafficlight.roi.width"));
             roi.setHeight(configuration.getInt("trafficlight.roi.height"));
             trafficLightSettings.setRoi(roi);
+
+            RoadSettings roadSettings = new RoadSettings();
+            roadSettings.setRoadRoiHeight(configuration.getInt("road.roi.height"));
+            roadSettings.setCannyThreshold1(configuration.getInt("road.canny.threshold1"));
+            roadSettings.setCannyThreshold2(configuration.getInt("road.canny.threshold2"));
+            roadSettings.setCannyApertureSize(configuration.getInt("road.canny.apertureSize"));
+
+            roadSettings.setLinesThreshold(configuration.getInt("road.lines.threshold"));
+            roadSettings.setLinesMinLineSize(configuration.getInt("road.lines.minLineSize"));
+            roadSettings.setLinesMaxLineGap(configuration.getInt("road.lines.maxLineGap"));
+
+            autonomousSettings.setRoadSettings(roadSettings);
 
             bind(AutonomousSettings.class).toInstance(autonomousSettings);
         } catch (ConfigurationException e) {

@@ -2,6 +2,8 @@ package nl.carmageddon.service;
 
 import nl.carmageddon.domain.Car;
 import nl.carmageddon.domain.LinesView;
+import nl.carmageddon.domain.RoadSettings;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,14 +30,28 @@ public class RoadLookoutTest {
     @InjectMocks
     private RoadLookout lookout;
 
+    private static RoadSettings settings = new RoadSettings();
+
     static {
+        settings.setRoadRoiHeight(120);
+        settings.setCannyThreshold1(80);
+        settings.setCannyThreshold2(120);
+        settings.setCannyApertureSize(3);
+        settings.setLinesThreshold(52);
+        settings.setLinesMinLineSize(50);
+        settings.setLinesMaxLineGap(50);
+    }
+
+    @BeforeClass
+    public static void setup() {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
+
     @Test
     public void detectLines() throws Exception {
+        lookout.setRoadSettings(settings);
         Mat img = Imgcodecs.imread("./src/main/resources/ws4.jpg");
         Mat org = img.clone();
-        lookout.setRoiHeight(120);
         LinesView linesView = lookout.detectLines(img);
 
         lookout.addRoadHighlights(linesView, org);
