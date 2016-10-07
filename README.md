@@ -12,6 +12,7 @@
 - Backend jetty server met guice&jersey applicatie.
 
 # Lokaal zonder beaglebone
+- copieer ./src/main/resources/libopencv_java310.dylib naar JAVA_HOME/jre/lib
 - mvn install:install-file -Dfile=./src/main/resources/opencv-310.jar -DgroupId=nl.carmageddon -DartifactId=opencv -Dversion=3.10 -Dpackaging=jar
 - mvn sass:watch 
 - mvn jetty:run
@@ -80,11 +81,10 @@ Bij booten moeten we een aantal dingen klaar zetten. Oa. device tree overlays (d
     $ set: JETTY_HOST=0.0.0.0
     $ save
     
-    
-
-
+   
 ## Wifi dongle configureren
 Beetje vergeten, maar deze sites hebben mij geholpen:
 - https://sites.google.com/site/easylinuxtipsproject/reserve-7#TOC-Realtek-RTL8188CUS-and-RTL8192CU-chipsets-0bda:8176-and-0bda:8178-
 - http://brilliantlyeasy.com/ubuntu-linux-tl-wn725n-tp-link-version-2-wifi-driver-install/
-- en de TL-WN823N.tar.gz driver in beaglebone folder
+- en de TL-WN823N.tar.gz driver in beaglebone folder (sudo make ARCH=arm)
+- `wlist scan` scant wifi netwerken

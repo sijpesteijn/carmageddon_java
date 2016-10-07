@@ -1,6 +1,7 @@
 package nl.carmageddon.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
@@ -69,6 +70,7 @@ public class Camera {
         Mat snapshot = new Mat();
         VideoCapture camera = getCamera();
         camera.read(snapshot);
+        Core.flip(snapshot, snapshot, 0);
         return snapshot;
 //        Mat img = Imgcodecs.imread("/Users/gijs/programming/java/carmageddon/src/main/resources/ws4.jpg");
 //        return img;
