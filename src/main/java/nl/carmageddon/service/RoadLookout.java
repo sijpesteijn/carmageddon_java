@@ -95,6 +95,7 @@ public class RoadLookout extends Observable implements Lookout {
 
         // Find the lines
         Imgproc.HoughLinesP(roiMath, lines, 1, Math.PI / 180, threshold, minLineSize, lineGap);
+
         List<Point> points = new ArrayList<>();
         List<Line> roadLines = new ArrayList<>();
         List<Line> finishLines = new ArrayList<>();
