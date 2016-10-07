@@ -8,6 +8,15 @@ public class HSV {
     private int saturation;
     private int brightness;
 
+    public HSV() {
+    }
+
+    public HSV(int hue, int saturation, int brightness) {
+        this.hue = hue;
+        this.saturation = saturation;
+        this.brightness = brightness;
+    }
+
     public int getHue() {
         return hue;
     }

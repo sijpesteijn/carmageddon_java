@@ -9,6 +9,16 @@ public class ROI {
     private int width;
     private int height;
 
+    public ROI() {
+    }
+
+    public ROI(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
     public int getX() {
         return x;
     }

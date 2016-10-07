@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 
 import static org.junit.Assert.assertTrue;
+import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 
 /**
  * @author Gijs Sijpesteijn
@@ -33,11 +34,14 @@ public class RoadLookoutTest {
     @Test
     public void detectLines() throws Exception {
         Mat img = Imgcodecs.imread("./src/main/resources/ws4.jpg");
+        Mat org = img.clone();
         lookout.setRoiHeight(120);
         LinesView linesView = lookout.detectLines(img);
 
-        lookout.addRoadHighlights(linesView, img);
-        imgshow(img);
+        lookout.addRoadHighlights(linesView, org);
+        imwrite("moe.jpg", org);
+//        imgshow(org);
+
 
         assertTrue(linesView.getRoadLines().size() > 0);
 
