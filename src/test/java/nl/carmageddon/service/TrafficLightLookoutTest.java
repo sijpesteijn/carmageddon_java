@@ -33,7 +33,7 @@ public class TrafficLightLookoutTest {
         settings.setLowerHSVMin(new HSV(2,87,191));
         settings.setLowerHSVMax(new HSV(0,255,255));
         settings.setUpperHSVMin(new HSV(3,100,100));
-        settings.setUpperHSVMax(new HSV(365,100,100));
+        settings.setUpperHSVMax(new HSV(365,255,255));
     }
 
     @BeforeClass
