@@ -67,7 +67,7 @@ public class ConfigurationModule extends AbstractModule {
             trafficLightSettings.setRoi(roi);
 
             RoadSettings roadSettings = new RoadSettings();
-            roadSettings.setRoadRoiHeight(configuration.getInt("road.roi.height"));
+            roadSettings.setRoiHeight(configuration.getInt("road.roi.height"));
             roadSettings.setCannyThreshold1(configuration.getInt("road.canny.threshold1"));
             roadSettings.setCannyThreshold2(configuration.getInt("road.canny.threshold2"));
             roadSettings.setCannyApertureSize(configuration.getInt("road.canny.apertureSize"));

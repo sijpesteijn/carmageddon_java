@@ -33,7 +33,7 @@ public class RoadLookoutTest {
     private static RoadSettings settings = new RoadSettings();
 
     static {
-        settings.setRoadRoiHeight(120);
+        settings.setRoiHeight(120);
         settings.setCannyThreshold1(80);
         settings.setCannyThreshold2(120);
         settings.setCannyApertureSize(3);

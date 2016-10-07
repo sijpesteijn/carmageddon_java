@@ -1,16 +1,16 @@
 <div class="autonomous">
     <div class="snapshot">
-        <img id="webcam">
         <div id="roi">
             <div class="roi" style="left: {{settings.trafficLightSettings.roi.x}}px;
             top: {{settings.trafficLightSettings.roi.y}}px; width:
             {{settings.trafficLightSettings.roi.width}}px; height: {{settings.trafficLightSettings.roi.height}}px;"></div>
         </div>
-        <div id="roadRoiHeight">
-            <div class="roadRoiHeight"
-                 style="left:0px;top:{{settings.roadRoiHeight}}px;width:{{settings.cameraDimension.width}}px;
+        <div id="roiHeight">
+            <div class="roiHeight"
+                 style="left:0px;top:{{settings.roadSettings.roiHeight}}px;width:{{settings.cameraDimension.width}}px;
                 height: 1px;"></div>
         </div>
+        <img id="webcam">
     </div>
     <div class="status">
         <img class="settings" ng-click="showSettings = !showSettings" src="./images/settings.png">
@@ -19,82 +19,5 @@
         <ul><li ng-repeat="msg in msgs track by $index">{{ msg.msg }}
             <span ng-if="msg.count > 1">[{{msg.count}}]</span></li></ul>
     </div>
-    <div class="settings-overlay" ng-if="showSettings">
-        <ul class="tabHeader">
-            <li><a href="#" ng-click="tab='general'" ng-class="{'active': tab == 'general'}">General</a></li>
-            <li><a href="#" ng-click="tab='traffic'" ng-class="{'active': tab == 'traffic'}">Trafficlight</a></li>
-        </ul>
-        <div ng-if="tab == 'traffic'" class="trafficlight-settings">
-            <ul class="tabHeader">
-                <li><a href="#" ng-click="subtab='colors'" ng-class="{'active': subtab == 'colors'}">Colors</a></li>
-                <li><a href="#" ng-click="subtab='sizes'" ng-class="{'active': subtab == 'sizes'}">Sizes</a></li>
-            </ul>
-            <div class="colors" ng-if="tab == 'traffic' && subtab == 'colors'">
-                Lower limit:
-                <ul class="lower">
-                    <li><div class="min">min</div><color-picker id="lowerHSVMin" options="options"
-                                                                   event-api="eventApi"
-                                                      ng-model="lowerHSVMin"></color-picker></li>
-                    <li><div class="max">max</div> <color-picker id="lowerHSVMax" options="options"
-                                                                   event-api="eventApi"
-                                                      ng-model="lowerHSVMax"></color-picker></li>
-                </ul>
-                Upper limit:
-                <ul class="upper">
-                    <li><div class="min">min</div> <color-picker id="upperHSVMin" options="options"
-                                                                   event-api="eventApi"
-                                                      ng-model="upperHSVMin"></color-picker></li>
-                    <li><div class="max">max</div> <color-picker id="upperHSVMax" options="options"
-                                                                   event-api="eventApi"
-                                                      ng-model="upperHSVMax"></color-picker></li>
-                </ul>
-            </div>
-            <div class="sizes" ng-if="tab == 'traffic' && subtab == 'sizes'">
-                Min size:
-                <ul class="minDimension">
-                    <li>width
-                        <input type="number" min="-1" ng-model="settings.trafficLightSettings.minDimension.width"
-                               ng-change="updateDimension()"></li>
-                    <li>height
-                        <input type="number" min="-1" ng-model="settings.trafficLightSettings.minDimension.height"
-                               ng-change="updateDimension()"></li>
-                </ul>
-                Max size:
-                <ul class="maxDimension">
-                    <li>width  <input type="number" min="-1"
-                                      ng-model="settings.trafficLightSettings.maxDimension.width"></li>
-                    <li>height <input type="number" min="-1"
-                                      ng-model="settings.trafficLightSettings.maxDimension.height"></li>
-                </ul>
-            </div>
-        </div>
-
-        <div ng-if="tab == 'general'" class="common-settings">
-            <ul>
-                <li>
-                    <label for="viewtype">
-                        View type:
-                        <select id="viewType" ng-model="settings.viewType">
-                            <option value="result">Result</option>
-                            <option value="hue">HUE</option>
-                            <option value="baw">Black and White</option>
-                        </select>
-                    </label>
-                </li>
-                <li>
-                    <label for="framerate_slider">
-                        Framerate: <input type="range" min="1" max="30" id="framerate_slider"
-                                          ng-model="framerate" ng-change="updateFramerate(framerate)"> {{ framerate }}
-                        fps.
-                    </label>
-                </li>
-                <li>
-                    <label for="roi_slider">
-                        Road ROI<input type="range" min="1" id="roi_slider" max="{{settings.cameraDimension.height}}"
-                               ng-model="settings.roadRoiHeight" ng-change="delaySettingsUpdate()">
-                    </label>
-                </li>
-            </ul>
-        </div>
-    </div>
+    <settings ng-if="showSettings"></settings>
 </div>

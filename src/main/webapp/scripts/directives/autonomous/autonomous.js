@@ -3,29 +3,25 @@
 
     app.controller('autonomousCtrl', autonomousController).directive('autonomous', autonomousDirective);
 
-    autonomousController.$inject = ['$scope', '$resource', '$timeout', 'websocketFactory'];
+    autonomousController.$inject = ['$scope', '$resource', 'websocketFactory', 'settingsFactory'];
 
-    function autonomousController($scope, $resource, $timeout, websocketFactory) {
-        var websocket;
-        $scope.lowerHSVMin;
-        $scope.lowerHSVMax;
-        $scope.upperHSVMin;
-        $scope.upperHSVMax;
-
-        $scope.framerate;
-        $scope.settings;
-
+    function autonomousController($scope, $resource, websocketFactory, settingsFactory) {
         $scope.msgs = [];
         $scope.racing = false;
         $scope.showSettings = false;
-        $scope.tab = 'general';
-        $scope.subtab = 'colors';
-        var updateTimeout = angular.undefined;
+        $scope.settings = angular.undefined;
+
         var lastLookout = angular.undefined;
         var roi = document.getElementById("roi");
         var webcam = document.getElementById("webcam");
         var offset_x = 3;
         var offset_y = 40;
+        var websocket;
+
+        settingsFactory.getSettings().then(function (data) {
+            $scope.settings = data;
+            $scope.framerate = 1000/$scope.settings.delay;
+        });
 
         $scope.startRace = function () {
             $resource('./rest/autonomous/start').save({}, {},
@@ -63,99 +59,12 @@
             return false;
         };
 
-        $scope.$watch('settings', function () {
-            $scope.delaySettingsUpdate();
-        }, true);
-
-
-        function getSettings() {
-
-            function buildHsv(hsv) {
-                return 'hsv('+ hsv.hue + ',' + Math.round(hsv.saturation / (255/100)) + '%,' + Math.round(hsv.brightness / (255/100)) + '%)';
-            }
-
-            $resource('./rest/autonomous/settings').get({}, {},
-                function (settings) {
-                    $scope.lowerHSVMin = buildHsv(settings.trafficLightSettings.lowerHSVMin);
-                    $scope.lowerHSVMax = buildHsv(settings.trafficLightSettings.lowerHSVMax);
-                    $scope.upperHSVMin = buildHsv(settings.trafficLightSettings.upperHSVMin);
-                    $scope.upperHSVMax = buildHsv(settings.trafficLightSettings.upperHSVMax);
-                    $scope.settings = settings;
-                    $scope.framerate = 1000/$scope.settings.delay;
-                },
-                function (error) {
-                    console.error('mode update failed', error);
-                });
-        }
-
-        function updateSettings() {
-
-            function getHsv(hsv) {
-                var splits = hsv.split(',');
-                var result = {
-                    hue: splits[0].split('(')[1],
-                    saturation: Math.round(splits[1].substring(0,splits[1].length-1)*(255/100)),
-                    brightness: Math.round(splits[2].substring(0,splits[2].length-2)*(255/100))
-                };
-                return result;
-            }
-
-            var settings = $scope.settings;
-            settings.trafficLightSettings.lowerHSVMin = getHsv($scope.lowerHSVMin);
-            settings.trafficLightSettings.lowerHSVMax = getHsv($scope.lowerHSVMax);
-            settings.trafficLightSettings.upperHSVMin = getHsv($scope.upperHSVMin);
-            settings.trafficLightSettings.upperHSVMax = getHsv($scope.upperHSVMax);
-            $resource('./rest/autonomous/settings').save({},
-                settings,
-                function (success) {
-                },
-                function (error) {
-                    console.error('mode update failed', error);
-                });
-        }
-
-        $scope.options = {
-            format: 'hsv',
-            hue: true,
-            swatch: true
-        };
-
-        $scope.eventApi = {
-            onChange: function(api, color, $event) {
-                var id = api.getElement().attr('id');
-                if (id === 'lowerHSVMin') {
-                    $scope.lowerHSVMin = color;
-                } else if (id === 'lowerHSVMax') {
-                    $scope.lowerHSVMax = color;
-                } else if (id === 'upperHSVMin') {
-                    $scope.upperHSVMin = color;
-                } else {
-                    $scope.upperHSVMax = color;
-                }
-                $scope.delaySettingsUpdate();
-            }
-        };
-
-        $scope.delaySettingsUpdate = function () {
-            if (updateTimeout != null) {
-                $timeout.cancel(updateTimeout);
-            }
-            updateTimeout = $timeout(updateSettings, 500);
-        };
-
-        $scope.updateFramerate = function (framerate) {
-            $scope.framerate = framerate;
-            $scope.settings.delay = 1000/$scope.framerate;
-            $scope.delaySettingsUpdate();
-        };
-
         $scope.$on('$destroy', function () {
             console.debug('destroying autonomous controller');
             websocket.closeConnection();
         });
 
         websocket = websocketFactory.create('autonomous/status');
-        getSettings();
 
         function setMousePosition(e) {
             var ev = e || window.event; //Moz || IE

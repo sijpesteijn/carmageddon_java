@@ -4,7 +4,7 @@ package nl.carmageddon.domain;
  * @author Gijs Sijpesteijn
  */
 public class RoadSettings {
-    private int roadRoiHeight;
+    private int roiHeight;
     private int cannyThreshold1;
     private int cannyThreshold2;
     private int cannyApertureSize;
@@ -12,12 +12,12 @@ public class RoadSettings {
     private int linesMinLineSize;
     private int linesMaxLineGap;
 
-    public int getRoadRoiHeight() {
-        return roadRoiHeight;
+    public int getRoiHeight() {
+        return roiHeight;
     }
 
-    public void setRoadRoiHeight(int roadRoiHeight) {
-        this.roadRoiHeight = roadRoiHeight;
+    public void setRoiHeight(int roiHeight) {
+        this.roiHeight = roiHeight;
     }
 
     public int getCannyThreshold1() {

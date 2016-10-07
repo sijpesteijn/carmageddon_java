@@ -17,7 +17,7 @@ app.run(function ($rootScope) {
 });
 
 
-app.factory('websocketFactory', function ($websocket, $location, $interval, $timeout) {
+app.factory('websocketFactory', function ($websocket, $location, $interval) {
 
     function websocket(ep) {
         var connection = null;
@@ -85,4 +85,75 @@ app.factory('websocketFactory', function ($websocket, $location, $interval, $tim
         }
     }
 
+});
+
+app.factory('settingsFactory', function($timeout, $resource, $q) {
+    var updateTimeout;
+    var settings = $q.defer();
+
+    function getSettings() {
+
+
+        $resource('./rest/autonomous/settings').get({}, {},
+            function (data) {
+                var newSettings = data;
+                newSettings.trafficLightSettings.lowerHSVMin = buildHsv(data.trafficLightSettings.lowerHSVMin);
+                newSettings.trafficLightSettings.lowerHSVMax = buildHsv(data.trafficLightSettings.lowerHSVMax);
+                newSettings.trafficLightSettings.upperHSVMin = buildHsv(data.trafficLightSettings.upperHSVMin);
+                newSettings.trafficLightSettings.upperHSVMax = buildHsv(data.trafficLightSettings.upperHSVMax);
+                settings.resolve(newSettings);
+            },
+            function (error) {
+                console.error('mode update failed', error);
+            });
+        return settings;
+    }
+
+    function updateSettings() {
+
+        var newSettings = settings;
+        newSettings.trafficLightSettings.lowerHSVMin = getHsv(newSettings.lowerHSVMin);
+        newSettings.trafficLightSettings.lowerHSVMax = getHsv(newSettings.lowerHSVMax);
+        newSettings.trafficLightSettings.upperHSVMin = getHsv(newSettings.upperHSVMin);
+        newSettings.trafficLightSettings.upperHSVMax = getHsv(newSettings.upperHSVMax);
+        $resource('./rest/autonomous/settings').save({},
+            newSettings,
+            function (success) {
+            },
+            function (error) {
+                console.error('mode update failed', error);
+            });
+    }
+
+    function getHsv(hsv) {
+        var splits = hsv.split(',');
+        var result = {
+            hue: splits[0].split('(')[1],
+            saturation: Math.round(splits[1].substring(0,splits[1].length-1)*(255/100)),
+            brightness: Math.round(splits[2].substring(0,splits[2].length-2)*(255/100))
+        };
+        return result;
+    }
+
+    function buildHsv(hsv) {
+        return 'hsv('+ hsv.hue + ',' + Math.round(hsv.saturation / (255/100)) + '%,' + Math.round(hsv.brightness / (255/100)) + '%)';
+    }
+
+    function delaySettingsUpdate(settings) {
+        this.settings = settings;
+        if (updateTimeout != null) {
+            $timeout.cancel(updateTimeout);
+        }
+        updateTimeout = $timeout(updateSettings, 500);
+    }
+
+
+    return {
+        getSettings: function () {
+            return getSettings().promise;
+        },
+        updateSettings: function (settings) {
+            updateSettings(settings);
+        }
+    }
 });

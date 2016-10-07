@@ -84,7 +84,7 @@ public class RoadLookout extends Observable implements Lookout {
         int lineGap = 50;
 
         // Get region to look at
-        Rect roi = new Rect(0, settings.getRoadRoiHeight(), snapshot.width(), snapshot.height() - settings.getRoadRoiHeight());
+        Rect roi = new Rect(0, settings.getRoiHeight(), snapshot.width(), snapshot.height() - settings.getRoiHeight());
         Mat roiMath = new Mat(snapshot,roi);
 
         // Blur and convert to gray
