@@ -12,7 +12,7 @@ var app = angular.module('carmageddon', [
 app.run(function ($rootScope) {
     $rootScope.carMode = 'disabled';
     $rootScope.settings = {
-        throttleLimit: 20
+        throttleLimit: 40
     }
 });
 

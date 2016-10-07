@@ -50,7 +50,7 @@
                     });
                 $scope.angle = currAngle;
             }
-            var currThrottle = -1 * Math.round(joystick.deltaY());
+            var currThrottle = -1 * Math.round(joystick.deltaY()/3);
             if ($scope.throttleLimit > 0 && currThrottle > $scope.throttleLimit) {
                 currThrottle = $scope.throttleLimit;
                 if ($scope.throttle != currThrottle) {
