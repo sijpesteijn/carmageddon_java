@@ -17,6 +17,8 @@ public class LinesView {
 
     private List<Line> finishLines;
 
+    private double averageX;
+
     public void setRoi(Rect roi) {
         this.roi = roi;
     }
@@ -47,5 +49,13 @@ public class LinesView {
 
     public List<Line> getFinishLines() {
         return finishLines;
+    }
+
+    public void setAverageX(double averageX) {
+        this.averageX = (int) averageX;
+    }
+
+    public double getAverageX() {
+        return averageX;
     }
 }

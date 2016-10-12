@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
+import java.util.stream.Collectors;
 
 import static org.opencv.imgproc.Imgproc.line;
 
@@ -31,13 +32,17 @@ public class RoadLookout extends Observable implements Lookout {
         this.car = car;
     }
 
+    private static Comparator<Point> getPointComparator() {
+        return (p1, p2) -> p1.x - p2.x == 0 ? 0 : p1.x - p2.x > 0 ? 1 : -1;
+    }
+
     @Override
     public LookoutResult start() {
         run = true;
-        while(run) {
+        while (run) {
             car.getEngine().setThrottle(20);
             int index = 0;
-            while(run && index++ < 10) {
+            while (run && index++ < 10) {
                 Mat snapshot = this.car.getCamera().makeSnapshot();
                 LinesView linesView = detectLines(snapshot.clone());
                 addRoadHighlights(linesView, snapshot);
@@ -53,7 +58,7 @@ public class RoadLookout extends Observable implements Lookout {
             car.getEngine().setThrottle(0);
             if (run) {
                 result = new LookoutResult(AutonomousStatus.RACE_FINISHED,
-                                           this.car.getCamera().makeSnapshotInByteArray());
+                        this.car.getCamera().makeSnapshotInByteArray());
                 notifyClients(result);
             }
             run = false;
@@ -71,7 +76,6 @@ public class RoadLookout extends Observable implements Lookout {
         notifyObservers(event);
     }
 
-
     public void setDelay(long delay) {
         this.delay = delay;
     }
@@ -85,7 +89,7 @@ public class RoadLookout extends Observable implements Lookout {
 
         // Get region to look at
         Rect roi = new Rect(0, settings.getRoiHeight(), snapshot.width(), snapshot.height() - settings.getRoiHeight());
-        Mat roiMath = new Mat(snapshot,roi);
+        Mat roiMath = new Mat(snapshot, roi);
 
         // Blur and convert to gray
         Imgproc.GaussianBlur(roiMath, roiMath, new Size(3, 3), 3);
@@ -93,11 +97,11 @@ public class RoadLookout extends Observable implements Lookout {
 
         // Edge detection
         Imgproc.Canny(roiMath, roiMath, settings.getCannyThreshold1(), settings.getCannyThreshold2(), settings.getCannyApertureSize(),
-                      false);
+                false);
 
         // Find the lines
         Imgproc.HoughLinesP(roiMath, lines, 1, Math.PI / 180, settings.getLinesThreshold(), settings.getLinesMinLineSize(),
-                            settings.getLinesMaxLineGap());
+                settings.getLinesMaxLineGap());
 
         List<Point> points = new ArrayList<>();
         List<Line> roadLines = new ArrayList<>();
@@ -122,15 +126,73 @@ public class RoadLookout extends Observable implements Lookout {
             }
         }
 
-        if (points.size() > 0 ) {
-            final Double maxX = points.stream().max(getPointComparator()).map(p -> p.x).get();
-            final Double minX = points.stream().min(getPointComparator()).map(p -> p.x).get();
-            view.setAverageLine(new Line(new Point((maxX - minX) / 2, roi.y), new Point((maxX - minX) / 2, roi.y + roi.height)));
+        // experimental
+        final List<Point> medianPoints = getMedianPoints(points);
+
+        if (medianPoints.size() > 0) {
+            view.setAverageLine(new Line(medianPoints.get(medianPoints.size() - 1), medianPoints.get(0)));
+            view.setAverageX(getCenterX(medianPoints));
         }
+
+        for (int i = 0; i < medianPoints.size() - 1; i++) {
+            //  System.out.println("sd: "+angle(new Line(medianPoints.get(i),medianPoints.get(i+1))));
+        }
+
         view.setRoadLines(roadLines);
         view.setFinishLines(finishLines);
         view.setRoi(roi);
         return view;
+    }
+
+    private double angle(Line line) {
+        return ((Math.atan(Math.abs(line.getEnd().y - line.getStart().y) / Math.abs(line.getEnd().x - line.getStart().x))) * 180 / Math.PI);
+
+    }
+
+    private List<Point> getMedianPoints(List<Point> roadLinePair) {
+        final Double averageX = getCenterX(roadLinePair);
+
+        //System.out.println(averageX);
+
+        final List<Point> rightLines = roadLinePair.stream().sorted((p1, p2) -> compareTo(p1.y, p2.y))
+                .filter(p -> p.x > averageX.intValue())
+                .collect(Collectors.toList());
+
+        final List<Point> leftLines = roadLinePair.stream().sorted((p1, p2) -> compareTo(p1.y, p2.y))
+                .filter(p -> p.x <= averageX.intValue())
+                .collect(Collectors.toList());
+
+        List<Point> median = new ArrayList<>();
+        if (rightLines.size() < leftLines.size()) {
+            for (int i = 0; i < rightLines.size(); i++) {
+                final Point rP = rightLines.get(i);
+                final Point lP = leftLines.get(i);
+                median.add(new Point((rP.x + lP.x) / 2, (rP.y + lP.y) / 2));
+            }
+        } else {
+            for (int i = 0; i < leftLines.size(); i++) {
+                final Point rP = rightLines.get(i);
+                final Point lP = leftLines.get(i);
+                median.add(new Point((rP.x + lP.x) / 2, (rP.y + lP.y) / 2));
+            }
+        }
+
+        final Double medX = getCenterX(median);
+        final Double medY = getCenterY(median);
+
+        return median;
+    }
+
+    public Double getCenterX(List<Point> roadLinePair) {
+        return roadLinePair.stream().map(p -> p.x).collect(Collectors.averagingInt(x -> x.intValue()));
+    }
+
+    public Double getCenterY(List<Point> roadLinePair) {
+        return roadLinePair.stream().map(p -> p.y).collect(Collectors.averagingInt(y -> y.intValue()));
+    }
+
+    private int compareTo(double x, double y) {
+        return (x < y) ? -1 : ((x == y) ? 0 : 1);
     }
 
     public void addRoadHighlights(LinesView view, Mat snapshot) {
@@ -141,13 +203,8 @@ public class RoadLookout extends Observable implements Lookout {
             view.getFinishLines().forEach(finishLine -> {
                 line(snapshot, finishLine.getStart(), finishLine.getEnd(), new Scalar(255, 255, 0), 2);
             });
-            line(snapshot, view.getAverageLine().getStart(), view.getAverageLine().getEnd(), new Scalar(255,0,0),2);
+            line(snapshot, view.getAverageLine().getStart(), view.getAverageLine().getEnd(), new Scalar(255, 0, 0), 2);
         }
-    }
-
-
-    private static Comparator<Point> getPointComparator() {
-        return (p1, p2) -> p1.x - p2.x == 0 ? 0 : p1.x - p2.x > 0 ? 1 : -1;
     }
 
     public void setViewType(ViewType viewType) {
