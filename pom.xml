@@ -7,7 +7,6 @@
     <artifactId>carmageddon</artifactId>
     <version>LOCAL</version>
     <modules>
-        <module>domain</module>
         <module>web</module>
         <module>car</module>
     </modules>
@@ -165,7 +164,7 @@
 
     <build>
         <plugins>
-            <plugin>
+           <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>

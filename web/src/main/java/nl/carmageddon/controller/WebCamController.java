@@ -1,6 +1,6 @@
 package nl.carmageddon.controller;
 
-import nl.carmageddon.domain.Car;
+import nl.carmageddon.domain.Camera;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -29,24 +29,18 @@ public class WebCamController {
     private static Logger logger = LoggerFactory.getLogger(CarController.class);
     private File video;
     final int chunk_size = 1024 * 1024; // 1MB chunks
-    private Car car;
+    private Camera camera;
 
     @Inject
-    public WebCamController(Car car) {
-        this.car = car;
-    }
-
-    @POST
-    @Path(value = "/use/{id}")
-    public void useWebCam(@PathParam("id") int id) {
-        this.car.getCamera().setId(id);
+    public WebCamController(Camera camera) {
+        this.camera = camera;
     }
 
     @GET
     @Path(value = "/snapshot")
     @Produces(MediaType.TEXT_HTML)
     public String makeSnapShot(@Context HttpServletResponse response) throws IOException {
-        Mat frame = car.getCamera().makeSnapshot();
+        Mat frame = camera.makeSnapshot();
         MatOfByte ofByte = new MatOfByte();
         Imgcodecs.imencode(".png", frame, ofByte);
 

@@ -1,12 +1,8 @@
 package nl.carmageddon.guice;
 
-import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
-import nl.carmageddon.domain.Pwm;
-import nl.carmageddon.domain.PwmImpl;
-import nl.carmageddon.domain.PwmMock;
 import org.opencv.core.Core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +23,7 @@ public class CarmageddonServletModule extends ServletModule {
 
         String extentsion = ".dylib";
         if (System.getProperty("os.arch").contains("arm")) {
-            bind(Pwm.class).annotatedWith(Names.named("PWM22")).toInstance(new PwmImpl(22));
-            bind(Pwm.class).annotatedWith(Names.named("PWM42")).toInstance(new PwmImpl(42));
             extentsion = ".so";
-        } else {
-            bind(Pwm.class).annotatedWith(Names.named("PWM22")).to(PwmMock.class);
-            bind(Pwm.class).annotatedWith(Names.named("PWM42")).to(PwmMock.class);
         }
 
         try {

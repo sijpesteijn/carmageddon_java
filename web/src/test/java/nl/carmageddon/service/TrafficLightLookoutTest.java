@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public class TrafficLightLookoutTest {
     @Mock
-    private Car car;
+    private Camera camera;
 
     @InjectMocks
     private TrafficLightLookout lookout;

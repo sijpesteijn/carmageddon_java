@@ -1,6 +1,5 @@
 package nl.carmageddon.controller;
 
-import nl.carmageddon.domain.Car;
 import nl.carmageddon.domain.CarmageddonSettings;
 import nl.carmageddon.service.AutonomousService;
 
@@ -16,17 +15,12 @@ import javax.ws.rs.core.Response;
 @Singleton
 @Path("settings")
 public class SettingsController {
-
     private CarmageddonSettings carmageddonSettings;
-
-    private Car car;
-
     private AutonomousService autonomousService;
 
     @Inject
-    public SettingsController(CarmageddonSettings carmageddonSettings, Car car, AutonomousService autonomousService) {
+    public SettingsController(CarmageddonSettings carmageddonSettings, AutonomousService autonomousService) {
         this.carmageddonSettings = carmageddonSettings;
-        this.car = car;
         this.autonomousService = autonomousService;
     }
 
@@ -35,8 +29,8 @@ public class SettingsController {
     public Response saveSettings(CarmageddonSettings settings) {
         this.carmageddonSettings = settings;
         this.autonomousService.useSettings(settings);
-        this.car.getCamera().setShowVideo(settings.isShowVideo());
-        this.car.getEngine().setThrottleLimit(settings.getMaxThrottle());
+//        this.car.getCamera().setShowVideo(settings.isShowVideo());
+//        this.car.getEngine().setThrottleLimit(settings.getMaxThrottle());
         return Response.ok().build();
     }
 

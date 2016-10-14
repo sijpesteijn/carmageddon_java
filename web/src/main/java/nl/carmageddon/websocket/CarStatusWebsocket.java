@@ -1,6 +1,5 @@
 package nl.carmageddon.websocket;
 
-import nl.carmageddon.domain.Car;
 import nl.carmageddon.domain.CarmageddonSettings;
 import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -16,8 +15,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,20 +24,19 @@ import java.util.concurrent.TimeUnit;
  */
 @Singleton
 @ServerEndpoint(value = "/car/status", configurator = CarmageddonWebsocketConfigurator.class)
-public class CarStatusWebsocket implements Observer {
+public class CarStatusWebsocket {
     private static final Logger log = LoggerFactory.getLogger(CarStatusWebsocket.class);
     private List<Session> sessions = new ArrayList<>();
-    private Car car;
     private String responseLine;
     private ObjectMapper mapper = new ObjectMapper();
     private final ScheduledExecutorService bbTimer = Executors.newSingleThreadScheduledExecutor();
 
     @Inject
-    public CarStatusWebsocket(CarmageddonSettings settings, Car car) throws IOException {
-        this.car = car;
-        this.car.addObserver(this);
-        this.car.getSteer().addObserver(this);
-        this.car.getEngine().addObserver(this);
+    public CarStatusWebsocket(CarmageddonSettings settings) throws IOException {
+//        this.car = car;
+//        this.car.addObserver(this);
+//        this.car.getSteer().addObserver(this);
+//        this.car.getEngine().addObserver(this);
         Socket socket = new Socket(settings.getBeagleBoneSettings().getBeagleBoneIp(),
                                    settings.getBeagleBoneSettings().getCarStatusPort());
         bbTimer.schedule(() -> {
@@ -62,8 +58,8 @@ public class CarStatusWebsocket implements Observer {
     @OnOpen
     public void onOpen(Session session) throws IOException {
         log.debug("Session added " + session.toString());
-        String json = mapper.writeValueAsString(this.car);
-        session.getAsyncRemote().sendText(json);
+//        String json = mapper.writeValueAsString(this.car);
+//        session.getAsyncRemote().sendText(json);
         sessions.add(session);
     }
 
@@ -91,14 +87,14 @@ public class CarStatusWebsocket implements Observer {
         sessions.remove(session);
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-        try {
-            String json = mapper.writeValueAsString(this.car);
-            for (Session session : sessions)
-                session.getAsyncRemote().sendText(json);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void update(Observable o, Object arg) {
+//        try {
+//            String json = mapper.writeValueAsString(this.car);
+//            for (Session session : sessions)
+//                session.getAsyncRemote().sendText(json);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

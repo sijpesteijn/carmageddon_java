@@ -12,15 +12,13 @@ import java.util.Observable;
 public class Car extends Observable {
     private Steer steer;
     private Engine engine;
-    private Camera camera;
     private Mode mode = Mode.disabled;
     private boolean connected = false;
 
     @Inject
-    public Car(Steer steer, Engine engine, Camera camera) {
+    public Car(Steer steer, Engine engine) {
         this.steer = steer;
         this.engine = engine;
-        this.camera = camera;
     }
 
     public Steer getSteer() {
@@ -30,8 +28,6 @@ public class Car extends Observable {
     public Engine getEngine() {
         return engine;
     }
-
-    public Camera getCamera() { return camera; }
 
     public void setConnected(boolean connected) {
         this.connected = connected;

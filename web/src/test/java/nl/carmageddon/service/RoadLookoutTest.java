@@ -1,6 +1,6 @@
 package nl.carmageddon.service;
 
-import nl.carmageddon.domain.Car;
+import nl.carmageddon.domain.Camera;
 import nl.carmageddon.domain.Line;
 import nl.carmageddon.domain.LinesView;
 import nl.carmageddon.domain.RoadSettings;
@@ -44,7 +44,7 @@ public class RoadLookoutTest {
     }
 
     @Mock
-    private Car car;
+    private Camera camera;
     @InjectMocks
     private RoadLookout lookout;
 

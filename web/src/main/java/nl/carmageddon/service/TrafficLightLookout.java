@@ -20,14 +20,14 @@ public class TrafficLightLookout extends Observable implements Lookout {
 
     private static final Logger logger = LoggerFactory.getLogger(TrafficLightLookout.class);
     private boolean stop = true;
-    private Car car;
     private TrafficLightSettings settings;
     private LookoutResult result;
     private long delay;
+    private Camera camera;
 
     @Inject
-    public TrafficLightLookout(Car car) {
-        this.car = car;
+    public TrafficLightLookout(Camera camera) {
+        this.camera = camera;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
         boolean lightsOff = false;
         List<Rect> trafficLightLookoutResultShapes = trafficLightLookoutResult.getRects();
         while (!stop && !lightsOff) {
-            Mat snapshot = this.car.getCamera().makeSnapshot();
+            Mat snapshot = this.camera.makeSnapshot();
             TrafficLightView view = getTrafficLightView(snapshot.clone());
             addTrafficLightHighlight(view, snapshot);
             if (!trafficLightOff(trafficLightLookoutResultShapes, view.getFoundRectangles())) {
@@ -88,7 +88,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
             } catch (InterruptedException e) {
                 logger.debug("Looking for a traffic light. " + e.getMessage());
             }
-            Mat snapshot = this.car.getCamera().makeSnapshot();
+            Mat snapshot = this.camera.makeSnapshot();
             TrafficLightView view = getTrafficLightView(snapshot);
             addTrafficLightHighlight(view, snapshot);
             if (view.getFoundRectangles().size() == 1) {

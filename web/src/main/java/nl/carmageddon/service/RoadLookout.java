@@ -19,7 +19,6 @@ import static org.opencv.imgproc.Imgproc.line;
  */
 @Singleton
 public class RoadLookout extends Observable implements Lookout {
-    private Car car;
     private boolean run;
     private LookoutResult result;
     private long delay;
@@ -27,9 +26,11 @@ public class RoadLookout extends Observable implements Lookout {
 
     private RoadSettings settings;
 
+    private Camera camera;
+
     @Inject
-    public RoadLookout(Car car) {
-        this.car = car;
+    public RoadLookout(Camera camera) {
+        this.camera = camera;
     }
 
     private static Comparator<Point> getPointComparator() {
@@ -40,13 +41,11 @@ public class RoadLookout extends Observable implements Lookout {
     public LookoutResult start() {
         run = true;
         while (run) {
-            car.getEngine().setThrottle(20);
             int index = 0;
             while (run && index++ < 10) {
-                Mat snapshot = this.car.getCamera().makeSnapshot();
+                Mat snapshot = this.camera.makeSnapshot();
                 LinesView linesView = detectLines(snapshot.clone());
                 addRoadHighlights(linesView, snapshot);
-                this.car.getEngine().setThrottle(20);
                 result = new LookoutResult(AutonomousStatus.RACING, snapshot);
                 notifyClients(result);
                 try {
@@ -55,10 +54,9 @@ public class RoadLookout extends Observable implements Lookout {
                     e.printStackTrace();
                 }
             }
-            car.getEngine().setThrottle(0);
             if (run) {
                 result = new LookoutResult(AutonomousStatus.RACE_FINISHED,
-                        this.car.getCamera().makeSnapshot());
+                        this.camera.makeSnapshot());
                 notifyClients(result);
             }
             run = false;

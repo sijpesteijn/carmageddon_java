@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Car Processing Unit :)
@@ -26,16 +24,18 @@ public class CPU extends Observable implements Observer {
     private static Logger logger = LoggerFactory.getLogger(CPU.class);
     private CarmageddonSettings settings;
     private boolean racing;
-    private Car car;
     private Lookout currentLookout;
     private List<Lookout> lookouts = new ArrayList<>();
     private TrafficLightLookout trafficLightLookout;
+
+    private Camera camera;
+
     private RoadLookout roadLookout;
     private long delay;
     private ScheduledExecutorService statusTimer;
 
     private Runnable statusRunner = () -> {
-        if (this.car.getCamera().getCamera() != null && this.car.getCamera().getCamera().isOpened()) {
+        if (this.camera.getCamera() != null && this.camera.getCamera().isOpened()) {
             sendReadyToRace();
         } else {
             notifyClients(new LookoutResult(AutonomousStatus.NO_CAMERA, null));
@@ -43,12 +43,11 @@ public class CPU extends Observable implements Observer {
     };
 
     @Inject
-    public CPU(CarmageddonSettings settings, Car car, TrafficLightLookout trafficLightLookout, RoadLookout
-            roadLookout) {
+    public CPU(CarmageddonSettings settings, TrafficLightLookout trafficLightLookout, RoadLookout
+            roadLookout, Camera camera) {
         this.settings = settings;
-        this.car = car;
-        this.car.addObserver(this);
         this.trafficLightLookout = trafficLightLookout;
+        this.camera = camera;
         this.trafficLightLookout.addObserver(this);
         this.lookouts.add(this.trafficLightLookout);
         this.roadLookout = roadLookout;
@@ -78,7 +77,7 @@ public class CPU extends Observable implements Observer {
     private void sendReadyToRace() {
         Mat snapshot = null;
         if (settings.isShowVideo()) {
-            snapshot = this.car.getCamera().makeSnapshot();
+            snapshot = this.camera.makeSnapshot();
             if (settings.getTrafficLightSettings().isAddFound()) {
                 TrafficLightView trafficLightViewview = this.trafficLightLookout.getTrafficLightView(snapshot);
                 logger.debug("Possible traffic lights: " + trafficLightViewview.getFoundRectangles().size());
@@ -108,10 +107,10 @@ public class CPU extends Observable implements Observer {
             this.currentLookout.stop();
             this.currentLookout = null;
             startWebcamPushTimer();
-            notifyClients(new LookoutResult(AutonomousStatus.RACE_STOPPED, this.car.getCamera().makeSnapshot()));
+            notifyClients(new LookoutResult(AutonomousStatus.RACE_STOPPED, this.camera.makeSnapshot()));
         }
-        this.car.getSteer().setAngle(0);
-        this.car.getEngine().setThrottle(0);
+//        this.car.getSteer().setAngle(0);
+//        this.car.getEngine().setThrottle(0);
         this.racing = false;
     }
 
@@ -121,21 +120,21 @@ public class CPU extends Observable implements Observer {
             LookoutResult event = (LookoutResult) arg;
             notifyClients(event);
         }
-        // TODO misschien ook een event
-        if (arg == null) {
-            if (car.getMode() == Mode.autonomous && this.racing == false) {
-                startWebcamPushTimer();
-            } else if(this.statusTimer != null) {
-                shutdownWebcamPushTimer();
-            }
-        }
+//        // TODO misschien ook een event
+//        if (arg == null) {
+//            if (car.getMode() == Mode.autonomous && this.racing == false) {
+//                startWebcamPushTimer();
+//            } else if(this.statusTimer != null) {
+//                shutdownWebcamPushTimer();
+//            }
+//        }
     }
 
     private void startWebcamPushTimer() {
-        if(this.statusTimer == null && this.car.getMode() == Mode.autonomous && !this.racing) {
-            this.statusTimer = Executors.newSingleThreadScheduledExecutor();
-            this.statusTimer.scheduleAtFixedRate(statusRunner, 0, this.delay, TimeUnit.MILLISECONDS);
-        }
+//        if(this.statusTimer == null && this.car.getMode() == Mode.autonomous && !this.racing) {
+//            this.statusTimer = Executors.newSingleThreadScheduledExecutor();
+//            this.statusTimer.scheduleAtFixedRate(statusRunner, 0, this.delay, TimeUnit.MILLISECONDS);
+//        }
     }
 
     private void shutdownWebcamPushTimer() {
@@ -153,10 +152,10 @@ public class CPU extends Observable implements Observer {
         this.settings = settings;
 
         this.delay = settings.getDelay();
-        if (car.getMode() == Mode.autonomous && this.racing == false) {
-            shutdownWebcamPushTimer();
-            startWebcamPushTimer();
-        }
+//        if (car.getMode() == Mode.autonomous && this.racing == false) {
+//            shutdownWebcamPushTimer();
+//            startWebcamPushTimer();
+//        }
 
     }
 
@@ -165,9 +164,9 @@ public class CPU extends Observable implements Observer {
     }
 
     public void destroy() {
-        if (car.getCamera().isOpened()) {
-            car.getCamera().getCamera().release();
-        }
+//        if (car.getCamera().isOpened()) {
+//            car.getCamera().getCamera().release();
+//        }
         shutdownWebcamPushTimer();
         if (this.currentLookout != null) {
             this.currentLookout.stop();

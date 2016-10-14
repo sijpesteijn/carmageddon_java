@@ -9,6 +9,7 @@ public class BeagleBoneSettings {
     private int lifeLinePort;
     private int carStatusPort;
     private int carControlPort;
+    private String streamPort;
 
     public void setBeagleBoneIp(String beagleBoneIp) {
         this.beagleBoneIp = beagleBoneIp;
@@ -40,5 +41,13 @@ public class BeagleBoneSettings {
 
     public int getCarControlPort() {
         return carControlPort;
+    }
+
+    public void setStreamPort(String streamPort) {
+        this.streamPort = streamPort;
+    }
+
+    public String getStreamPort() {
+        return streamPort;
     }
 }

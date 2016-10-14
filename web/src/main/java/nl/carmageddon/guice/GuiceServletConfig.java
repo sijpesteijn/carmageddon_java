@@ -3,7 +3,6 @@ package nl.carmageddon.guice;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
-import nl.carmageddon.domain.Car;
 import nl.carmageddon.service.CPU;
 
 import javax.servlet.ServletContextEvent;

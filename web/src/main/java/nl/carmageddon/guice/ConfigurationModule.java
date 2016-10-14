@@ -22,6 +22,7 @@ public class ConfigurationModule extends AbstractModule {
 
             BeagleBoneSettings beagleBoneSettings = new BeagleBoneSettings();
             beagleBoneSettings.setBeagleBoneIp(configuration.getString("bb.ip"));
+            beagleBoneSettings.setStreamPort(configuration.getString("bb.stream.port"));
             beagleBoneSettings.setLifeLinePort(configuration.getInt("bb.lifeline.port"));
             beagleBoneSettings.setCarStatusPort(configuration.getInt("bb.carstatus.port"));
             beagleBoneSettings.setCarControlPort(configuration.getInt("bb.carcontrol.port"));

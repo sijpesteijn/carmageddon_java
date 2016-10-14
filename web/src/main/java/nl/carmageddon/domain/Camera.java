@@ -9,11 +9,8 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import static org.opencv.videoio.Videoio.*;
+import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_HEIGHT;
+import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_WIDTH;
 
 /**
  * @author Gijs Sijpesteijn
@@ -21,23 +18,24 @@ import static org.opencv.videoio.Videoio.*;
 @Singleton
 public class Camera {
     private static Logger logger = LoggerFactory.getLogger(Camera.class);
-
     private final Dimension dimension;
-
-    private final ScheduledExecutorService frameGrabberTimer;
+//    private final ScheduledExecutorService frameGrabberTimer;
 
     @JsonIgnore
     private VideoCapture camera;
     private int id;
+    private String url;
     private boolean showVideo;
-    private Mat snapshot;
+//    private Mat snapshot;
 
     @Inject
     public Camera(CarmageddonSettings settings) {
         this.showVideo = settings.isShowVideo();
         this.dimension = settings.getCameraDimension();
-        this.frameGrabberTimer = Executors.newSingleThreadScheduledExecutor();
-        this.frameGrabberTimer.schedule(frameGrabber, 2, TimeUnit.MILLISECONDS);
+        url = "http://" + settings.getBeagleBoneSettings().getBeagleBoneIp() + ":"
+                + settings.getBeagleBoneSettings().getStreamPort() + "/?action=stream";
+//        this.frameGrabberTimer = Executors.newSingleThreadScheduledExecutor();
+//        this.frameGrabberTimer.schedule(frameGrabber, 5, TimeUnit.MILLISECONDS);
     }
 
     public int getId() {
@@ -51,48 +49,53 @@ public class Camera {
         }
     }
 
-    private Runnable frameGrabber = () -> {
-        while(this.getCamera() != null) {
-            camera.grab();
-            camera.retrieve(snapshot);
-        }
-    };
+//    private Runnable frameGrabber = () -> {
+//        while(this.getCamera() != null) {
+//            camera.grab();
+//            camera.retrieve(snapshot);
+//        }
+//    };
 
     public VideoCapture getCamera() {
         if (camera != null && camera.isOpened()) {
             return camera;
         }
-        camera = new VideoCapture(id); //"http://192.168.88.200:8090/?action=stream");
+        camera = new VideoCapture(url);
         try {
             Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         if (!camera.isOpened()) {
-            logger.error("No webcam with id " + id + " found!");
+            logger.error("No webcam with id " + url + " found!");
             camera = null;
         } else {
             camera.set(CV_CAP_PROP_FRAME_WIDTH, dimension.getWidth());
             camera.set(CV_CAP_PROP_FRAME_HEIGHT, dimension.getHeight());
-            double v = camera.get(5);
-            logger.debug("FPS " + v);
-            camera.set(5, 10);
-            v = camera.get(5);
-            logger.debug("FPS " + v);
         }
         return camera;
     }
 
     public Mat makeSnapshot() {
-//        Mat snapshot = new Mat();
-//        VideoCapture camera = getCamera();
-//
-//        camera.grab();
-//        camera.retrieve(snapshot);
-//        Core.flip(snapshot, snapshot, 0);
+
+        Mat snapshot = new Mat();
+        VideoCapture camera = getCamera();
+        camera.grab();
+        camera.retrieve(snapshot);
         return snapshot;
 //        Mat img = Imgcodecs.imread("/Users/gijs/programming/java/carmageddon/src/main/resources/ws4.jpg");
 //        return img;
+//        Mat mat = new Mat(320, 240, CvType.CV_8UC3);
+//        try {
+//            URL url = new URL("http://192.168.0.100/?action=snapshot");
+//            mat.put(0, 0, IOUtils.toByteArray(url.openStream()));
+//
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return mat;
     }
 
 //    public byte[] makeSnapshotInByteArray() {
