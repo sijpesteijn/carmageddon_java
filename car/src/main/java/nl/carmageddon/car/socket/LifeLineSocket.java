@@ -47,7 +47,8 @@ public class LifeLineSocket {
             }
         }, 100, TimeUnit.MILLISECONDS);
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-            if (this.car.isConnected() && System.currentTimeMillis() - this.lastTime > this.delay + 100) {
+            if (this.car.isConnected() && System.currentTimeMillis() - this.lastTime > this.delay * 2) {
+                logger.debug("No ping command after " + (this.delay*2));
                 this.car.setConnected(false);
             }
         }, 0, this.delay, TimeUnit.MILLISECONDS);
@@ -55,11 +56,15 @@ public class LifeLineSocket {
 
     private class LifeLineHandler extends Thread {
         private PrintStream out;
+
+        private Socket connection;
+
         private DataInputStream dis;
 
         public LifeLineHandler(Socket connection) throws IOException {
             dis = new DataInputStream(connection.getInputStream());
             out = new PrintStream(connection.getOutputStream());
+            this.connection = connection;
         }
 
         @Override
@@ -74,6 +79,7 @@ public class LifeLineSocket {
                     lastTime = System.currentTimeMillis();
                     out.println("pong");
                     out.flush();
+                    logger.debug("send: pong");
                 }
             } catch (IOException e) {
                 logger.error(e.getMessage());

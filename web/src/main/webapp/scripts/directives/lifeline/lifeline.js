@@ -3,23 +3,14 @@
 
     app.controller('lifelineCtrl', lifelineController).directive('lifeline', lifelineDirective);
 
-    lifelineController.$inject = ['$scope', '$timeout', 'websocketFactory'];
+    lifelineController.$inject = ['$scope', 'websocketFactory'];
 
-    function lifelineController($scope, timeout, websocketFactory) {
+    function lifelineController($scope, websocketFactory) {
         $scope.heartbeat = false;
-
         var websocket = websocketFactory.create('lifeline');
-        sendPing();
-
-        function sendPing() {
-            $timeout(function () {
-                websocket.sendMessage('ping');
-            }, 500);
-        }
 
         websocket.onMessage(function(message) {
             $scope.heartbeat = !$scope.heartbeat;
-            sendPing();
         });
 
         $scope.$on('$destroy', function () {
