@@ -15,10 +15,11 @@
                 </label>
             </li>
             <li>
-                <label for="maxThrottle">
-                    Max throttle:
-                    <input type="range" min="-1" id="maxThrottle" max="120" ng-model="settings.maxThrottle">
-                    {{ settings.maxThrottle }}
+                <label for="throttleLimit">
+                    Throttle limit:
+                    <input type="range" min="-1" id="throttleLimit" max="120"
+                           ng-model="settings.beagleBoneSettings.throttleLimit">
+                    {{ settings.beagleBoneSettings.throttleLimit }}
                 </label>
             </li>
             <li>

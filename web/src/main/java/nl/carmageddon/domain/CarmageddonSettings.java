@@ -8,7 +8,6 @@ public class CarmageddonSettings {
     private TrafficLightSettings trafficLightSettings;
     private RoadSettings roadSettings;
     private long delay;
-    private int maxThrottle;
     private Dimension cameraDimension;
     private boolean showVideo;
     private BeagleBoneSettings beagleBoneSettings;
@@ -43,14 +42,6 @@ public class CarmageddonSettings {
 
     public void setRoadSettings(RoadSettings roadSettings) {
         this.roadSettings = roadSettings;
-    }
-
-    public int getMaxThrottle() {
-        return maxThrottle;
-    }
-
-    public void setMaxThrottle(int maxThrottle) {
-        this.maxThrottle = maxThrottle;
     }
 
     public void setShowVideo(boolean showVideo) {

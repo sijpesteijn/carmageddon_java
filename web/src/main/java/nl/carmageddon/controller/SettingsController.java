@@ -2,12 +2,14 @@ package nl.carmageddon.controller;
 
 import nl.carmageddon.domain.CarmageddonSettings;
 import nl.carmageddon.service.AutonomousService;
+import nl.carmageddon.service.CarInstructionSender;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 /**
  * @author Gijs Sijpesteijn
@@ -18,19 +20,23 @@ public class SettingsController {
     private CarmageddonSettings carmageddonSettings;
     private AutonomousService autonomousService;
 
+    private CarInstructionSender sender;
+
     @Inject
-    public SettingsController(CarmageddonSettings carmageddonSettings, AutonomousService autonomousService) {
+    public SettingsController(CarmageddonSettings carmageddonSettings,
+            AutonomousService autonomousService,
+            CarInstructionSender sender) {
         this.carmageddonSettings = carmageddonSettings;
         this.autonomousService = autonomousService;
+        this.sender = sender;
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response saveSettings(CarmageddonSettings settings) {
+    public Response saveSettings(CarmageddonSettings settings) throws IOException {
         this.carmageddonSettings = settings;
         this.autonomousService.useSettings(settings);
-//        this.car.getCamera().setShowVideo(settings.isShowVideo());
-//        this.car.getEngine().setThrottleLimit(settings.getMaxThrottle());
+        this.sender.sendMessage("throttleLimit", settings.getBeagleBoneSettings().getThrottleLimit());
         return Response.ok().build();
     }
 

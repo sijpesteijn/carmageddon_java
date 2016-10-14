@@ -53,7 +53,7 @@ public class LifeLineWebsocket {
                 try {
                     while (!received && is != null && (responseLine = is.readLine()) != null) {
                         if (responseLine.equals("pong")) {
-                            log.debug("pong received");
+//                            log.debug("pong received");
                             received = true;
                         }
                     }

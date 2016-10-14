@@ -1,7 +1,7 @@
 <div class="car-status">
     <div class="car">
-            Steer angle: <span class="angle">{{ car.steer.angle }}</span>
-            Engine throttle: <span class="throttle">{{car.engine.throttle }}</span>
+            Steer angle: <span class="angle">{{ car.angle }}</span>
+            Engine throttle: <span class="throttle">{{car.throttle }}</span>
     </div>
     <div class="mode">
         Mode: <select ng-model="carMode" ng-options="mode for mode in modes" ng-change="updateCarMode()">

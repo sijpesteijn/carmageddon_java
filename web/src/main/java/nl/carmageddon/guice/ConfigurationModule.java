@@ -17,7 +17,6 @@ public class ConfigurationModule extends AbstractModule {
             PropertiesConfiguration configuration = new PropertiesConfiguration("application.properties");
             CarmageddonSettings carmageddonSettings = new CarmageddonSettings();
             carmageddonSettings.setDelay(configuration.getLong("common.delay"));
-            carmageddonSettings.setMaxThrottle(configuration.getInt("common.maxThrottle"));
             carmageddonSettings.setShowVideo(configuration.getBoolean("common.showVideo"));
 
             BeagleBoneSettings beagleBoneSettings = new BeagleBoneSettings();
@@ -26,6 +25,7 @@ public class ConfigurationModule extends AbstractModule {
             beagleBoneSettings.setLifeLinePort(configuration.getInt("bb.lifeline.port"));
             beagleBoneSettings.setCarStatusPort(configuration.getInt("bb.carstatus.port"));
             beagleBoneSettings.setCarControlPort(configuration.getInt("bb.carcontrol.port"));
+            beagleBoneSettings.setThrottleLimit(configuration.getInt("bb.throttle.limit"));
             carmageddonSettings.setBeagleBoneSettings(beagleBoneSettings);
 
             Dimension cameraDimension = new Dimension();

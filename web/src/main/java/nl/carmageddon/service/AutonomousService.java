@@ -4,6 +4,7 @@ import nl.carmageddon.domain.CarmageddonSettings;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.util.Observer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -39,7 +40,7 @@ public class AutonomousService {
         this.cpu.addObserver(observer);
     }
 
-    public void stopRace() {
+    public void stopRace() throws IOException {
         this.cpu.stopRacing();
     }
 

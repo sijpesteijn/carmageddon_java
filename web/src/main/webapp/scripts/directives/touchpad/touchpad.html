@@ -1,10 +1,11 @@
 <div class="touchpad">
     <div>
-        <label for="maxThrottle">
+        <label for="throttleLimit">
             Max throttle:
-            <input type="range" min="-1" id="maxThrottle" max="120" ng-model="settings.maxThrottle"
+            <input type="range" min="-1" id="throttleLimit" max="120"
+                   ng-model="settings.beagleBoneSettings.throttleLimit"
                    ng-change="updateMaxThrottle()">
-            {{ settings.maxThrottle }}
+            {{ settings.beagleBoneSettings.throttleLimit }}
         </label>
     </div>
     <div id="touchpad"></div>

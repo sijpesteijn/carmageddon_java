@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 /**
  * @author Gijs Sijpesteijn
@@ -33,7 +34,7 @@ public class AutonomousController {
 
     @POST
     @Path("/stop")
-    public Response stopAutonomous() {
+    public Response stopAutonomous() throws IOException {
         autonomousService.stopRace();
         return Response.ok().build();
     }

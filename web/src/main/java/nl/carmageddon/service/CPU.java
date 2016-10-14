@@ -7,11 +7,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Car Processing Unit :)
@@ -30,6 +33,10 @@ public class CPU extends Observable implements Observer {
 
     private Camera camera;
 
+    private Car car;
+
+    private CarInstructionSender carInstructionSender;
+
     private RoadLookout roadLookout;
     private long delay;
     private ScheduledExecutorService statusTimer;
@@ -44,10 +51,12 @@ public class CPU extends Observable implements Observer {
 
     @Inject
     public CPU(CarmageddonSettings settings, TrafficLightLookout trafficLightLookout, RoadLookout
-            roadLookout, Camera camera) {
+            roadLookout, Camera camera, Car car, CarInstructionSender carInstructionSender) {
         this.settings = settings;
         this.trafficLightLookout = trafficLightLookout;
         this.camera = camera;
+        this.car = car;
+        this.carInstructionSender = carInstructionSender;
         this.trafficLightLookout.addObserver(this);
         this.lookouts.add(this.trafficLightLookout);
         this.roadLookout = roadLookout;
@@ -102,15 +111,15 @@ public class CPU extends Observable implements Observer {
         return racing;
     }
 
-    public void stopRacing() {
+    public void stopRacing() throws IOException {
         if (this.currentLookout != null) {
             this.currentLookout.stop();
             this.currentLookout = null;
             startWebcamPushTimer();
             notifyClients(new LookoutResult(AutonomousStatus.RACE_STOPPED, this.camera.makeSnapshot()));
         }
-//        this.car.getSteer().setAngle(0);
-//        this.car.getEngine().setThrottle(0);
+        this.carInstructionSender.sendMessage("angle", 0);
+        this.carInstructionSender.sendMessage("throttle", 0);
         this.racing = false;
     }
 
@@ -121,20 +130,20 @@ public class CPU extends Observable implements Observer {
             notifyClients(event);
         }
 //        // TODO misschien ook een event
-//        if (arg == null) {
-//            if (car.getMode() == Mode.autonomous && this.racing == false) {
-//                startWebcamPushTimer();
-//            } else if(this.statusTimer != null) {
-//                shutdownWebcamPushTimer();
-//            }
-//        }
+        if (arg == null) {
+            if (car.getMode() == Mode.autonomous && this.racing == false) {
+                startWebcamPushTimer();
+            } else if(this.statusTimer != null) {
+                shutdownWebcamPushTimer();
+            }
+        }
     }
 
     private void startWebcamPushTimer() {
-//        if(this.statusTimer == null && this.car.getMode() == Mode.autonomous && !this.racing) {
-//            this.statusTimer = Executors.newSingleThreadScheduledExecutor();
-//            this.statusTimer.scheduleAtFixedRate(statusRunner, 0, this.delay, TimeUnit.MILLISECONDS);
-//        }
+        if(this.statusTimer == null && this.car.getMode() == Mode.autonomous && !this.racing) {
+            this.statusTimer = Executors.newSingleThreadScheduledExecutor();
+            this.statusTimer.scheduleAtFixedRate(statusRunner, 0, this.delay, TimeUnit.MILLISECONDS);
+        }
     }
 
     private void shutdownWebcamPushTimer() {
@@ -152,10 +161,10 @@ public class CPU extends Observable implements Observer {
         this.settings = settings;
 
         this.delay = settings.getDelay();
-//        if (car.getMode() == Mode.autonomous && this.racing == false) {
-//            shutdownWebcamPushTimer();
-//            startWebcamPushTimer();
-//        }
+        if (car.getMode() == Mode.autonomous && this.racing == false) {
+            shutdownWebcamPushTimer();
+            startWebcamPushTimer();
+        }
 
     }
 
@@ -164,9 +173,6 @@ public class CPU extends Observable implements Observer {
     }
 
     public void destroy() {
-//        if (car.getCamera().isOpened()) {
-//            car.getCamera().getCamera().release();
-//        }
         shutdownWebcamPushTimer();
         if (this.currentLookout != null) {
             this.currentLookout.stop();

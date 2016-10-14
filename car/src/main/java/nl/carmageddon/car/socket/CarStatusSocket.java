@@ -47,20 +47,23 @@ public class CarStatusSocket {
     };
 
     private Runnable statusSender = () -> {
-        try {
-            carStatus = mapper.writeValueAsString(this.car);
-        } catch (IOException e) {
-            logger.debug("Could not serialize car.");
-        }
-        this.clientConnections.forEach(clientConnection -> {
-            PrintStream out = null;
+        if (this.clientConnections.size() > 0) {
             try {
-                out = new PrintStream(clientConnection.getOutputStream());
-                out.println(carStatus);
+                carStatus = mapper.writeValueAsString(this.car);
             } catch (IOException e) {
-                logger.debug("Could not send status to client " + clientConnection.getInetAddress());
+                logger.debug("Could not serialize car.");
             }
-        });
+            this.clientConnections.forEach(clientConnection -> {
+                PrintStream out = null;
+                try {
+                    out = new PrintStream(clientConnection.getOutputStream());
+                    out.println(carStatus);
+                    out.flush();
+                } catch (IOException e) {
+                    logger.debug("Could not send status to client " + clientConnection.getInetAddress());
+                }
+            });
+        }
     };
 
     @Inject
@@ -68,7 +71,7 @@ public class CarStatusSocket {
         this.car = car;
         this.socket = new ServerSocket(settings.carStatusPort());
         this.lifelineTimer.schedule(socketListener, 100, TimeUnit.MILLISECONDS);
-        this.statusTimer.scheduleAtFixedRate(statusSender, 0, 100, TimeUnit.MILLISECONDS);
+        this.statusTimer.scheduleAtFixedRate(statusSender, 0, 300, TimeUnit.MILLISECONDS);
     }
 
 }

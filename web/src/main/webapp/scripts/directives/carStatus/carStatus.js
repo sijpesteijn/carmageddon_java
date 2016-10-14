@@ -8,14 +8,15 @@
     function carStatusController($rootScope, $scope, $resource, websocketFactory) {
         $scope.connected = false;
         $scope.car;
+        $rootScope.carMode;
         $scope.modes = ['disabled','manual','autonomous'];
 
         var websocket = websocketFactory.create('car/status');
 
         websocket.onMessage(function (message) {
             if (message.data !== 'pong') {
+                console.log("Car: " + message.data);
                 $scope.car = angular.fromJson(message.data);
-                $rootScope.settings.throttleLimit = $scope.car.engine.throttleLimit;
                 $rootScope.carMode = $scope.car.mode;
             }
         });

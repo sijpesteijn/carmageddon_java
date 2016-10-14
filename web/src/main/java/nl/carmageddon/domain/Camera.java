@@ -60,7 +60,7 @@ public class Camera {
         if (camera != null && camera.isOpened()) {
             return camera;
         }
-        camera = new VideoCapture(url);
+        camera = new VideoCapture(0);
         try {
             Thread.sleep(200);
         } catch (InterruptedException e) {

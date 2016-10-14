@@ -10,6 +10,7 @@ public class BeagleBoneSettings {
     private int carStatusPort;
     private int carControlPort;
     private String streamPort;
+    private int throttleLimit;
 
     public void setBeagleBoneIp(String beagleBoneIp) {
         this.beagleBoneIp = beagleBoneIp;
@@ -49,5 +50,13 @@ public class BeagleBoneSettings {
 
     public String getStreamPort() {
         return streamPort;
+    }
+
+    public int getThrottleLimit() {
+        return throttleLimit;
+    }
+
+    public void setThrottleLimit(int throttleLimit) {
+        this.throttleLimit = throttleLimit;
     }
 }
