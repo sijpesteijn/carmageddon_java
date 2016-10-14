@@ -1,8 +1,8 @@
 package nl.carmageddon.car.socket;
 
 import com.google.inject.Inject;
-import nl.carmageddon.domain.Car;
-import nl.carmageddon.domain.CarSettings;
+import nl.carmageddon.car.domain.Car;
+import nl.carmageddon.car.domain.CarSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,15 +56,11 @@ public class LifeLineSocket {
 
     private class LifeLineHandler extends Thread {
         private PrintStream out;
-
-        private Socket connection;
-
         private DataInputStream dis;
 
         public LifeLineHandler(Socket connection) throws IOException {
             dis = new DataInputStream(connection.getInputStream());
             out = new PrintStream(connection.getOutputStream());
-            this.connection = connection;
         }
 
         @Override
@@ -72,14 +68,14 @@ public class LifeLineSocket {
             String req;
             try {
                 while (dis != null && (req = dis.readLine()) != null) {
-                    logger.debug("received: " + req);
+//                    logger.debug("received: " + req);
                     if (!car.isConnected()) {
                         car.setConnected(true);
                     }
                     lastTime = System.currentTimeMillis();
                     out.println("pong");
                     out.flush();
-                    logger.debug("send: pong");
+//                    logger.debug("send: pong");
                 }
             } catch (IOException e) {
                 logger.error(e.getMessage());

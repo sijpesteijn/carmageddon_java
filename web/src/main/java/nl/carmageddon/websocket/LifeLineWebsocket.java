@@ -44,10 +44,10 @@ public class LifeLineWebsocket {
         }
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             if (sessions.size() > 0) {
-                log.debug("sending ping.");
+//                log.debug("sending ping.");
                 out.println("ping");
                 out.flush();
-                log.debug("waiting for pong");
+//                log.debug("waiting for pong");
                 String responseLine;
                 boolean received = false;
                 try {

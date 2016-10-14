@@ -1,4 +1,4 @@
-package nl.carmageddon.domain;
+package nl.carmageddon.car.domain;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.slf4j.Logger;

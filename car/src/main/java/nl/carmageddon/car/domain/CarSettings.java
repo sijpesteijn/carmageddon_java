@@ -1,4 +1,4 @@
-package nl.carmageddon.domain;
+package nl.carmageddon.car.domain;
 
 /**
  * @author Gijs Sijpesteijn
@@ -6,8 +6,8 @@ package nl.carmageddon.domain;
 public class CarSettings {
     private int lifelinePort;
     private int carStatusPort;
-
     private int carControlPort;
+    private int throtteLimit;
 
     public int lifelinePort() {
         return lifelinePort;
@@ -31,5 +31,13 @@ public class CarSettings {
 
     public int getCarControlPort() {
         return carControlPort;
+    }
+
+    public void setThrotteLimit(int throtteLimit) {
+        this.throtteLimit = throtteLimit;
+    }
+
+    public int getThrotteLimit() {
+        return throtteLimit;
     }
 }

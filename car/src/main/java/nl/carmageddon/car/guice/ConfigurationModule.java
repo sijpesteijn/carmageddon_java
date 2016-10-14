@@ -2,10 +2,10 @@ package nl.carmageddon.car.guice;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
-import nl.carmageddon.domain.CarSettings;
-import nl.carmageddon.domain.Pwm;
-import nl.carmageddon.domain.PwmImpl;
-import nl.carmageddon.domain.PwmMock;
+import nl.carmageddon.car.domain.CarSettings;
+import nl.carmageddon.car.domain.Pwm;
+import nl.carmageddon.car.domain.PwmImpl;
+import nl.carmageddon.car.domain.PwmMock;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
@@ -30,6 +30,7 @@ public class ConfigurationModule extends AbstractModule {
             settings.setLifelinePort(configuration.getInt("lifeline.port"));
             settings.setCarStatusPort(configuration.getInt("carstatus.port"));
             settings.setCarControlPort(configuration.getInt("carcontrol.port"));
+            settings.setThrotteLimit(configuration.getInt("throttle.limit"));
 
             bind(CarSettings.class).toInstance(settings);
         } catch (ConfigurationException e) {

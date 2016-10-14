@@ -1,8 +1,8 @@
 package nl.carmageddon.car.socket;
 
 import com.google.inject.Inject;
-import nl.carmageddon.domain.Car;
-import nl.carmageddon.domain.CarSettings;
+import nl.carmageddon.car.domain.Car;
+import nl.carmageddon.car.domain.CarSettings;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package nl.carmageddon.domain;
+package nl.carmageddon.car.domain;
 
 import org.junit.Before;
 import org.junit.Test;

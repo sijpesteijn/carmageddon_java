@@ -1,4 +1,4 @@
-package nl.carmageddon.domain;
+package nl.carmageddon.car.domain;
 
 import com.google.inject.Inject;
 
@@ -16,9 +16,10 @@ public class Car extends Observable {
     private boolean connected = false;
 
     @Inject
-    public Car(Steer steer, Engine engine) {
+    public Car(CarSettings settings, Steer steer, Engine engine) {
         this.steer = steer;
         this.engine = engine;
+        this.engine.setThrottleLimit(settings.getThrotteLimit());
     }
 
     public Steer getSteer() {
@@ -45,6 +46,10 @@ public class Car extends Observable {
 
     public void setMode(Mode mode) {
         this.mode = mode;
+        if (this.mode == Mode.disabled) {
+            this.engine.setThrottle(0);
+            this.steer.setAngle(0);
+        }
         setChanged();
         notifyObservers();
     }

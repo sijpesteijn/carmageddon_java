@@ -1,4 +1,4 @@
-package nl.carmageddon.domain;
+package nl.carmageddon.car.domain;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
