@@ -6,9 +6,14 @@
     <groupId>nl.carmageddon</groupId>
     <artifactId>carmageddon</artifactId>
     <version>LOCAL</version>
-    <packaging>war</packaging>
+    <modules>
+        <module>domain</module>
+        <module>web</module>
+        <module>car</module>
+    </modules>
+    <packaging>pom</packaging>
 
-    <name>nl.carmageddon.Carmageddon</name>
+    <name>Carmageddon - Parent</name>
 
     <properties>
         <jersey.version>1.19.2</jersey.version>
@@ -159,71 +164,7 @@
     </dependencies>
 
     <build>
-        <finalName>carmageddon</finalName>
         <plugins>
-            <plugin>
-                <groupId>org.jasig.maven</groupId>
-                <artifactId>sass-maven-plugin</artifactId>
-                <version>1.1.1</version>
-                <executions>
-                    <execution>
-                        <id>package</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>update-stylesheets</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <resources>
-                        <resource>
-                            <source>
-                                <directory>${basedir}/src/main/webapp/sass/</directory>
-                            </source>
-                            <destination>${basedir}/src/main/webapp/css</destination>
-                        </resource>
-                    </resources>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.3.12.v20160915</version>
-                <configuration>
-                    <scanIntervalSeconds>1</scanIntervalSeconds>
-                    <scanTargetPatterns>
-                        <scanTargetPattern>
-                            <directory>src/main/webapp/</directory>
-                            <includes>
-                                <include>**/*.html</include>
-                                <include>**/*.js</include>
-                                <include>**/*.css</include>
-                            </includes>
-                        </scanTargetPattern>
-                        <scanTargetPattern>
-                            <directory>target/classes/</directory>
-                            <includes>
-                                <include>**/*.class</include>
-                            </includes>
-                        </scanTargetPattern>
-                    </scanTargetPatterns>
-                    <httpConnector>
-                        <port>8082</port>
-                    </httpConnector>
-                    <!--<connectors>-->
-                    <!--<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">-->
-                    <!--<port>9002</port>-->
-                    <!--<maxIdleTime>60000</maxIdleTime>-->
-                    <!--</connector>-->
-                    <!--</connectors>-->
-                    <webApp>
-                        <contextPath>/carmageddon</contextPath>
-                    </webApp>
-                </configuration>
-                <dependencies>
-
-                </dependencies>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

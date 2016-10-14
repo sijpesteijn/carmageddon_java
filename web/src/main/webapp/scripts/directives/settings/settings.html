@@ -1,0 +1,167 @@
+<div class="settings-overlay">
+    <ul class="tabHeader">
+        <li><a href="#" ng-click="tab='general'" ng-class="{'active': tab == 'general'}">General</a></li>
+        <li><a href="#" ng-click="tab='traffic'" ng-class="{'active': tab == 'traffic'}">Trafficlight</a></li>
+        <li><a href="#" ng-click="tab='road'" ng-class="{'active': tab == 'road'}">Road</a></li>
+    </ul>
+    <div ng-if="tab == 'general'" class="general-settings">
+        <ul>
+            <li>
+                <label for="framerate_slider">
+                    Framerate:
+                    <input type="range" min="1" max="30" id="framerate_slider" ng-model="framerate" ng-change="updateFramerate(framerate)">
+                    {{ framerate }}
+                    fps.
+                </label>
+            </li>
+            <li>
+                <label for="maxThrottle">
+                    Max throttle:
+                    <input type="range" min="-1" id="maxThrottle" max="120" ng-model="settings.maxThrottle">
+                    {{ settings.maxThrottle }}
+                </label>
+            </li>
+            <li>
+                <label for="showVideo">
+                    Show video:
+                    <input type="checkbox" id="showVideo" ng-model="settings.showVideo">
+                    {{ settings.showVideo }}
+                </label>
+            </li>
+        </ul>
+    </div>
+    <div ng-if="tab == 'traffic'" class="trafficlight-settings">
+        <ul class="tabHeader">
+            <li><a href="#" ng-click="subtab='colors'" ng-class="{'active': subtab == 'colors'}">Colors</a></li>
+            <li><a href="#" ng-click="subtab='sizes'" ng-class="{'active': subtab == 'sizes'}">Sizes</a></li>
+        </ul>
+        <div class="colors" ng-if="tab == 'traffic' && subtab == 'colors'">
+            <ul class="lower">
+                <li>
+                    <label for="viewtype">
+                        View type:
+                        <select class="viewType" ng-model="settings.trafficLightSettings.viewType">
+                            <option ng-repeat="viewType in trafficLightViewTypes"
+                                    value="{{viewType.id}}"
+                                    ng-selected="settings.trafficLightSettings.viewType == viewType.id">{{viewType
+                                .name}}</option>
+                        </select>
+                    </label>
+                </li>
+                <li>
+                    <label for="addTrafficLightResult">
+                        Add found:
+                        <input type="checkbox" id="addTrafficLightResult"
+                               ng-model="settings.trafficLightSettings.addFound">
+                        {{ settings.trafficLightSettings.addFound }}
+                    </label>
+                </li>
+                <li>Lower limit:</li>
+                <li><div class="min">min</div><color-picker id="lowerHSVMin" options="options"
+                                                            event-api="eventApi"
+                                                            ng-model="lowerHSVMin"></color-picker></li>
+                <li><div class="max">max</div> <color-picker id="lowerHSVMax" options="options"
+                                                             event-api="eventApi"
+                                                             ng-model="lowerHSVMax"></color-picker></li>
+                <li>Upper limit:</li>
+                <li><div class="min">min</div> <color-picker id="upperHSVMin" options="options"
+                                                             event-api="eventApi"
+                                                             ng-model="upperHSVMin"></color-picker></li>
+                <li><div class="max">max</div> <color-picker id="upperHSVMax" options="options"
+                                                             event-api="eventApi"
+                                                             ng-model="upperHSVMax"></color-picker></li>
+            </ul>
+        </div>
+        <div class="sizes" ng-if="tab == 'traffic' && subtab == 'sizes'">
+            <ul class="minDimension">
+                <li>Min size:</li>
+                <li>width
+                    <input type="number" min="-1" ng-model="settings.trafficLightSettings.minDimension.width"></li>
+                <li>height
+                    <input type="number" min="-1" ng-model="settings.trafficLightSettings.minDimension.height"></li>
+                <li>Max size:</li>
+                <li>width  <input type="number" min="-1"
+                                  ng-model="settings.trafficLightSettings.maxDimension.width"></li>
+                <li>height <input type="number" min="-1"
+                                  ng-model="settings.trafficLightSettings.maxDimension.height"></li>
+            </ul>
+        </div>
+    </div>
+    <div ng-if="tab == 'road'" class="road-settings">
+        <ul>
+            <li>
+                <label for="viewtype">
+                    View type:
+                    <select id="viewType" ng-model="settings.roadSettings.viewType">
+                        <option ng-repeat="viewType in roadViewTypes"
+                                value="{{viewType.id}}" ng-selected="settings.roadSettings.viewType == viewType.id">
+                            {{viewType.name}}</option>
+                    </select>
+                </label>
+            </li>
+            <li>
+                <label for="addRoadResult">
+                    Add found:
+                    <input type="checkbox" id="addRoadResult"
+                           ng-model="settings.roadSettings.addFound">
+                    {{ settings.roadSettings.addFound }}
+                </label>
+            </li>
+            <li>
+                <label for="roi_slider">
+                    Road ROI:
+                    <input type="range" min="1" id="roi_slider" max="{{settings.cameraDimension.height}}" ng-model="settings.roadSettings.roiHeight">
+                    {{ settings.roadSettings.roiHeight }}
+                </label>
+            </li>
+            <li>
+                <label for="canny_threshold1">
+                    Canny threshold1:
+                    <input type="range" min="1" max="1000" id="canny_threshold1"
+                           ng-model="settings.roadSettings.cannyThreshold1">
+                    {{ settings.roadSettings.cannyThreshold1 }}
+                </label>
+            </li>
+            <li>
+                <label for="canny_threshold2">
+                    Canny threshold1:
+                    <input type="range" min="1" max="1000" id="canny_threshold2"
+                           ng-model="settings.roadSettings.cannyThreshold2">
+                    {{ settings.roadSettings.cannyThreshold2 }}
+                </label>
+            </li>
+            <li>
+                <label for="canny_apertureSize">
+                    Canny aperture size:
+                    <input type="range" min="3" id="canny_apertureSize" max="7" step="2"
+                           ng-model="settings.roadSettings.cannyApertureSize">
+                    {{ settings.roadSettings.cannyApertureSize }}
+                </label>
+            </li>
+            <li>
+                <label for="lines_threshold">
+                    Lines threshold:
+                    <input type="range" min="1" id="lines_threshold" max="1000"
+                           ng-model="settings.roadSettings.linesThreshold">
+                    {{ settings.roadSettings.linesThreshold }}
+                </label>
+            </li>
+            <li>
+                <label for="lines_minLineSize">
+                    Lines min line size:
+                    <input type="range" min="1" id="lines_minLineSize" max="1000"
+                           ng-model="settings.roadSettings.linesMinLineSize">
+                    {{ settings.roadSettings.linesMinLineSize }}
+                </label>
+            </li>
+            <li>
+                <label for="lines_maxLineGap">
+                    Lines max line gap:
+                    <input type="range" min="1" id="lines_maxLineGap" max="1000"
+                           ng-model="settings.roadSettings.linesMaxLineGap">
+                    {{ settings.roadSettings.linesMaxLineGap }}
+                </label>
+            </li>
+        </ul>
+    </div>
+</div>

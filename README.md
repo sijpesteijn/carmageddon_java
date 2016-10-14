@@ -87,3 +87,5 @@ Beetje vergeten, maar deze sites hebben mij geholpen:
 - http://brilliantlyeasy.com/ubuntu-linux-tl-wn725n-tp-link-version-2-wifi-driver-install/
 - en de TL-WN823N.tar.gz driver in beaglebone folder (sudo make ARCH=arm)
 - `wlist scan` scant wifi netwerken
+
+./mjpg_streamer -i "./input_uvc.so -d /dev/video0 -n -f 15 -r 320x240" -o "./output_http.so -p 8090 -n -w ./www"
