@@ -29,7 +29,7 @@ public class CPU extends Observable implements Observer {
     private boolean racing;
     private Lookout currentLookout;
     private List<Lookout> lookouts = new ArrayList<>();
-    private TrafficLightLookout2 trafficLightLookout;
+    private TrafficLightLookout trafficLightLookout;
     private Camera camera;
     private Car car;
     private CarInstructionSender carInstructionSender;
@@ -46,7 +46,7 @@ public class CPU extends Observable implements Observer {
     };
 
     @Inject
-    public CPU(CarmageddonSettings settings, TrafficLightLookout2 trafficLightLookout, RoadLookout
+    public CPU(CarmageddonSettings settings, TrafficLightLookout trafficLightLookout, RoadLookout
             roadLookout, Camera camera, Car car, CarInstructionSender carInstructionSender) {
         this.settings = settings;
         this.camera = camera;

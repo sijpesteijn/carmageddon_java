@@ -18,16 +18,16 @@ import static org.opencv.core.CvType.CV_8UC1;
  * @author Gijs Sijpesteijn
  */
 @Singleton
-public class TrafficLightLookout2 extends Observable implements Lookout {
+public class TrafficLightLookout extends Observable implements Lookout {
 
-    private static final Logger logger = LoggerFactory.getLogger(TrafficLightLookout2.class);
+    private static final Logger logger = LoggerFactory.getLogger(TrafficLightLookout.class);
     private boolean run = false;
     private TrafficLightSettings settings;
     private LookoutResult result;
     private Camera camera;
 
     @Inject
-    public TrafficLightLookout2(Camera camera) {
+    public TrafficLightLookout(Camera camera) {
         this.camera = camera;
     }
 

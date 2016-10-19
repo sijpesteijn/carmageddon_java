@@ -28,7 +28,7 @@ import static org.opencv.imgproc.Imgproc.line;
  */
 @Singleton
 public class RoadLookout extends Observable implements Lookout {
-    private static final Logger logger = LoggerFactory.getLogger(TrafficLightLookout2.class);
+    private static final Logger logger = LoggerFactory.getLogger(TrafficLightLookout.class);
     private boolean run;
     private LookoutResult result;
     private long delay;
@@ -209,7 +209,7 @@ public class RoadLookout extends Observable implements Lookout {
         pca.setAxisX(axisX);
         pca.setAxisY(axisY);
 
-        double angle = toDegrees(atan2(decomposition.getRealEigenvalues()[1], decomposition.getRealEigenvalues()[0]));
+        double angle = toDegrees(atan(decomposition.getRealEigenvalues()[1]/decomposition.getRealEigenvalues()[0]));
         pca.setAngle(angle);
         return pca;
     }
