@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import nl.carmageddon.domain.CarInstuction;
 import nl.carmageddon.domain.CarmageddonSettings;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.net.Socket;
  */
 @Singleton
 public class CarInstructionSender {
+    private static Logger logger = LoggerFactory.getLogger(CarInstructionSender.class);
     private ObjectMapper mapper = new ObjectMapper();
     private PrintWriter out;
 
@@ -26,11 +29,15 @@ public class CarInstructionSender {
 
     }
 
-    public void sendMessage(String key, Object value) throws IOException {
-        CarInstuction ci = new CarInstuction();
-        ci.setKey(key);
-        ci.setValue(value);
-        out.println(mapper.writeValueAsString(ci));
-        out.flush();
+    public void sendMessage(String key, Object value) {
+        try {
+            CarInstuction ci = new CarInstuction();
+            ci.setKey(key);
+            ci.setValue(value);
+            out.println(mapper.writeValueAsString(ci));
+            out.flush();
+        } catch (IOException e) {
+            logger.error("Could not send instruction: " + key + " = " + value + " " + e.getMessage());
+        }
     }
 }

@@ -32,11 +32,6 @@
         </ul>
     </div>
     <div ng-if="tab == 'traffic'" class="trafficlight-settings">
-        <ul class="tabHeader">
-            <li><a href="#" ng-click="subtab='colors'" ng-class="{'active': subtab == 'colors'}">Colors</a></li>
-            <li><a href="#" ng-click="subtab='sizes'" ng-class="{'active': subtab == 'sizes'}">Sizes</a></li>
-        </ul>
-        <div class="colors" ng-if="tab == 'traffic' && subtab == 'colors'">
             <ul class="lower">
                 <li>
                     <label for="viewtype">
@@ -57,36 +52,7 @@
                         {{ settings.trafficLightSettings.addFound }}
                     </label>
                 </li>
-                <li>Lower limit:</li>
-                <li><div class="min">min</div><color-picker id="lowerHSVMin" options="options"
-                                                            event-api="eventApi"
-                                                            ng-model="lowerHSVMin"></color-picker></li>
-                <li><div class="max">max</div> <color-picker id="lowerHSVMax" options="options"
-                                                             event-api="eventApi"
-                                                             ng-model="lowerHSVMax"></color-picker></li>
-                <li>Upper limit:</li>
-                <li><div class="min">min</div> <color-picker id="upperHSVMin" options="options"
-                                                             event-api="eventApi"
-                                                             ng-model="upperHSVMin"></color-picker></li>
-                <li><div class="max">max</div> <color-picker id="upperHSVMax" options="options"
-                                                             event-api="eventApi"
-                                                             ng-model="upperHSVMax"></color-picker></li>
             </ul>
-        </div>
-        <div class="sizes" ng-if="tab == 'traffic' && subtab == 'sizes'">
-            <ul class="minDimension">
-                <li>Min size:</li>
-                <li>width
-                    <input type="number" min="-1" ng-model="settings.trafficLightSettings.minDimension.width"></li>
-                <li>height
-                    <input type="number" min="-1" ng-model="settings.trafficLightSettings.minDimension.height"></li>
-                <li>Max size:</li>
-                <li>width  <input type="number" min="-1"
-                                  ng-model="settings.trafficLightSettings.maxDimension.width"></li>
-                <li>height <input type="number" min="-1"
-                                  ng-model="settings.trafficLightSettings.maxDimension.height"></li>
-            </ul>
-        </div>
     </div>
     <div ng-if="tab == 'road'" class="road-settings">
         <ul>

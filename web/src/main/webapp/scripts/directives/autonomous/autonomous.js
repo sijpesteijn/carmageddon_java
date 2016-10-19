@@ -8,7 +8,7 @@
     function autonomousController($scope, $resource, websocketFactory, settingsFactory) {
         $scope.msgs = [];
         $scope.racing = false;
-        $scope.showSettings = false;
+        $scope.showSettings = true;
         $scope.settings = angular.undefined;
 
         var lastLookout = angular.undefined;

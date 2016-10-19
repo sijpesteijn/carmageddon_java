@@ -5,18 +5,18 @@ import nl.carmageddon.domain.Line;
 import nl.carmageddon.domain.LinesView;
 import nl.carmageddon.domain.RoadSettings;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -24,10 +24,11 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
+import static org.opencv.imgproc.Imgproc.circle;
+
 /**
  * @author Gijs Sijpesteijn
  */
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class RoadLookoutTest {
     public static final double RAD2DEG = 180 / Math.PI;
@@ -129,7 +130,6 @@ public class RoadLookoutTest {
     }
 
     @Test
-    @Ignore
     public void detectLines_20degNeg_132off() throws Exception {
         lookout.setRoadSettings(settings);
         Mat img = Imgcodecs.imread("./src/main/resources/roadsamples/frame[-20.08 -1.32].jpeg");
@@ -144,6 +144,31 @@ public class RoadLookoutTest {
         assertThat(angle(averageLine), is(closeTo(-10, 2.0)));
         assertThat(linesView.getAverageX(), is(closeTo(176, 5.0))); //image dead center
 
+    }
+
+    @Test
+    public void testPCA() throws Exception {
+        Mat mat = new Mat(350, 350, CvType.CV_8UC3, new Scalar(255,255,255));
+        List<Point> points = new ArrayList<>();
+        points.add(new Point(250,350-240));
+        points.add(new Point(50,350-70));
+        points.add(new Point(220,350-290));
+        points.add(new Point(190,350-220));
+        points.add(new Point(310,350-300));
+        points.add(new Point(230,350-270));
+        points.add(new Point(200,350-160));
+        points.add(new Point(110,350-100));
+        points.add(new Point(150,350-160));
+        points.add(new Point(110,350-90));
+        RoadLookout.PCA pca = lookout.calculatePCA(points);
+        System.out.println(pca.getAngle());
+        points.forEach(point -> {
+            circle(mat, point, 2, new Scalar(0, 0, 255), 1);
+        });
+        circle(mat, pca.getCenter(), 5, new Scalar(255, 0, 0), 2);
+        lookout.drawAxis(mat, pca.getCenter(), pca.getAxisX(), new Scalar(255,0,255), 0.2);
+//        lookout.drawAxis(mat, pca.getCenter(), pca.getAxisY(), new Scalar(0, 255,255), 0.2);
+        imwrite("pca.jpg", mat);
     }
 
     private double angle(Line line) {

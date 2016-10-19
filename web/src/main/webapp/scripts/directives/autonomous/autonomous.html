@@ -13,7 +13,7 @@
         <img id="webcam">
     </div>
     <div class="status">
-        <img class="settings" ng-click="showSettings = !showSettings" src="./images/settings.png">
+        <!--<img class="settings" ng-click="showSettings = !showSettings" src="./images/settings.png">-->
         <button class="pointer" ng-click="startRace()" ng-if="!racing" ng-disabled="!readyToRace();">START RACE</button>
         <button class="pointer" ng-click="stopRace()" ng-if="racing">STOP RACE</button>
         <ul><li ng-repeat="msg in msgs track by $index">{{ msg.msg }}

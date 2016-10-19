@@ -29,14 +29,10 @@ public class CPU extends Observable implements Observer {
     private boolean racing;
     private Lookout currentLookout;
     private List<Lookout> lookouts = new ArrayList<>();
-    private TrafficLightLookout trafficLightLookout;
-
+    private TrafficLightLookout2 trafficLightLookout;
     private Camera camera;
-
     private Car car;
-
     private CarInstructionSender carInstructionSender;
-
     private RoadLookout roadLookout;
     private long delay;
     private ScheduledExecutorService statusTimer;
@@ -50,18 +46,21 @@ public class CPU extends Observable implements Observer {
     };
 
     @Inject
-    public CPU(CarmageddonSettings settings, TrafficLightLookout trafficLightLookout, RoadLookout
+    public CPU(CarmageddonSettings settings, TrafficLightLookout2 trafficLightLookout, RoadLookout
             roadLookout, Camera camera, Car car, CarInstructionSender carInstructionSender) {
         this.settings = settings;
-        this.trafficLightLookout = trafficLightLookout;
         this.camera = camera;
         this.car = car;
         this.carInstructionSender = carInstructionSender;
+
+        this.trafficLightLookout = trafficLightLookout;
         this.trafficLightLookout.addObserver(this);
         this.lookouts.add(this.trafficLightLookout);
+
         this.roadLookout = roadLookout;
         this.roadLookout.addObserver(this);
         this.lookouts.add(this.roadLookout);
+
         useSettings(this.settings);
     }
 
@@ -89,13 +88,12 @@ public class CPU extends Observable implements Observer {
             snapshot = this.camera.makeSnapshot();
             if (settings.getTrafficLightSettings().isAddFound()) {
                 TrafficLightView trafficLightViewview = this.trafficLightLookout.getTrafficLightView(snapshot);
-                logger.debug("Possible traffic lights: " + trafficLightViewview.getFoundRectangles().size());
                 this.trafficLightLookout.addTrafficLightHighlight(trafficLightViewview, snapshot);
             }
             if (settings.getRoadSettings().isAddFound()) {
                 LinesView linesView = this.roadLookout.detectLines(snapshot);
-                logger.debug("Possible roads: " + linesView.getRoadLines().size());
-                logger.debug("Possible finish lines: " + linesView.getFinishLines().size());
+//                logger.debug("Possible roads: " + linesView.getRoadLines().size());
+//                logger.debug("Possible finish lines: " + linesView.getFinishLines().size());
                 this.roadLookout.addRoadHighlights(linesView, snapshot);
             }
         }
@@ -155,7 +153,6 @@ public class CPU extends Observable implements Observer {
 
     public void useSettings(CarmageddonSettings settings) {
         this.trafficLightLookout.setTrafficLightSettings(settings.getTrafficLightSettings());
-        this.trafficLightLookout.setDelay(settings.getDelay());
         this.roadLookout.setRoadSettings(settings.getRoadSettings());
         this.roadLookout.setDelay(settings.getDelay());
         this.settings = settings;

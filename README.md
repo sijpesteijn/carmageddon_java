@@ -12,8 +12,13 @@
 - Backend jetty server met guice&jersey applicatie.
 
 # Lokaal zonder beaglebone
-- copieer ./src/main/resources/libopencv_java310.dylib naar JAVA_HOME/jre/lib
-- mvn install:install-file -Dfile=./src/main/resources/opencv-310.jar -DgroupId=nl.carmageddon -DartifactId=opencv -Dversion=3.10 -Dpackaging=jar
+- als je opencv voor java nog niet hebt geinstalleerd, copieer dan ./src/main/resources/libopencv_java310.dylib naar JAVA_HOME/jre/lib
+- mvn install:install-file -Dfile=./web/src/main/resources/opencv-310.jar -DgroupId=nl.carmageddon -DartifactId=opencv -Dversion=3.10 -Dpackaging=jar
+- start CarApp main method om bb stukje lokaal te draaien
+- pas dan web/src/application.properties aan en gebruik voor bb.ip je lokale ip
+
+# webclient
+- cd web
 - mvn sass:watch 
 - mvn jetty:run
 - http://localhost:8082/carmageddon

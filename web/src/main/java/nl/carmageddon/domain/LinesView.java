@@ -9,17 +9,16 @@ import java.util.List;
  * @author Gijs Sijpesteijn
  */
 public class LinesView {
-
     private Rect roi;
-
     private Line averageLine;
-
+    private Line leftLane;
+    private Line rightLane;
     private List<Line> roadLines;
-
     private List<Line> finishLines;
-
     private double averageX;
     private Mat result;
+    private int angle;
+    private FinishLine finishLine;
 
     public void setRoi(Rect roi) {
         this.roi = roi;
@@ -67,5 +66,41 @@ public class LinesView {
 
     public double getAverageX() {
         return averageX;
+    }
+
+    public Line getLeftLane() {
+        return leftLane;
+    }
+
+    public void setLeftLane(Line leftLane) {
+        this.leftLane = leftLane;
+    }
+
+    public Line getRightLane() {
+        return rightLane;
+    }
+
+    public void setRightLane(Line rightLane) {
+        this.rightLane = rightLane;
+    }
+
+    public void setAngle(int angle) {
+        this.angle = angle;
+    }
+
+    public int getAngle() {
+        return angle;
+    }
+
+    public FinishLine getFinishLine() {
+        return finishLine;
+    }
+
+    public void setFinishLine(FinishLine finishLine) {
+        this.finishLine = finishLine;
+    }
+
+    public boolean hasLines() {
+        return leftLane == null && rightLane == null;
     }
 }

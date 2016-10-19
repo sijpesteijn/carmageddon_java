@@ -21,4 +21,12 @@ public class Line {
     public Point getEnd() {
         return end;
     }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+               "start=" + start +
+               ", end=" + end +
+               '}';
+    }
 }
