@@ -13,5 +13,6 @@ public enum AutonomousStatus {
     CAR_STOPPED,
     RACE_STOPPED,
     RACING,
+    NO_ROAD,
     RACE_FINISHED
 }

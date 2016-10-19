@@ -58,12 +58,18 @@ public class RoadLookout extends Observable implements Lookout {
             Mat snapshot = this.camera.makeSnapshot();
             LinesView linesView = detectLines(snapshot.clone());
             addRoadHighlights(linesView, snapshot);
+            // Nu heel grof kijken of finish lijn te dichtbij komt, dan stoppen.
             if (!run || snapshot.height() - linesView.getFinishLine().getDistance() <  70) {
                 carInstructionSender.sendMessage("throttle", 0);
                 result = new LookoutResult(AutonomousStatus.RACE_FINISHED, snapshot);
                 notifyClients(result);
                 run = false;
-//            } else if (run && !linesView.hasLines()) {
+            } else // als er geen linker en rechter pca zijn. stoppen, want dan geen weg meer.
+                if (run && linesView.getLeftPca() == null && linesView.getRightPca() == null ) {
+                carInstructionSender.sendMessage("throttle", 0);
+                result = new LookoutResult(AutonomousStatus.NO_ROAD, snapshot);
+                notifyClients(result);
+                run = false;
             } else { // Gas op de plank
                 carInstructionSender.sendMessage("throttle", 18);
                 carInstructionSender.sendMessage("angle", linesView.getAngle());
@@ -166,8 +172,8 @@ public class RoadLookout extends Observable implements Lookout {
 
         // Average lijn bepalen aan de hand van de hoeken van de linker en rechter lijnen.
         double angle = leftPca.getAngle() - rightPca.getAngle();
-        Point startAverageLine = new Point(0,0);
-        Point endAverageLine = new Point(100,100);
+        Point startAverageLine = new Point(averageX, 120);
+        Point endAverageLine = new Point(averageX, 240);
         Line averageLine = new Line(startAverageLine, endAverageLine);
 
         view.setAverageLine(averageLine);
