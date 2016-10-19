@@ -96,6 +96,7 @@ public class RoadLookout extends Observable implements Lookout {
         Rect roi = new Rect(0, settings.getRoiHeight(), snapshot.width(), snapshot.height() - settings.getRoiHeight());
         Mat roiMath = new Mat(snapshot, roi);
         Mat result = roiMath.clone();
+        view.setRoi(roi);
 
         // Blur and convert to gray
         Imgproc.GaussianBlur(roiMath, roiMath, new Size(3, 3), 3);
@@ -117,10 +118,11 @@ public class RoadLookout extends Observable implements Lookout {
                             settings.getLinesMinLineSize(),
                             settings.getLinesMaxLineGap());
 
-        List<Point> points = new ArrayList<>();
-        List<Line> roadLines = new ArrayList<>();
-        List<Line> finishLines = new ArrayList<>();
-        List<Point> finishPoints = new ArrayList<>();
+
+        List<Point> horizontalPoints = new ArrayList<>();
+        List<Point> verticalPoints = new ArrayList<>();
+        List<Line> horizontalLines = new ArrayList<>();
+        List<Line> verticalLines = new ArrayList<>();
         for (int x = 0; x < lines.rows(); x++) {
             double[] vec = lines.get(x, 0);
             double x1 = vec[0],
@@ -130,60 +132,46 @@ public class RoadLookout extends Observable implements Lookout {
             Point start = new Point(x1, y1);
             Point end = new Point(x2, y2);
 
-
             // filter vertical/horizontal
             if (abs(x1 - x2) > 20 && abs(y1 - y2) > 20) {
-                points.add(start);
-                points.add(end);
-                roadLines.add(new Line(start, end));
+                verticalPoints.add(start);
+                verticalPoints.add(end);
+                verticalLines.add(new Line(start, end));
             }
             else {
-                finishPoints.add(start);
-                finishPoints.add(end);
-                finishLines.add(new Line(start, end));
+                horizontalPoints.add(start);
+                horizontalPoints.add(end);
+                horizontalLines.add(new Line(start, end));
             }
         }
 
+        view.setRoadLines(verticalLines);
+        view.setFinishLines(horizontalLines);
 
-        final Double averageX = getCenterX(points);
+        final Double averageX = getCenterX(verticalPoints);
 
-        final List<Point> leftPoints = points.stream().sorted((p1, p2) -> compareTo(p1.y, p2.y))
+        final List<Point> leftPoints = verticalPoints.stream().sorted((p1, p2) -> compareTo(p1.y, p2.y))
                                              .filter(p -> p.x > averageX.intValue())
                                              .collect(toList());
-        final List<Point> rightPoints = points.stream().sorted((p1, p2) -> compareTo(p1.y, p2.y))
+        final List<Point> rightPoints = verticalPoints.stream().sorted((p1, p2) -> compareTo(p1.y, p2.y))
                                               .filter(p -> p.x <= averageX.intValue())
                                               .collect(toList());
 
-        List<Line> leftLines = roadLines.stream().filter(line -> {
-            return (line.getStart().x < averageX.intValue() &&
-                    line.getEnd().x < averageX.intValue());
-        })
-                                        .collect(toList());
-        List<Line> rightLines = roadLines.stream().filter(line -> {
-            return (line.getStart().x >= averageX.intValue() &&
-                    line.getEnd().x >= averageX.intValue());
-        })
-                                         .collect(toList());
-        PCA finishPca = calculatePCA(finishPoints);
-        circle(snapshot, finishPca.getCenter(), 5, new Scalar(255, 0, 255), 2);
-        drawAxis(snapshot, finishPca.getCenter(), finishPca.getAxisX(), new Scalar(0, 255, 0), 1);
-        drawAxis(snapshot, finishPca.getCenter(), finishPca.getAxisY(), new Scalar(255, 255, 0), 5);
-//        logger.debug("Finish angle: " + finishPca.getAngle());
+        PCA finishPca = calculatePCA(horizontalPoints);
+        view.setFinishPca(finishPca);
+        PCA leftPca = calculatePCA(leftPoints);
+        view.setLeftPca(leftPca);
+        PCA rightPca = calculatePCA(rightPoints);
+        view.setRightPca(rightPca);
 
-//        PCA leftPca = calculatePCA(leftPoints);
-//        circle(snapshot, leftPca.getCenter(), 5, new Scalar(255, 0, 255), 2);
-//        PCA rightPca = calculatePCA(rightPoints);
-//        circle(snapshot, rightPca.getCenter(), 5, new Scalar(255, 0, 255), 2);
-//        logger.debug("Left angle: " + leftPca.getAngle());
-//        logger.debug("Right angle: " + rightPca.getAngle());
-//        logger.debug("Angle: " + -1 * (leftPca.getAngle() + rightPca.getAngle()));
+        // Average lijn bepalen aan de hand van de hoeken van de linker en rechter lijnen.
+        double angle = leftPca.getAngle() - rightPca.getAngle();
+        Point startAverageLine = new Point(0,0);
+        Point endAverageLine = new Point(100,100);
+        Line averageLine = new Line(startAverageLine, endAverageLine);
 
+        view.setAverageLine(averageLine);
         view.setResult(roiMath);
-        view.setAverageLine(leftLines.get(0));
-        leftLines.addAll(rightLines);
-        view.setRoadLines(leftLines);
-        view.setFinishLines(finishLines);
-        view.setRoi(roi);
         return view;
     }
 
@@ -244,57 +232,32 @@ public class RoadLookout extends Observable implements Lookout {
     public void addRoadHighlights(LinesView view, Mat snapshot) {
         Rect roi = view.getRoi();
         view.getResult().copyTo(snapshot.submat(roi));
+
         if (view.getRoadLines().size() > 0) {
-//            view.getRoadLines().forEach(roadLine -> {
-//                line(snapshot, roadLine.getStart(), roadLine.getEnd(), new Scalar(0, 255, 0), 2);
-//            });
-//            view.getFinishLines().forEach(finishLine -> {
-//                line(snapshot, finishLine.getStart(), finishLine.getEnd(), new Scalar(255, 255, 0), 2);
-//            });
-//            line(snapshot, view.getAverageLine().getStart(), view.getAverageLine().getAxisX(), new Scalar(255, 0, 0), 2);
+            view.getRoadLines().forEach(roadLine -> {
+                line(snapshot, roadLine.getStart(), roadLine.getEnd(), new Scalar(0, 255, 0), 2);
+            });
+            view.getFinishLines().forEach(finishLine -> {
+                line(snapshot, finishLine.getStart(), finishLine.getEnd(), new Scalar(255, 255, 0), 2);
+            });
+            line(snapshot, view.getAverageLine().getStart(), view.getAverageLine().getEnd(), new Scalar(255, 0, 0), 2);
         }
+
+        circle(snapshot, view.getFinishPca().getCenter(), 5, new Scalar(255, 0, 255), 2);
+        drawAxis(snapshot, view.getFinishPca().getCenter(), view.getFinishPca().getAxisX(), new Scalar(0, 255, 0), 1);
+        drawAxis(snapshot, view.getFinishPca().getCenter(), view.getFinishPca().getAxisY(), new Scalar(255, 255, 0), 5);
+
+        circle(snapshot, view.getLeftPca().getCenter(), 5, new Scalar(255, 0, 255), 2);
+        drawAxis(snapshot, view.getLeftPca().getCenter(), view.getLeftPca().getAxisX(), new Scalar(0, 255, 0), 1);
+        drawAxis(snapshot, view.getLeftPca().getCenter(), view.getLeftPca().getAxisY(), new Scalar(255, 255, 0), 5);
+
+        circle(snapshot, view.getRightPca().getCenter(), 5, new Scalar(255, 0, 255), 2);
+        drawAxis(snapshot, view.getRightPca().getCenter(), view.getRightPca().getAxisX(), new Scalar(0, 255, 0), 1);
+        drawAxis(snapshot, view.getRightPca().getCenter(), view.getRightPca().getAxisY(), new Scalar(255, 255, 0), 5);
     }
 
     public void setRoadSettings(RoadSettings settings) {
         this.settings = settings;
     }
 
-    public class PCA {
-        private double angle;
-        private Point center;
-        private Point axisX;
-        private Point axisY;
-
-        public double getAngle() {
-            return angle;
-        }
-
-        public void setAngle(double angle) {
-            this.angle = angle;
-        }
-
-        public Point getCenter() {
-            return center;
-        }
-
-        public void setCenter(Point center) {
-            this.center = center;
-        }
-
-        public Point getAxisX() {
-            return axisX;
-        }
-
-        public void setAxisX(Point axisX) {
-            this.axisX = axisX;
-        }
-
-        public Point getAxisY() {
-            return axisY;
-        }
-
-        public void setAxisY(Point axisY) {
-            this.axisY = axisY;
-        }
-    }
 }

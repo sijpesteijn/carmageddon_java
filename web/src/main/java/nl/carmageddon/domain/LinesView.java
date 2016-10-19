@@ -19,6 +19,9 @@ public class LinesView {
     private Mat result;
     private int angle;
     private FinishLine finishLine;
+    private PCA leftPca;
+    private PCA rightPca;
+    private PCA finishPca;
 
     public void setRoi(Rect roi) {
         this.roi = roi;
@@ -102,5 +105,29 @@ public class LinesView {
 
     public boolean hasLines() {
         return leftLane == null && rightLane == null;
+    }
+
+    public void setLeftPca(PCA leftPca) {
+        this.leftPca = leftPca;
+    }
+
+    public void setRightPca(PCA rightPca) {
+        this.rightPca = rightPca;
+    }
+
+    public void setFinishPca(PCA finishPca) {
+        this.finishPca = finishPca;
+    }
+
+    public PCA getLeftPca() {
+        return leftPca;
+    }
+
+    public PCA getRightPca() {
+        return rightPca;
+    }
+
+    public PCA getFinishPca() {
+        return finishPca;
     }
 }

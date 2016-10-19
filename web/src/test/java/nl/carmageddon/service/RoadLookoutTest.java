@@ -1,9 +1,6 @@
 package nl.carmageddon.service;
 
-import nl.carmageddon.domain.Camera;
-import nl.carmageddon.domain.Line;
-import nl.carmageddon.domain.LinesView;
-import nl.carmageddon.domain.RoadSettings;
+import nl.carmageddon.domain.*;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -162,7 +159,7 @@ public class RoadLookoutTest {
         points.add(new Point(110,350-100));
         points.add(new Point(150,350-160));
         points.add(new Point(110,350-90));
-        RoadLookout.PCA pca = lookout.calculatePCA(points);
+        PCA pca = lookout.calculatePCA(points);
         System.out.println(pca.getAngle());
         points.forEach(point -> {
             circle(mat, point, 2, new Scalar(0, 0, 255), 1);
