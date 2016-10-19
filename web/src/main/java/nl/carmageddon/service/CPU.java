@@ -86,14 +86,8 @@ public class CPU extends Observable implements Observer {
         Mat snapshot = null;
         if (settings.isShowVideo()) {
             snapshot = this.camera.makeSnapshot();
-            if (settings.getTrafficLightSettings().isAddFound()) {
-                TrafficLightView trafficLightViewview = this.trafficLightLookout.getTrafficLightView(snapshot);
-                this.trafficLightLookout.addTrafficLightHighlight(trafficLightViewview, snapshot);
-            }
             if (settings.getRoadSettings().isAddFound()) {
                 LinesView linesView = this.roadLookout.detectLines(snapshot);
-//                logger.debug("Possible roads: " + linesView.getRoadLines().size());
-//                logger.debug("Possible finish lines: " + linesView.getFinishLines().size());
                 this.roadLookout.addRoadHighlights(linesView, snapshot);
             }
         }

@@ -6,30 +6,12 @@ package nl.carmageddon.domain;
 public class TrafficLightSettings {
 
     private ROI roi;
-    private ViewType viewType;
-    private boolean addFound;
 
-    public nl.carmageddon.domain.ROI getRoi() {
+    public ROI getRoi() {
         return roi;
     }
 
-    public void setRoi(nl.carmageddon.domain.ROI roi) {
+    public void setRoi(ROI roi) {
         this.roi = roi;
-    }
-
-    public ViewType getViewType() {
-        return viewType;
-    }
-
-    public void setViewType(ViewType viewType) {
-        this.viewType = viewType;
-    }
-
-    public boolean isAddFound() {
-        return addFound;
-    }
-
-    public void setAddFound(boolean addFound) {
-        this.addFound = addFound;
     }
 }

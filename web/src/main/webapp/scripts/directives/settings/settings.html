@@ -1,7 +1,6 @@
 <div class="settings-overlay">
     <ul class="tabHeader">
         <li><a href="#" ng-click="tab='general'" ng-class="{'active': tab == 'general'}">General</a></li>
-        <li><a href="#" ng-click="tab='traffic'" ng-class="{'active': tab == 'traffic'}">Trafficlight</a></li>
         <li><a href="#" ng-click="tab='road'" ng-class="{'active': tab == 'road'}">Road</a></li>
     </ul>
     <div ng-if="tab == 'general'" class="general-settings">
@@ -30,29 +29,6 @@
                 </label>
             </li>
         </ul>
-    </div>
-    <div ng-if="tab == 'traffic'" class="trafficlight-settings">
-            <ul class="lower">
-                <li>
-                    <label for="viewtype">
-                        View type:
-                        <select class="viewType" ng-model="settings.trafficLightSettings.viewType">
-                            <option ng-repeat="viewType in trafficLightViewTypes"
-                                    value="{{viewType.id}}"
-                                    ng-selected="settings.trafficLightSettings.viewType == viewType.id">{{viewType
-                                .name}}</option>
-                        </select>
-                    </label>
-                </li>
-                <li>
-                    <label for="addTrafficLightResult">
-                        Add found:
-                        <input type="checkbox" id="addTrafficLightResult"
-                               ng-model="settings.trafficLightSettings.addFound">
-                        {{ settings.trafficLightSettings.addFound }}
-                    </label>
-                </li>
-            </ul>
     </div>
     <div ng-if="tab == 'road'" class="road-settings">
         <ul>

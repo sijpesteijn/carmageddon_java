@@ -4,7 +4,6 @@ import nl.carmageddon.domain.*;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +44,20 @@ public class TrafficLightLookout extends Observable implements Lookout {
             }
         }
         return result;
+    }
+
+    public TrafficLightView getTrafficLightView(Mat snapshot) {
+        TrafficLightView view = new TrafficLightView();
+
+        // Get just a region to look at
+        ROI roi = settings.getRoi();
+        Rect region = new Rect(roi.getX(), roi.getY(), roi.getWidth(), roi.getHeight());
+        Mat roiMat = new Mat(snapshot.clone(), region);
+
+        view.setRoiMat(roiMat);
+        view.setResult(roiMat);
+        view.setRoi(region);
+        return view;
     }
 
     private LookoutResult waitForGo(TrafficLightView viewWithLightOn) {
@@ -95,26 +108,8 @@ public class TrafficLightLookout extends Observable implements Lookout {
         return lookout;
     }
 
-    public TrafficLightView getTrafficLightView(Mat snapshot) {
-        TrafficLightView view = new TrafficLightView();
-
-        // Get just a region to look at
-        ROI roi = settings.getRoi();
-        Rect region = new Rect(roi.getX(), roi.getY(), roi.getWidth(), roi.getHeight());
-        Mat roiMat = new Mat(snapshot.clone(), region);
-
-        view.setRoiMat(roiMat);
-        view.setResult(snapshot);
-        view.setRoi(region);
-        return view;
-    }
-
     public void stop() {
         run = true;
-    }
-
-    private Scalar buildScalar(HSV HSV) {
-        return new Scalar(HSV.getHue(), HSV.getSaturation(), HSV.getBrightness());
     }
 
     public void setTrafficLightSettings(TrafficLightSettings settings) {
@@ -122,7 +117,8 @@ public class TrafficLightLookout extends Observable implements Lookout {
     }
 
     public void addTrafficLightHighlight(TrafficLightView view, Mat snapshot) {
-        view.getResult().copyTo(snapshot.submat(view.getRoi()));
+        Rect roi = view.getRoi();
+        view.getResult().copyTo(snapshot.submat(roi));
     }
 
     class TrafficLightLookoutResult extends LookoutResult {

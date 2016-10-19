@@ -35,8 +35,6 @@ public class ConfigurationModule extends AbstractModule {
 
             TrafficLightSettings trafficLightSettings = new TrafficLightSettings();
             carmageddonSettings.setTrafficLightSettings(trafficLightSettings);
-            trafficLightSettings.setViewType(ViewType.valueOf(configuration.getString("trafficlight.viewtype")));
-            trafficLightSettings.setAddFound(configuration.getBoolean("trafficlight.addFound"));
 
             ROI roi = new ROI();
             roi.setX(configuration.getInt("trafficlight.roi.x"));

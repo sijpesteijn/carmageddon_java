@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 import java.util.stream.Collectors;
@@ -35,6 +34,7 @@ public class RoadLookout extends Observable implements Lookout {
     private Camera camera;
     private CarInstructionSender carInstructionSender;
     private CarmageddonSettings carmageddonSettings;
+    private boolean tooClose = false;
 
     @Inject
     public RoadLookout(Camera camera, CarInstructionSender carInstructionSender, CarmageddonSettings carmageddonSettings) {
@@ -51,7 +51,7 @@ public class RoadLookout extends Observable implements Lookout {
             LinesView linesView = detectLines(snapshot.clone());
             addRoadHighlights(linesView, snapshot);
             // Nu heel grof kijken of finish lijn te dichtbij komt, dan stoppen.
-            if (!run || snapshot.height() - linesView.getFinishLine().getDistance() <  70) {
+            if (!run || finishLinesCloserThan(linesView.getFinishLines(),  snapshot.height(), 70)) {
                 carInstructionSender.sendMessage("throttle", 0);
                 result = new LookoutResult(AutonomousStatus.RACE_FINISHED, snapshot);
                 notifyClients(result);
@@ -70,6 +70,17 @@ public class RoadLookout extends Observable implements Lookout {
             }
         }
         return result;
+    }
+
+    private boolean finishLinesCloserThan(List<Line> finishLines, int height, int minDistance) {
+        finishLines.forEach(line -> {
+            int distance = (int) ((line.getStart().y + line.getEnd().y) / 2);
+            if (height - distance <  minDistance) {
+                tooClose = true;
+            }
+
+        });
+        return tooClose;
     }
 
     @Override

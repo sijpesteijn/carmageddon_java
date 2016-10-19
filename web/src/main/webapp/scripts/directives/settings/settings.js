@@ -9,11 +9,6 @@
         $scope.framerate;
         $scope.settings;
         $scope.tab = 'general';
-        $scope.trafficLightViewTypes = [
-            {id:'result',name:'Result'},
-            {id:'hsv',name:'HSV'},
-            {id:'baw',name:'Black & White'}
-        ];
         $scope.roadViewTypes = [
             {id:'result',name:'Result'},
             {id:'baw',name:'Black & White'},

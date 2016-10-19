@@ -2,7 +2,6 @@ package nl.carmageddon.domain;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +23,9 @@ public class Camera {
     private VideoCapture camera;
     private int id;
     private String url;
-    private boolean showVideo;
 
     @Inject
     public Camera(CarmageddonSettings settings) {
-        this.showVideo = settings.isShowVideo();
         this.dimension = settings.getCameraDimension();
         url = "http://" + settings.getBeagleBoneSettings().getBeagleBoneIp() + ":"
                 + settings.getBeagleBoneSettings().getStreamPort() + "/?action=stream";
@@ -49,7 +46,7 @@ public class Camera {
         if (camera != null && camera.isOpened()) {
             return camera;
         }
-        camera = new VideoCapture(0);
+        camera = new VideoCapture(url);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -66,19 +63,15 @@ public class Camera {
     }
 
     public Mat makeSnapshot() {
-        return Imgcodecs.imread("/Users/gijs/programming/java/carmageddon/web/src/main/resources/ws3.jpg");
-//        Mat snapshot = new Mat();
-//        VideoCapture camera = getCamera();
-//        camera.grab();
-//        camera.retrieve(snapshot);
-//        return snapshot;
+//        return Imgcodecs.imread("/Users/gijs/programming/java/carmageddon/web/src/main/resources/ws3.jpg");
+        Mat snapshot = new Mat();
+        VideoCapture camera = getCamera();
+        camera.grab();
+        camera.retrieve(snapshot);
+        return snapshot;
     }
 
     public boolean isOpened() {
         return camera != null;
-    }
-
-    public void setShowVideo(boolean showVideo) {
-        this.showVideo = showVideo;
     }
 }
