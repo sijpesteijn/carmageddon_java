@@ -154,7 +154,6 @@ public class CPU extends Observable implements Observer {
     public void useSettings(CarmageddonSettings settings) {
         this.trafficLightLookout.setTrafficLightSettings(settings.getTrafficLightSettings());
         this.roadLookout.setRoadSettings(settings.getRoadSettings());
-        this.roadLookout.setDelay(settings.getDelay());
         this.settings = settings;
 
         this.delay = settings.getDelay();

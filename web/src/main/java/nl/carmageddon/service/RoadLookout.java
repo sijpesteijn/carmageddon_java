@@ -31,13 +31,9 @@ public class RoadLookout extends Observable implements Lookout {
     private static final Logger logger = LoggerFactory.getLogger(TrafficLightLookout.class);
     private boolean run;
     private LookoutResult result;
-    private long delay;
     private RoadSettings settings;
-
     private Camera camera;
-
     private CarInstructionSender carInstructionSender;
-
     private CarmageddonSettings carmageddonSettings;
 
     @Inject
@@ -45,10 +41,6 @@ public class RoadLookout extends Observable implements Lookout {
         this.camera = camera;
         this.carInstructionSender = carInstructionSender;
         this.carmageddonSettings = carmageddonSettings;
-    }
-
-    private static Comparator<Point> getPointComparator() {
-        return (p1, p2) -> p1.x - p2.x == 0 ? 0 : p1.x - p2.x > 0 ? 1 : -1;
     }
 
     @Override
@@ -88,10 +80,6 @@ public class RoadLookout extends Observable implements Lookout {
     private void notifyClients(LookoutResult event) {
         setChanged();
         notifyObservers(event);
-    }
-
-    public void setDelay(long delay) {
-        this.delay = delay;
     }
 
     public LinesView detectLines(Mat snapshot) {
