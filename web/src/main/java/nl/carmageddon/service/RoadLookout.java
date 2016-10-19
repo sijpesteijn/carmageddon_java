@@ -125,6 +125,7 @@ public class RoadLookout extends Observable implements Lookout {
                             settings.getLinesMaxLineGap());
 
 
+        // Verzamel horizontale en verticale punten
         List<Point> horizontalPoints = new ArrayList<>();
         List<Point> verticalPoints = new ArrayList<>();
         List<Line> horizontalLines = new ArrayList<>();
@@ -138,35 +139,38 @@ public class RoadLookout extends Observable implements Lookout {
             Point start = new Point(x1, y1);
             Point end = new Point(x2, y2);
 
+            double angle = toDegrees(atan2(abs(y1 - y2),abs(x1 - x2)));
             // filter vertical/horizontal
-            if (abs(x1 - x2) > 20 && abs(y1 - y2) > 20) {
+            if (angle > 10) {
                 verticalPoints.add(start);
                 verticalPoints.add(end);
                 verticalLines.add(new Line(start, end));
             }
-            else {
+            else if (angle < 80){
                 horizontalPoints.add(start);
                 horizontalPoints.add(end);
                 horizontalLines.add(new Line(start, end));
             }
         }
-
         view.setRoadLines(verticalLines);
         view.setFinishLines(horizontalLines);
 
-        final Double averageX = getCenterX(verticalPoints);
-
-        final List<Point> leftPoints = verticalPoints.stream().sorted((p1, p2) -> compareTo(p1.y, p2.y))
+        Double averageX = verticalPoints.stream().map(p -> p.x).collect(Collectors.averagingInt(x -> x.intValue()));
+        // Splits de verticale punten in linker en rechter
+        List<Point> leftPoints = verticalPoints.stream().sorted((p1, p2) -> compareTo(p1.y, p2.y))
                                              .filter(p -> p.x > averageX.intValue())
                                              .collect(toList());
-        final List<Point> rightPoints = verticalPoints.stream().sorted((p1, p2) -> compareTo(p1.y, p2.y))
+        List<Point> rightPoints = verticalPoints.stream().sorted((p1, p2) -> compareTo(p1.y, p2.y))
                                               .filter(p -> p.x <= averageX.intValue())
                                               .collect(toList());
 
+        // Bereken trendline voor horizontale punten
         PCA finishPca = calculatePCA(horizontalPoints);
         view.setFinishPca(finishPca);
+        // Bereken trendline voor linker punten
         PCA leftPca = calculatePCA(leftPoints);
         view.setLeftPca(leftPca);
+        // Bereken trendline voor rechter punten
         PCA rightPca = calculatePCA(rightPoints);
         view.setRightPca(rightPca);
 
@@ -177,7 +181,7 @@ public class RoadLookout extends Observable implements Lookout {
         Line averageLine = new Line(startAverageLine, endAverageLine);
 
         view.setAverageLine(averageLine);
-        view.setResult(roiMath);
+        view.setResult(result);
         return view;
     }
 
@@ -206,29 +210,6 @@ public class RoadLookout extends Observable implements Lookout {
         double angle = toDegrees(atan(decomposition.getRealEigenvalues()[1]/decomposition.getRealEigenvalues()[0]));
         pca.setAngle(angle);
         return pca;
-    }
-
-    public void drawAxis(Mat img, Point p, Point q, Scalar colour, double scale) {
-        double angle;
-        double hypotenuse;
-        angle = atan2(p.y - q.y, p.x - q.x);
-        hypotenuse = sqrt((p.y-q.y) * (p.y - q.y) + (p.x - q.x) * (p.x - q.x));
-        logger.debug("Degrees: " + toDegrees(angle));
-        // Here we lengthen the arrow by a factor of scale
-        q.x = (int) (p.x - scale * hypotenuse * cos(angle));
-        q.y = (int) (p.y - scale * hypotenuse * sin(angle));
-        line(img, p, q, colour, 1);
-        // create the arrow hooks
-        p.x = (int) (q.x + 9 * cos(angle + PI / 4));
-        p.y = (int) (q.y + 9 * sin(angle + PI / 4));
-        line(img, p, q, colour, 1);
-        p.x = (int) (q.x + 9 * cos(angle - PI / 4));
-        p.y = (int) (q.y + 9 * sin(angle - PI / 4));
-        line(img, p, q, colour, 1);
-    }
-
-    public Double getCenterX(List<Point> roadLinePair) {
-        return roadLinePair.stream().map(p -> p.x).collect(Collectors.averagingInt(x -> x.intValue()));
     }
 
     private int compareTo(double x, double y) {
@@ -262,8 +243,26 @@ public class RoadLookout extends Observable implements Lookout {
         drawAxis(snapshot, view.getRightPca().getCenter(), view.getRightPca().getAxisY(), new Scalar(255, 255, 0), 5);
     }
 
+    public void drawAxis(Mat img, Point p, Point q, Scalar colour, double scale) {
+        double angle;
+        double hypotenuse;
+        angle = atan2(p.y - q.y, p.x - q.x);
+        hypotenuse = sqrt((p.y-q.y) * (p.y - q.y) + (p.x - q.x) * (p.x - q.x));
+//        logger.debug("Degrees: " + toDegrees(angle));
+        // Here we lengthen the arrow by a factor of scale
+        q.x = (int) (p.x - scale * hypotenuse * cos(angle));
+        q.y = (int) (p.y - scale * hypotenuse * sin(angle));
+        line(img, p, q, colour, 1);
+        // create the arrow hooks
+        p.x = (int) (q.x + 9 * cos(angle + PI / 4));
+        p.y = (int) (q.y + 9 * sin(angle + PI / 4));
+        line(img, p, q, colour, 1);
+        p.x = (int) (q.x + 9 * cos(angle - PI / 4));
+        p.y = (int) (q.y + 9 * sin(angle - PI / 4));
+        line(img, p, q, colour, 1);
+    }
+
     public void setRoadSettings(RoadSettings settings) {
         this.settings = settings;
     }
-
 }
