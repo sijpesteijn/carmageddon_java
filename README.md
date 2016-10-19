@@ -14,8 +14,8 @@
 # Lokaal zonder beaglebone
 - als je opencv voor java nog niet hebt geinstalleerd, copieer dan ./src/main/resources/libopencv_java310.dylib naar JAVA_HOME/jre/lib
 - mvn install:install-file -Dfile=./web/src/main/resources/opencv-310.jar -DgroupId=nl.carmageddon -DartifactId=opencv -Dversion=3.10 -Dpackaging=jar
+- pas web/src/application.properties aan en gebruik voor bb.ip `localhost`
 - start CarApp main method om bb stukje lokaal te draaien
-- pas dan web/src/application.properties aan en gebruik voor bb.ip je lokale ip
 
 # webclient
 - cd web
