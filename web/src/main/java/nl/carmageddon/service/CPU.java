@@ -83,15 +83,16 @@ public class CPU extends Observable implements Observer {
     }
 
     private void sendReadyToRace() {
-        Mat snapshot = null;
-        if (settings.isShowVideo()) {
-            snapshot = this.camera.makeSnapshot();
+        if (settings.isPreview()) {
+            Mat snapshot = this.camera.makeSnapshot();
             if (settings.getRoadSettings().isAddFound()) {
-                LinesView linesView = this.roadLookout.detectLines(snapshot);
-                this.roadLookout.addRoadHighlights(linesView, snapshot);
+                LinesView linesView = this.roadLookout.getCurrentView(snapshot);
+                this.roadLookout.addViewToMat(snapshot,linesView);
             }
+            notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, snapshot));
+        } else {
+            notifyClients(new LookoutResult(AutonomousStatus.NO_PREVIEW, null));
         }
-        notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, snapshot));
     }
 
     private void notifyClients(LookoutResult event) {
@@ -113,6 +114,7 @@ public class CPU extends Observable implements Observer {
         this.carInstructionSender.sendMessage("angle", 0);
         this.carInstructionSender.sendMessage("throttle", 0);
         this.racing = false;
+        startWebcamPushTimer();
     }
 
     @Override

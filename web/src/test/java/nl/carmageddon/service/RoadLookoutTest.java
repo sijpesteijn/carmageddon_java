@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nl.carmageddon.service.MatUtils.calculatePCA;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.closeTo;
@@ -83,10 +84,10 @@ public class RoadLookoutTest {
         lookout.setRoadSettings(settings);
         Mat img = Imgcodecs.imread("./src/main/resources/roadsamples/frame[-0.02 -0.00].jpeg");
         Mat org = img.clone();
-        LinesView linesView = lookout.detectLines(img);
+        LinesView linesView = lookout.getCurrentView(img);
         final Line averageLine = linesView.getAverageLine();
 
-        lookout.addRoadHighlights(linesView, org);
+        lookout.addViewToMat(org, linesView);
         imwrite("detectLines_0deg_0off.jpg", org);
 
         assertThat(averageLine, not(nullValue()));
@@ -99,10 +100,10 @@ public class RoadLookoutTest {
         lookout.setRoadSettings(settings);
         Mat img = Imgcodecs.imread("./src/main/resources/roadsamples/frame[-5.01 -0.21].jpeg");
         Mat org = img.clone();
-        LinesView linesView = lookout.detectLines(img);
+        LinesView linesView = lookout.getCurrentView(img);
         final Line averageLine = linesView.getAverageLine();
 
-        lookout.addRoadHighlights(linesView, org);
+        lookout.addViewToMat(org, linesView);
         imwrite("detectLines_5degNeg_21off.jpg", org);
 
         assertThat(averageLine, not(nullValue()));
@@ -116,10 +117,10 @@ public class RoadLookoutTest {
         lookout.setRoadSettings(settings);
         Mat img = Imgcodecs.imread("./src/main/resources/roadsamples/frame[-10.04 -0.51].jpeg");
         Mat org = img.clone();
-        LinesView linesView = lookout.detectLines(img);
+        LinesView linesView = lookout.getCurrentView(img);
         final Line averageLine = linesView.getAverageLine();
 
-        lookout.addRoadHighlights(linesView, org);
+        lookout.addViewToMat(org, linesView);
         imwrite("detectLines_10degNeg_51off.jpg", org);
 
         assertThat(averageLine, not(nullValue()));
@@ -133,10 +134,10 @@ public class RoadLookoutTest {
         lookout.setRoadSettings(settings);
         Mat img = Imgcodecs.imread("./src/main/resources/roadsamples/frame[-20.08 -1.32].jpeg");
         Mat org = img.clone();
-        LinesView linesView = lookout.detectLines(img);
+        LinesView linesView = lookout.getCurrentView(img);
         final Line averageLine = linesView.getAverageLine();
 
-        lookout.addRoadHighlights(linesView, org);
+        lookout.addViewToMat(org, linesView);
         imwrite("detectLines_20degNeg_132off.jpg", org);
 
         assertThat(averageLine, not(nullValue()));
@@ -159,13 +160,14 @@ public class RoadLookoutTest {
         points.add(new Point(110,350-100));
         points.add(new Point(150,350-160));
         points.add(new Point(110,350-90));
-        PCA pca = lookout.calculatePCA(points);
+        PCA pca = calculatePCA(points);
         System.out.println(pca.getAngle());
         points.forEach(point -> {
             circle(mat, point, 2, new Scalar(0, 0, 255), 1);
         });
         circle(mat, pca.getCenter(), 5, new Scalar(255, 0, 0), 2);
         lookout.drawAxis(mat, pca.getCenter(), pca.getAxisX(), new Scalar(255,0,255), 0.2);
+        lookout.drawAxis(mat, pca.getCenter(), pca.getAxisY(), new Scalar(255,0,255), 0.2);
 //        lookout.drawAxis(mat, pca.getCenter(), pca.getAxisY(), new Scalar(0, 255,255), 0.2);
         imwrite("pca.jpg", mat);
     }

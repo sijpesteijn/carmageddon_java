@@ -14,6 +14,9 @@ public class RoadSettings {
     private int linesMaxLineGap;
     private ViewType viewType;
     private boolean addFound;
+    private boolean showLane;
+    private boolean showFinishLine;
+    private boolean showAverageLine;
 
     public int getRoiHeight() {
         return roiHeight;
@@ -85,5 +88,29 @@ public class RoadSettings {
 
     public void setAddFound(boolean addFound) {
         this.addFound = addFound;
+    }
+
+    public void setShowLane(boolean showLane) {
+        this.showLane = showLane;
+    }
+
+    public void setShowFinishLine(boolean showFinishLine) {
+        this.showFinishLine = showFinishLine;
+    }
+
+    public boolean isShowLane() {
+        return showLane;
+    }
+
+    public boolean isShowFinishLine() {
+        return showFinishLine;
+    }
+
+    public boolean isShowAverageLine() {
+        return showAverageLine;
+    }
+
+    public void setShowAverageLine(boolean showAverageLine) {
+        this.showAverageLine = showAverageLine;
     }
 }

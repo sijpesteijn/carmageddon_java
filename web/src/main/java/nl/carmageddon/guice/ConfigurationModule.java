@@ -17,7 +17,7 @@ public class ConfigurationModule extends AbstractModule {
             PropertiesConfiguration configuration = new PropertiesConfiguration("application.properties");
             CarmageddonSettings carmageddonSettings = new CarmageddonSettings();
             carmageddonSettings.setDelay(configuration.getLong("common.delay"));
-            carmageddonSettings.setShowVideo(configuration.getBoolean("common.showVideo"));
+            carmageddonSettings.setPreview(configuration.getBoolean("common.preview"));
 
             BeagleBoneSettings beagleBoneSettings = new BeagleBoneSettings();
             beagleBoneSettings.setBeagleBoneIp(configuration.getString("bb.ip"));
@@ -44,6 +44,9 @@ public class ConfigurationModule extends AbstractModule {
             trafficLightSettings.setRoi(roi);
 
             RoadSettings roadSettings = new RoadSettings();
+            roadSettings.setShowFinishLine(configuration.getBoolean("road.show.finish"));
+            roadSettings.setShowLane(configuration.getBoolean("road.show.lane"));
+            roadSettings.setShowAverageLine(configuration.getBoolean("road.show.average"));
             roadSettings.setViewType(ViewType.valueOf(configuration.getString("road.viewtype")));
             roadSettings.setAddFound(configuration.getBoolean("road.addFound"));
 

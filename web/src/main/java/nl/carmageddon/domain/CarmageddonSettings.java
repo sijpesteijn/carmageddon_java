@@ -9,7 +9,7 @@ public class CarmageddonSettings {
     private RoadSettings roadSettings;
     private long delay;
     private Dimension cameraDimension;
-    private boolean showVideo;
+    private boolean preview;
     private BeagleBoneSettings beagleBoneSettings;
 
     public TrafficLightSettings getTrafficLightSettings() {
@@ -44,12 +44,12 @@ public class CarmageddonSettings {
         this.roadSettings = roadSettings;
     }
 
-    public void setShowVideo(boolean showVideo) {
-        this.showVideo = showVideo;
+    public void setPreview(boolean preview) {
+        this.preview = preview;
     }
 
-    public boolean isShowVideo() {
-        return showVideo;
+    public boolean isPreview() {
+        return preview;
     }
 
     public void setBeagleBoneSettings(BeagleBoneSettings beagleBoneSettings) {

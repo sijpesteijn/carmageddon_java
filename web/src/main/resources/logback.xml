@@ -9,6 +9,8 @@
     </appender>
 
     <logger name="org.eclipse" level="INFO"/>
+    <logger name="nl.carmageddon" level="ERROR"/>
+    <logger name="org.opencv" level="ERROR"/>
 
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>

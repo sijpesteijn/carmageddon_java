@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author Gijs Sijpesteijn
  */
-public class LinesView {
+public class LinesView implements View {
     private Rect roi;
     private Line averageLine;
     private Line leftLane;
@@ -35,6 +35,7 @@ public class LinesView {
         this.averageLine = averageLine;
     }
 
+    @Deprecated
     public void setRoadLines(List<Line> roadLines) {
         this.roadLines = roadLines;
     }
@@ -47,6 +48,7 @@ public class LinesView {
         return averageLine;
     }
 
+    @Deprecated
     public List<Line> getRoadLines() {
         return roadLines;
     }

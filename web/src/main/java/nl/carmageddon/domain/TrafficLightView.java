@@ -6,7 +6,7 @@ import org.opencv.core.Rect;
 /**
  * @author Gijs Sijpesteijn
  */
-public class TrafficLightView {
+public class TrafficLightView implements View {
 
     private Rect roi;
     private Mat result;

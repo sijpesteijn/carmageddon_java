@@ -17,8 +17,7 @@ import static org.opencv.core.CvType.CV_8UC1;
  * @author Gijs Sijpesteijn
  */
 @Singleton
-public class TrafficLightLookout extends Observable implements Lookout {
-
+public class TrafficLightLookout extends Observable implements Lookout<TrafficLightView> {
     private static final Logger logger = LoggerFactory.getLogger(TrafficLightLookout.class);
     private boolean run = false;
     private TrafficLightSettings settings;
@@ -35,8 +34,8 @@ public class TrafficLightLookout extends Observable implements Lookout {
         run = true;
         while (run) {
             Mat snapshot = this.camera.makeSnapshot();
-            TrafficLightView view = getTrafficLightView(snapshot);
-            addTrafficLightHighlight(view, snapshot);
+            TrafficLightView view = getCurrentView(snapshot);
+            addViewToMat(snapshot, view);
             notifyClients(new TrafficLightLookoutResult(AutonomousStatus.TRAFFIC_LIGHT_ROI_SET, snapshot, view));
             result = waitForGo(view);
             if (result.getStatus() == AutonomousStatus.TRAFFIC_LIGHT_OFF) {
@@ -46,7 +45,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
         return result;
     }
 
-    public TrafficLightView getTrafficLightView(Mat snapshot) {
+    public TrafficLightView getCurrentView(Mat snapshot) {
         TrafficLightView view = new TrafficLightView();
 
         // Get just a region to look at
@@ -64,8 +63,8 @@ public class TrafficLightLookout extends Observable implements Lookout {
         boolean lightsOff = false;
         while (run && !lightsOff) {
             Mat snapshot = this.camera.makeSnapshot();
-            TrafficLightView currentTrafficLightArea = getTrafficLightView(snapshot);
-            addTrafficLightHighlight(currentTrafficLightArea, snapshot);
+            TrafficLightView currentTrafficLightArea = getCurrentView(snapshot);
+            addViewToMat(snapshot, currentTrafficLightArea);
             if (pixelDifferencePercentage(viewWithLightOn, currentTrafficLightArea) < 40) {
                 result = new LookoutResult(AutonomousStatus.TRAFFIC_LIGHT_ON, snapshot);
             } else {
@@ -102,12 +101,6 @@ public class TrafficLightLookout extends Observable implements Lookout {
         return (int) (count*100/result.total());
     }
 
-    private TrafficLightLookoutResult getTrafficLightArea(Mat snapshot) {
-        TrafficLightView view = getTrafficLightView(snapshot);
-        TrafficLightLookoutResult lookout = new TrafficLightLookoutResult(AutonomousStatus.TRAFFIC_LIGHT_ROI_SET, snapshot, view);
-        return lookout;
-    }
-
     public void stop() {
         run = true;
     }
@@ -116,7 +109,7 @@ public class TrafficLightLookout extends Observable implements Lookout {
         this.settings = settings;
     }
 
-    public void addTrafficLightHighlight(TrafficLightView view, Mat snapshot) {
+    public void addViewToMat(Mat snapshot, TrafficLightView view) {
         Rect roi = view.getRoi();
         view.getResult().copyTo(snapshot.submat(roi));
     }

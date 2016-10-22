@@ -22,10 +22,10 @@
                 </label>
             </li>
             <li>
-                <label for="showVideo">
-                    Show video:
-                    <input type="checkbox" id="showVideo" ng-model="settings.showVideo">
-                    {{ settings.showVideo }}
+                <label for="preview">
+                    Show preview:
+                    <input type="checkbox" id="preview" ng-model="settings.preview">
+                    {{ settings.preview }}
                 </label>
             </li>
         </ul>
@@ -48,6 +48,30 @@
                     <input type="checkbox" id="addRoadResult"
                            ng-model="settings.roadSettings.addFound">
                     {{ settings.roadSettings.addFound }}
+                </label>
+            </li>
+            <li>
+                <label for="addFinishLine">
+                    Add finishlines:
+                    <input type="checkbox" id="addFinishLine"
+                           ng-model="settings.roadSettings.showFinishLine">
+                    {{ settings.roadSettings.showFinish }}
+                </label>
+            </li>
+            <li>
+                <label for="addLane">
+                    Add lane:
+                    <input type="checkbox" id="addLane"
+                           ng-model="settings.roadSettings.showLane">
+                    {{ settings.roadSettings.showLane }}
+                </label>
+            </li>
+            <li>
+                <label for="addAverage">
+                    Add average line:
+                    <input type="checkbox" id="addAverage"
+                           ng-model="settings.roadSettings.showAverageLine">
+                    {{ settings.roadSettings.showAverageLine }}
                 </label>
             </li>
             <li>
