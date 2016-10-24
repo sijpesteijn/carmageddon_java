@@ -26,7 +26,6 @@ public class CarInstructionSender {
         Socket socket = new Socket(settings.getBeagleBoneSettings().getBeagleBoneIp(),
                                    settings.getBeagleBoneSettings().getCarControlPort());
         out = new PrintWriter(socket.getOutputStream());
-
     }
 
     public void sendMessage(String key, Object value) {

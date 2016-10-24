@@ -17,6 +17,7 @@ public class RoadSettings {
     private boolean showLane;
     private boolean showFinishLine;
     private boolean showAverageLine;
+    private boolean showRoadLines;
 
     public int getRoiHeight() {
         return roiHeight;
@@ -90,27 +91,19 @@ public class RoadSettings {
         this.addFound = addFound;
     }
 
-    public void setShowLane(boolean showLane) {
-        this.showLane = showLane;
-    }
-
     public void setShowFinishLine(boolean showFinishLine) {
         this.showFinishLine = showFinishLine;
-    }
-
-    public boolean isShowLane() {
-        return showLane;
     }
 
     public boolean isShowFinishLine() {
         return showFinishLine;
     }
 
-    public boolean isShowAverageLine() {
-        return showAverageLine;
+    public boolean isShowRoadLines() {
+        return showRoadLines;
     }
 
-    public void setShowAverageLine(boolean showAverageLine) {
-        this.showAverageLine = showAverageLine;
+    public void setShowRoadLines(boolean showRoadLines) {
+        this.showRoadLines = showRoadLines;
     }
 }

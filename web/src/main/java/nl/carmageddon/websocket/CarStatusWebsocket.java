@@ -1,8 +1,8 @@
 package nl.carmageddon.websocket;
 
 import nl.carmageddon.domain.Car;
-import nl.carmageddon.domain.CarmageddonSettings;
 import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
+import nl.carmageddon.service.CarInstructionSender;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +29,10 @@ public class CarStatusWebsocket implements Observer {
     private Car car;
 
     @Inject
-    public CarStatusWebsocket(CarmageddonSettings settings, Car car) throws IOException {
+    public CarStatusWebsocket(Car car, CarInstructionSender carInstructionSender) throws IOException {
         this.car = car;
         this.car.addObserver(this);
+        carInstructionSender.sendMessage("hello", true);
     }
 
     @OnOpen

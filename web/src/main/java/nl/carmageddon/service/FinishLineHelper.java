@@ -27,6 +27,10 @@ public class FinishLineHelper {
     }
 
     public List<Line> findFinishLines(List<Point> horizontalPoints) {
+        List<Line> lines = new ArrayList<>();
+        if (horizontalPoints.size() == 0) {
+            return lines;
+        }
         double center_y = getCenterPoint(horizontalPoints).y;
         List<Point> upper = new ArrayList<>();
         List<Point> lower = new ArrayList<>();
@@ -41,7 +45,6 @@ public class FinishLineHelper {
                 upper.add(end);
             }
         }
-        List<Line> lines = new ArrayList<>();
         if (upper.size() > 0) {
             Point upperCenter = getCenterPoint(upper);
             if (upperCenter != null)

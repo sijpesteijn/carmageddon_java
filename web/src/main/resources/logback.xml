@@ -9,7 +9,7 @@
     </appender>
 
     <logger name="org.eclipse" level="INFO"/>
-    <logger name="nl.carmageddon" level="ERROR"/>
+    <logger name="nl.carmageddon" level="DEBUG"/>
     <logger name="org.opencv" level="ERROR"/>
 
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">

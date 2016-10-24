@@ -4,7 +4,7 @@
             Engine throttle: <span class="throttle">{{car.throttle }}</span>
     </div>
     <div class="mode">
-        Mode: <select ng-model="carMode" ng-options="mode for mode in modes" ng-change="updateCarMode()">
+        Mode: <select ng-model="carMode" ng-options="mode for mode in modes" ng-change="updateCarMode(carMode)">
         </select>
     </div>
 </div>

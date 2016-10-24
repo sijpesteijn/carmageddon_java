@@ -21,9 +21,11 @@
             }
         });
 
-        $scope.updateCarMode = function() {
+        $scope.updateCarMode = function(carMode) {
+            $scope.car.mode = carMode;
+            $rootScope.carMode = $scope.car.mode;
             $resource('./rest/car/mode/:mode').save({
-                    mode: $rootScope.carMode
+                    mode: $scope.car.mode
                 }, {},
                 function (success) {
                     // console.debug('mode send', success);

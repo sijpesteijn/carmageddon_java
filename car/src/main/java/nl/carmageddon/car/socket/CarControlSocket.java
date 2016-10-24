@@ -71,10 +71,14 @@ public class CarControlSocket {
                         this.car.setMode(Mode.valueOf((String) ci.getValue()));
                     }
                     else if (ci.getKey().equals("angle")) {
-                        this.car.getSteer().setAngle((Integer) ci.getValue());
+                        if (this.car.getMode() != Mode.disabled) {
+                            this.car.getSteer().setAngle((Integer) ci.getValue());
+                        }
                     }
                     else if (ci.getKey().equals("throttle")) {
-                        this.car.getEngine().setThrottle((Integer) ci.getValue());
+                        if (this.car.getMode() != Mode.disabled) {
+                            this.car.getEngine().setThrottle((Integer) ci.getValue());
+                        }
                     }
                     else if (ci.getKey().equals("throttleLimit")) {
                         this.car.getEngine().setThrottleLimit((Integer) ci.getValue());

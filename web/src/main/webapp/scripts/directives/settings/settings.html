@@ -9,15 +9,13 @@
                 <label for="framerate_slider">
                     Framerate:
                     <input type="range" min="1" max="30" id="framerate_slider" ng-model="framerate" ng-change="updateFramerate(framerate)">
-                    {{ framerate }}
-                    fps.
+                    {{ framerate }} fps.
                 </label>
             </li>
             <li>
                 <label for="throttleLimit">
                     Throttle limit:
-                    <input type="range" min="-1" id="throttleLimit" max="120"
-                           ng-model="settings.beagleBoneSettings.throttleLimit">
+                    <input type="range" min="-1" id="throttleLimit" max="120" ng-model="settings.beagleBoneSettings.throttleLimit">
                     {{ settings.beagleBoneSettings.throttleLimit }}
                 </label>
             </li>
@@ -32,7 +30,7 @@
     </div>
     <div ng-if="tab == 'road'" class="road-settings">
         <ul>
-            <li>
+            <li ng-show="false">
                 <label for="viewtype">
                     View type:
                     <select id="viewType" ng-model="settings.roadSettings.viewType">
@@ -45,33 +43,22 @@
             <li>
                 <label for="addRoadResult">
                     Add found:
-                    <input type="checkbox" id="addRoadResult"
-                           ng-model="settings.roadSettings.addFound">
+                    <input type="checkbox" id="addRoadResult" ng-model="settings.roadSettings.addFound">
                     {{ settings.roadSettings.addFound }}
                 </label>
             </li>
             <li>
                 <label for="addFinishLine">
                     Add finishlines:
-                    <input type="checkbox" id="addFinishLine"
-                           ng-model="settings.roadSettings.showFinishLine">
+                    <input type="checkbox" id="addFinishLine" ng-model="settings.roadSettings.showFinishLine">
                     {{ settings.roadSettings.showFinish }}
                 </label>
             </li>
             <li>
-                <label for="addLane">
-                    Add lane:
-                    <input type="checkbox" id="addLane"
-                           ng-model="settings.roadSettings.showLane">
-                    {{ settings.roadSettings.showLane }}
-                </label>
-            </li>
-            <li>
-                <label for="addAverage">
-                    Add average line:
-                    <input type="checkbox" id="addAverage"
-                           ng-model="settings.roadSettings.showAverageLine">
-                    {{ settings.roadSettings.showAverageLine }}
+                <label for="addRoadlines">
+                    Add road lines:
+                    <input type="checkbox" id="addRoadlines" ng-model="settings.roadSettings.showRoadLines">
+                    {{ settings.roadSettings.showRoadLines }}
                 </label>
             </li>
             <li>
@@ -84,48 +71,42 @@
             <li>
                 <label for="canny_threshold1">
                     Canny threshold1:
-                    <input type="range" min="1" max="1000" id="canny_threshold1"
-                           ng-model="settings.roadSettings.cannyThreshold1">
+                    <input type="range" min="1" max="1000" id="canny_threshold1" ng-model="settings.roadSettings.cannyThreshold1">
                     {{ settings.roadSettings.cannyThreshold1 }}
                 </label>
             </li>
             <li>
                 <label for="canny_threshold2">
                     Canny threshold1:
-                    <input type="range" min="1" max="1000" id="canny_threshold2"
-                           ng-model="settings.roadSettings.cannyThreshold2">
+                    <input type="range" min="1" max="1000" id="canny_threshold2" ng-model="settings.roadSettings.cannyThreshold2">
                     {{ settings.roadSettings.cannyThreshold2 }}
                 </label>
             </li>
             <li>
                 <label for="canny_apertureSize">
                     Canny aperture size:
-                    <input type="range" min="3" id="canny_apertureSize" max="7" step="2"
-                           ng-model="settings.roadSettings.cannyApertureSize">
+                    <input type="range" min="3" id="canny_apertureSize" max="7" step="2" ng-model="settings.roadSettings.cannyApertureSize">
                     {{ settings.roadSettings.cannyApertureSize }}
                 </label>
             </li>
             <li>
                 <label for="lines_threshold">
                     Lines threshold:
-                    <input type="range" min="1" id="lines_threshold" max="1000"
-                           ng-model="settings.roadSettings.linesThreshold">
+                    <input type="range" min="1" id="lines_threshold" max="1000" ng-model="settings.roadSettings.linesThreshold">
                     {{ settings.roadSettings.linesThreshold }}
                 </label>
             </li>
             <li>
                 <label for="lines_minLineSize">
                     Lines min line size:
-                    <input type="range" min="1" id="lines_minLineSize" max="1000"
-                           ng-model="settings.roadSettings.linesMinLineSize">
+                    <input type="range" min="1" id="lines_minLineSize" max="1000" ng-model="settings.roadSettings.linesMinLineSize">
                     {{ settings.roadSettings.linesMinLineSize }}
                 </label>
             </li>
             <li>
                 <label for="lines_maxLineGap">
                     Lines max line gap:
-                    <input type="range" min="1" id="lines_maxLineGap" max="1000"
-                           ng-model="settings.roadSettings.linesMaxLineGap">
+                    <input type="range" min="1" id="lines_maxLineGap" max="1000" ng-model="settings.roadSettings.linesMaxLineGap">
                     {{ settings.roadSettings.linesMaxLineGap }}
                 </label>
             </li>

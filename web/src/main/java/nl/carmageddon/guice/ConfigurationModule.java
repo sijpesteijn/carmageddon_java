@@ -45,8 +45,7 @@ public class ConfigurationModule extends AbstractModule {
 
             RoadSettings roadSettings = new RoadSettings();
             roadSettings.setShowFinishLine(configuration.getBoolean("road.show.finish"));
-            roadSettings.setShowLane(configuration.getBoolean("road.show.lane"));
-            roadSettings.setShowAverageLine(configuration.getBoolean("road.show.average"));
+            roadSettings.setShowRoadLines(configuration.getBoolean("road.show.roadlines"));
             roadSettings.setViewType(ViewType.valueOf(configuration.getString("road.viewtype")));
             roadSettings.setAddFound(configuration.getBoolean("road.addFound"));
 

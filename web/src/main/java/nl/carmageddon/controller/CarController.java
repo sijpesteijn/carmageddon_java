@@ -1,5 +1,6 @@
 package nl.carmageddon.controller;
 
+import nl.carmageddon.domain.Car;
 import nl.carmageddon.domain.Mode;
 import nl.carmageddon.service.AutonomousService;
 import nl.carmageddon.service.CarInstructionSender;
@@ -23,13 +24,15 @@ public class CarController {
     private static Logger logger = LoggerFactory.getLogger(CarController.class);
     private AutonomousService autonomousService;
     private CarInstructionSender carInstructionSender;
+    private Car car;
     private Mode mode = Mode.disabled;
 
     @Inject
     public CarController(AutonomousService autonomousService,
-            CarInstructionSender carInstructionSender) throws IOException {
+            CarInstructionSender carInstructionSender, Car car) throws IOException {
         this.autonomousService = autonomousService;
         this.carInstructionSender = carInstructionSender;
+        this.car = car;
     }
 
     @POST
@@ -45,6 +48,7 @@ public class CarController {
     public Response setMode(@PathParam("mode") Mode mode) throws IOException {
         this.mode = mode;
         carInstructionSender.sendMessage("mode", mode);
+        car.setMode(mode);
         return Response.ok().build();
     }
 
