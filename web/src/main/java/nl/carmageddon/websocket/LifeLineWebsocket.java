@@ -34,26 +34,16 @@ public class LifeLineWebsocket {
     @Inject
     public LifeLineWebsocket(CarmageddonSettings settings) throws IOException {
         this.settings = settings;
-        socket = new Socket(this.settings.getBeagleBoneSettings().getBeagleBoneIp(),
-                            this.settings.getBeagleBoneSettings().getLifeLinePort());
-        try {
-            out = new PrintStream(socket.getOutputStream());
-            is = new DataInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            log.error("Can't get streams. " + e.getMessage());
-        }
+        setupSocket();
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             if (sessions.size() > 0) {
-//                log.debug("sending ping.");
                 out.println("ping");
                 out.flush();
-//                log.debug("waiting for pong");
                 String responseLine;
                 boolean received = false;
                 try {
                     while (!received && is != null && (responseLine = is.readLine()) != null) {
                         if (responseLine.equals("pong")) {
-//                            log.debug("pong received");
                             received = true;
                         }
                     }
@@ -67,6 +57,17 @@ public class LifeLineWebsocket {
         }, 0, 500, TimeUnit.MILLISECONDS);
     }
 
+    private void setupSocket() throws IOException {
+        socket = new Socket(this.settings.getBeagleBoneSettings().getBeagleBoneIp(),
+                            this.settings.getBeagleBoneSettings().getLifeLinePort());
+        try {
+            out = new PrintStream(socket.getOutputStream());
+            is = new DataInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            log.error("Can't get streams. " + e.getMessage());
+        }
+    }
+
     private void notifyClients() {
         this.sessions.forEach(session -> {
             session.getAsyncRemote().sendText("pong");
@@ -74,14 +75,20 @@ public class LifeLineWebsocket {
     }
 
     @OnOpen
-    public void onOpen(Session session) {
+    public void onOpen(Session session) throws IOException {
         sessions.add(session);
+        if (socket == null || socket.isConnected() == false) {
+            setupSocket();
+        }
     }
 
     @OnError
-    public void onError(Session session, Throwable throwable) {
+    public void onError(Session session, Throwable throwable) throws IOException {
         log.error("Session removed " + session.toString());
         sessions.remove(session);
+        if (sessions.size() == 0) {
+            socket.close();
+        }
     }
 
     @OnClose
@@ -90,30 +97,12 @@ public class LifeLineWebsocket {
         try {
             sessions.remove(session);
             session.close();
+            if (sessions.size() == 0) {
+                socket.close();
+            }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
     }
-
-//    @OnMessage
-//    public void onMessage(String message, Session session) throws IOException {
-//        if (message.equals("ping")) {
-//            log.debug("sending ping. " + new Date());
-//            PrintStream out = new PrintStream(getSocket().getOutputStream());
-//            out.println("ping");
-//            out.flush();
-//            log.debug("waiting for pong");
-//            DataInputStream is = new DataInputStream(getSocket().getInputStream());
-//            String responseLine;
-//            boolean received = false;
-//            while (!received && is != null && (responseLine = is.readLine()) != null) {
-//                if (responseLine.equals("pong")) {
-//                    log.debug("pong received");
-//                    received = true;
-//                }
-//            }
-//            session.getAsyncRemote().sendText("pong");
-//        }
-//    }
 
 }

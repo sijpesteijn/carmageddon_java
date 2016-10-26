@@ -195,7 +195,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.3.12.v20160915</version>
                 <configuration>
-                    <scanIntervalSeconds>5</scanIntervalSeconds>
+                    <scanIntervalSeconds>1</scanIntervalSeconds>
                     <scanTargetPatterns>
                         <scanTargetPattern>
                             <directory>./src/main/webapp/</directory>

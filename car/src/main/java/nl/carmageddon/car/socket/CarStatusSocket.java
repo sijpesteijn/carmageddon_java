@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,7 +27,9 @@ public class CarStatusSocket {
     private String carStatus = "Can't tell";
     private Car car;
     private ServerSocket socket;
-    private List<Socket> clientConnections = new ArrayList<>();
+
+    private List<Socket> clientConnections;
+
     private final ScheduledExecutorService lifelineTimer = Executors.newSingleThreadScheduledExecutor();
     private final ScheduledExecutorService statusTimer = Executors.newSingleThreadScheduledExecutor();
 
@@ -67,9 +68,10 @@ public class CarStatusSocket {
     };
 
     @Inject
-    public CarStatusSocket(CarSettings settings, Car car) throws IOException {
+    public CarStatusSocket(CarSettings settings, Car car, List<Socket> clientConnections) throws IOException {
         this.car = car;
         this.socket = new ServerSocket(settings.carStatusPort());
+        this.clientConnections = clientConnections;
         this.lifelineTimer.schedule(socketListener, 100, TimeUnit.MILLISECONDS);
         this.statusTimer.scheduleAtFixedRate(statusSender, 0, 300, TimeUnit.MILLISECONDS);
     }

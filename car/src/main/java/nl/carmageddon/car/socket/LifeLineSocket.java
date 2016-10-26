@@ -3,6 +3,7 @@ package nl.carmageddon.car.socket;
 import com.google.inject.Inject;
 import nl.carmageddon.car.domain.Car;
 import nl.carmageddon.car.domain.CarSettings;
+import nl.carmageddon.car.domain.Mode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,11 +29,15 @@ public class LifeLineSocket {
     private final int delay = 500;
     private ServerSocket socket;
     private Car car;
+
+    private List<Socket> clientConnections;
+
     private long lastTime;
 
     @Inject
-    public LifeLineSocket(CarSettings settings, Car car) throws IOException {
+    public LifeLineSocket(CarSettings settings, Car car, List<Socket> clientConnections) throws IOException {
         this.car = car;
+        this.clientConnections = clientConnections;
         this.car.setConnected(false);
         socket = new ServerSocket(settings.lifelinePort());
 
@@ -49,6 +56,8 @@ public class LifeLineSocket {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             if (this.car.isConnected() && System.currentTimeMillis() - this.lastTime > this.delay * 2) {
                 logger.debug("No ping command after " + (this.delay*2));
+                this.clientConnections = new ArrayList<Socket>();
+                this.car.setMode(Mode.disabled);
                 this.car.setConnected(false);
             }
         }, 0, this.delay, TimeUnit.MILLISECONDS);

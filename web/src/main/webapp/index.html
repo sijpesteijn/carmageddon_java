@@ -23,10 +23,10 @@
 </header>
 
 <div class="workarea">
+    <panic-button></panic-button>
     <div class="car-disabled" ng-if="carMode == 'disabled'">De auto is uitgeschakeld.</div>
     <touchpad ng-if="carMode == 'manual'"></touchpad>
     <autonomous ng-if="carMode == 'autonomous'"></autonomous>
-    <panic-button></panic-button>
     <stream></stream>
 </div>
 

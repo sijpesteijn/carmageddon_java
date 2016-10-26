@@ -32,7 +32,7 @@ public class FinishLineHelper {
         return false;
     }
 
-    private boolean isPastFirstFinsihLine(RoadLookoutView roadLookoutView) {
+    public boolean isPastFirstFinsihLine(RoadLookoutView roadLookoutView) {
         return roadLookoutView.getFinishLines() != null && roadLookoutView.getFinishLines().size() <
                                                            prevNrOfFinishLines;
     }

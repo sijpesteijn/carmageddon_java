@@ -1,6 +1,7 @@
 package nl.carmageddon.car.guice;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import nl.carmageddon.car.domain.CarSettings;
 import nl.carmageddon.car.domain.Pwm;
@@ -8,6 +9,10 @@ import nl.carmageddon.car.domain.PwmImpl;
 import nl.carmageddon.car.domain.PwmMock;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Gijs Sijpesteijn
@@ -33,6 +38,9 @@ public class ConfigurationModule extends AbstractModule {
             settings.setThrotteLimit(configuration.getInt("throttle.limit"));
 
             bind(CarSettings.class).toInstance(settings);
+
+            List<Socket> clientConnections = new ArrayList<>();
+            bind(new TypeLiteral<List<Socket>>() {}).toInstance(clientConnections);
         } catch (ConfigurationException e) {
             throw new IllegalArgumentException("car.properties could not be found on the classpath.");
         }
