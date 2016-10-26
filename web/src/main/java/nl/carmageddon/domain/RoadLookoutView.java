@@ -1,30 +1,20 @@
 package nl.carmageddon.domain;
 
-import org.opencv.core.Mat;
 import org.opencv.core.Point;
-import org.opencv.core.Rect;
 
 import java.util.List;
 
 /**
  * @author Gijs Sijpesteijn
  */
-public class LinesView implements View {
-    private Rect roi;
+public class RoadLookoutView implements View {
     private Line leftLane;
     private Line rightLane;
     private List<Line> roadLines;
     private List<Line> finishLines;
-    private Mat result;
-    private Point center;
+    private Point laneCenter;
 
-    public void setRoi(Rect roi) {
-        this.roi = roi;
-    }
-
-    public Rect getRoi() {
-        return roi;
-    }
+    private Point finishCenter;
 
     public void setRoadLines(List<Line> roadLines) {
         this.roadLines = roadLines;
@@ -40,14 +30,6 @@ public class LinesView implements View {
 
     public List<Line> getFinishLines() {
         return finishLines;
-    }
-
-    public void setResult(Mat result) {
-        this.result = result;
-    }
-
-    public Mat getResult() {
-        return result;
     }
 
     public Line getLeftLane() {
@@ -66,12 +48,19 @@ public class LinesView implements View {
         this.rightLane = rightLane;
     }
 
-    public void setCenter(Point center) {
-        this.center = center;
+    public void setLaneCenter(Point laneCenter) {
+        this.laneCenter = laneCenter;
     }
 
-    public Point getCenter() {
-        return center;
+    public Point getLaneCenter() {
+        return laneCenter;
     }
 
+    public void setFinishCenter(Point finishCenter) {
+        this.finishCenter = finishCenter;
+    }
+
+    public Point getFinishCenter() {
+        return finishCenter;
+    }
 }

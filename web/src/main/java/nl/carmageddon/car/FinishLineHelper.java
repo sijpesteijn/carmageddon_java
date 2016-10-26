@@ -1,30 +1,42 @@
-package nl.carmageddon.service;
+package nl.carmageddon.car;
 
 import nl.carmageddon.domain.Line;
+import nl.carmageddon.domain.RoadLookoutView;
 import org.opencv.core.Point;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static nl.carmageddon.service.MatUtils.getCenterPoint;
+import static nl.carmageddon.MatUtils.getCenterPoint;
 
 /**
  * @author Gijs Sijpesteijn
  */
 public class FinishLineHelper {
-    private boolean tooClose;
+    private int prevNrOfFinishLines = 0;
 
-    private boolean finishLinesCloserThan(List<Line> finishLines, int height, int minDistance) {
-        tooClose = false;
-        finishLines.forEach(line -> {
-            int distance = (int) ((line.getStart().y + line.getEnd().y) / 2);
-            if (height - distance <  minDistance) {
-                tooClose = true;
+    public boolean finishLinesCloserThan(RoadLookoutView view, int height, int minDistance) {
+        if (isPastFirstFinsihLine(view)) {
+             Line finishLine = view.getFinishLines().get(0);
+            Point center = getCenterPoint(new ArrayList<Point>() {
+                {
+                    add(finishLine.getStart());
+                    add(finishLine.getEnd());
+                }
+            });
+            if (height - center.y < minDistance) {
+                return true;
             }
-
-        });
-        return tooClose;
+        }
+        this.prevNrOfFinishLines = view.getFinishLines() != null ? view.getFinishLines().size() : 0;
+        return false;
     }
+
+    private boolean isPastFirstFinsihLine(RoadLookoutView roadLookoutView) {
+        return roadLookoutView.getFinishLines() != null && roadLookoutView.getFinishLines().size() <
+                                                           prevNrOfFinishLines;
+    }
+
 
     public List<Line> findFinishLines(List<Point> horizontalPoints) {
         List<Line> lines = new ArrayList<>();
@@ -58,4 +70,7 @@ public class FinishLineHelper {
         return lines;
     }
 
+    public void reset() {
+        this.prevNrOfFinishLines = 0;
+    }
 }

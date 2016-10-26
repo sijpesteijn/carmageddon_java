@@ -74,4 +74,8 @@ public class Camera {
     public boolean isOpened() {
         return camera != null;
     }
+
+    public Dimension getDimension() {
+        return dimension;
+    }
 }

@@ -1,4 +1,4 @@
-package nl.carmageddon.service;
+package nl.carmageddon.car;
 
 import nl.carmageddon.domain.*;
 import org.opencv.core.Mat;
@@ -85,10 +85,8 @@ public class CPU extends Observable implements Observer {
     private void sendReadyToRace() {
         if (settings.isPreview()) {
             Mat snapshot = this.camera.makeSnapshot();
-            if (settings.getRoadSettings().isAddFound()) {
-                LinesView linesView = this.roadLookout.getCurrentView(snapshot);
-                this.roadLookout.addViewToMat(snapshot,linesView);
-            }
+            RoadLookoutView roadLookoutView = this.roadLookout.getCurrentView(snapshot);
+            this.roadLookout.addViewToMat(snapshot, roadLookoutView);
             notifyClients(new LookoutResult(AutonomousStatus.READY_TO_RACE, snapshot));
         } else {
             notifyClients(new LookoutResult(AutonomousStatus.NO_PREVIEW, null));
@@ -123,14 +121,13 @@ public class CPU extends Observable implements Observer {
             LookoutResult event = (LookoutResult) arg;
             notifyClients(event);
         }
-//        // TODO misschien ook een event
-        if (arg == null) {
-            if (car.getMode() == Mode.autonomous && this.racing == false) {
-                startWebcamPushTimer();
-            } else if(this.statusTimer != null) {
-                shutdownWebcamPushTimer();
-            }
-        }
+//        if (arg == null) {
+//            if (car.getMode() == Mode.autonomous && this.racing == false) {
+//                startWebcamPushTimer();
+//            } else if(this.statusTimer != null) {
+//                shutdownWebcamPushTimer();
+//            }
+//        }
     }
 
     private void startWebcamPushTimer() {

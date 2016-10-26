@@ -2,7 +2,7 @@ package nl.carmageddon.websocket;
 
 import nl.carmageddon.domain.Car;
 import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
-import nl.carmageddon.service.CarInstructionSender;
+import nl.carmageddon.car.CarInstructionSender;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

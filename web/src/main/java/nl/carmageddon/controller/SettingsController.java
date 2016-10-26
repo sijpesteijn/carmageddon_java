@@ -1,8 +1,8 @@
 package nl.carmageddon.controller;
 
 import nl.carmageddon.domain.CarmageddonSettings;
-import nl.carmageddon.service.AutonomousService;
-import nl.carmageddon.service.CarInstructionSender;
+import nl.carmageddon.car.AutonomousService;
+import nl.carmageddon.car.CarInstructionSender;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

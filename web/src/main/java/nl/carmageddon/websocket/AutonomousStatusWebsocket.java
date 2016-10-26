@@ -3,7 +3,7 @@ package nl.carmageddon.websocket;
 import com.sun.jersey.core.util.Base64;
 import nl.carmageddon.domain.LookoutResult;
 import nl.carmageddon.guice.CarmageddonWebsocketConfigurator;
-import nl.carmageddon.service.AutonomousService;
+import nl.carmageddon.car.AutonomousService;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;

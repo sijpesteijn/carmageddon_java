@@ -1,4 +1,4 @@
-package nl.carmageddon.service;
+package nl.carmageddon.car;
 
 import com.google.inject.Inject;
 import nl.carmageddon.domain.CarInstuction;

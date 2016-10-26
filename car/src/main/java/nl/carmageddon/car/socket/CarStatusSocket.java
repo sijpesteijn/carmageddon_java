@@ -71,7 +71,7 @@ public class CarStatusSocket {
         this.car = car;
         this.socket = new ServerSocket(settings.carStatusPort());
         this.lifelineTimer.schedule(socketListener, 100, TimeUnit.MILLISECONDS);
-        this.statusTimer.scheduleAtFixedRate(statusSender, 0, 500, TimeUnit.MILLISECONDS);
+        this.statusTimer.scheduleAtFixedRate(statusSender, 0, 300, TimeUnit.MILLISECONDS);
     }
 
 }

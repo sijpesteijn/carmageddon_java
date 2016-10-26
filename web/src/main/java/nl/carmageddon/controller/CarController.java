@@ -2,8 +2,8 @@ package nl.carmageddon.controller;
 
 import nl.carmageddon.domain.Car;
 import nl.carmageddon.domain.Mode;
-import nl.carmageddon.service.AutonomousService;
-import nl.carmageddon.service.CarInstructionSender;
+import nl.carmageddon.car.AutonomousService;
+import nl.carmageddon.car.CarInstructionSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

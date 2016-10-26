@@ -44,20 +44,31 @@ public class ConfigurationModule extends AbstractModule {
             trafficLightSettings.setRoi(roi);
 
             RoadSettings roadSettings = new RoadSettings();
-            roadSettings.setShowFinishLine(configuration.getBoolean("road.show.finish"));
+            roadSettings.setShowFinishLines(configuration.getBoolean("road.show.finishLines"));
             roadSettings.setShowRoadLines(configuration.getBoolean("road.show.roadlines"));
-            roadSettings.setViewType(ViewType.valueOf(configuration.getString("road.viewtype")));
-            roadSettings.setAddFound(configuration.getBoolean("road.addFound"));
-
             roadSettings.setRoiHeight(configuration.getInt("road.roi.height"));
-            roadSettings.setCannyThreshold1(configuration.getInt("road.canny.threshold1"));
-            roadSettings.setCannyThreshold2(configuration.getInt("road.canny.threshold2"));
-            roadSettings.setCannyApertureSize(configuration.getInt("road.canny.apertureSize"));
 
-            roadSettings.setLinesThreshold(configuration.getInt("road.lines.threshold"));
-            roadSettings.setLinesMinLineSize(configuration.getInt("road.lines.minLineSize"));
-            roadSettings.setLinesMaxLineGap(configuration.getInt("road.lines.maxLineGap"));
+            LineSettings laneLineSettings = new LineSettings();
+            laneLineSettings.setCannyThreshold1(configuration.getInt("road.lane.canny.threshold1"));
+            laneLineSettings.setCannyThreshold2(configuration.getInt("road.lane.canny.threshold2"));
+            laneLineSettings.setCannyApertureSize(configuration.getInt("road.lane.canny.apertureSize"));
 
+            laneLineSettings.setLinesThreshold(configuration.getInt("road.lane.lines.threshold"));
+            laneLineSettings.setLinesMinLineSize(configuration.getInt("road.lane.lines.minLineSize"));
+            laneLineSettings.setLinesMaxLineGap(configuration.getInt("road.lane.lines.maxLineGap"));
+
+            roadSettings.setLaneLineSettings(laneLineSettings);
+
+            LineSettings finishLineSettings = new LineSettings();
+            finishLineSettings.setCannyThreshold1(configuration.getInt("road.finish.canny.threshold1"));
+            finishLineSettings.setCannyThreshold2(configuration.getInt("road.finish.canny.threshold2"));
+            finishLineSettings.setCannyApertureSize(configuration.getInt("road.finish.canny.apertureSize"));
+
+            finishLineSettings.setLinesThreshold(configuration.getInt("road.finish.lines.threshold"));
+            finishLineSettings.setLinesMinLineSize(configuration.getInt("road.finish.lines.minLineSize"));
+            finishLineSettings.setLinesMaxLineGap(configuration.getInt("road.finish.lines.maxLineGap"));
+
+            roadSettings.setFinishLineSettings(finishLineSettings);
             carmageddonSettings.setRoadSettings(roadSettings);
 
             bind(CarmageddonSettings.class).toInstance(carmageddonSettings);

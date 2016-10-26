@@ -41,17 +41,10 @@
                 </label>
             </li>
             <li>
-                <label for="addRoadResult">
-                    Add found:
-                    <input type="checkbox" id="addRoadResult" ng-model="settings.roadSettings.addFound">
-                    {{ settings.roadSettings.addFound }}
-                </label>
-            </li>
-            <li>
-                <label for="addFinishLine">
+                <label for="addFinishLines">
                     Add finishlines:
-                    <input type="checkbox" id="addFinishLine" ng-model="settings.roadSettings.showFinishLine">
-                    {{ settings.roadSettings.showFinish }}
+                    <input type="checkbox" id="addFinishLines" ng-model="settings.roadSettings.showFinishLines">
+                    {{ settings.roadSettings.showFinishLines }}
                 </label>
             </li>
             <li>
@@ -68,48 +61,102 @@
                     {{ settings.roadSettings.roiHeight }}
                 </label>
             </li>
-            <li>
-                <label for="canny_threshold1">
-                    Canny threshold1:
-                    <input type="range" min="1" max="1000" id="canny_threshold1" ng-model="settings.roadSettings.cannyThreshold1">
-                    {{ settings.roadSettings.cannyThreshold1 }}
-                </label>
-            </li>
-            <li>
-                <label for="canny_threshold2">
-                    Canny threshold1:
-                    <input type="range" min="1" max="1000" id="canny_threshold2" ng-model="settings.roadSettings.cannyThreshold2">
-                    {{ settings.roadSettings.cannyThreshold2 }}
-                </label>
-            </li>
-            <li>
-                <label for="canny_apertureSize">
-                    Canny aperture size:
-                    <input type="range" min="3" id="canny_apertureSize" max="7" step="2" ng-model="settings.roadSettings.cannyApertureSize">
-                    {{ settings.roadSettings.cannyApertureSize }}
-                </label>
-            </li>
-            <li>
-                <label for="lines_threshold">
-                    Lines threshold:
-                    <input type="range" min="1" id="lines_threshold" max="1000" ng-model="settings.roadSettings.linesThreshold">
-                    {{ settings.roadSettings.linesThreshold }}
-                </label>
-            </li>
-            <li>
-                <label for="lines_minLineSize">
-                    Lines min line size:
-                    <input type="range" min="1" id="lines_minLineSize" max="1000" ng-model="settings.roadSettings.linesMinLineSize">
-                    {{ settings.roadSettings.linesMinLineSize }}
-                </label>
-            </li>
-            <li>
-                <label for="lines_maxLineGap">
-                    Lines max line gap:
-                    <input type="range" min="1" id="lines_maxLineGap" max="1000" ng-model="settings.roadSettings.linesMaxLineGap">
-                    {{ settings.roadSettings.linesMaxLineGap }}
-                </label>
-            </li>
         </ul>
+        <ul class="tabHeader">
+            <li><a href="#" ng-click="subtab='lane'" ng-class="{'active': subtab == 'lane'}">Lane</a></li>
+            <li><a href="#" ng-click="subtab='finish'" ng-class="{'active': subtab == 'finish'}">Finish</a></li>
+        </ul>
+        <div ng-if="tab == 'road' && subtab == 'lane'">
+            <ul>
+                <li>
+                    <label for="lane_canny_threshold1">
+                        Canny threshold1:
+                        <input type="range" min="1" max="1000" id="lane_canny_threshold1" ng-model="settings.roadSettings.laneLineSettings.cannyThreshold1">
+                        {{ settings.roadSettings.laneLineSettings.cannyThreshold1 }}
+                    </label>
+                </li>
+                <li>
+                    <label for="lane_canny_threshold2">
+                        Canny threshold1:
+                        <input type="range" min="1" max="1000" id="lane_canny_threshold2" ng-model="settings.roadSettings.laneLineSettings.cannyThreshold2">
+                        {{ settings.roadSettings.laneLineSettings.cannyThreshold2 }}
+                    </label>
+                </li>
+                <li>
+                    <label for="lane_canny_apertureSize">
+                        Canny aperture size:
+                        <input type="range" min="3" id="lane_canny_apertureSize" max="7" step="2" ng-model="settings.roadSettings.laneLineSettings.cannyApertureSize">
+                        {{ settings.roadSettings.laneLineSettings.cannyApertureSize }}
+                    </label>
+                </li>
+                <li>
+                    <label for="lane_lines_threshold">
+                        Lines threshold:
+                        <input type="range" min="1" id="lane_lines_threshold" max="1000" ng-model="settings.roadSettings.laneLineSettings.linesThreshold">
+                        {{ settings.roadSettings.laneLineSettings.linesThreshold }}
+                    </label>
+                </li>
+                <li>
+                    <label for="lane_lines_minLineSize">
+                        Lines min line size:
+                        <input type="range" min="1" id="lane_lines_minLineSize" max="1000" ng-model="settings.roadSettings.laneLineSettings.linesMinLineSize">
+                        {{ settings.roadSettings.laneLineSettings.linesMinLineSize }}
+                    </label>
+                </li>
+                <li>
+                    <label for="lane_lines_maxLineGap">
+                        Lines max line gap:
+                        <input type="range" min="1" id="lane_lines_maxLineGap" max="1000" ng-model="settings.roadSettings.laneLineSettings.linesMaxLineGap">
+                        {{ settings.roadSettings.laneLineSettings.linesMaxLineGap }}
+                    </label>
+                </li>
+            </ul>
+        </div>
+        <div ng-if="tab == 'road' && subtab == 'finish'">
+            <ul>
+                <li>
+                    <label for="finish_canny_threshold1">
+                        Canny threshold1:
+                        <input type="range" min="1" max="1000" id="finish_canny_threshold1" ng-model="settings.roadSettings.finishLineSettings.cannyThreshold1">
+                        {{ settings.roadSettings.finishLineSettings.cannyThreshold1 }}
+                    </label>
+                </li>
+                <li>
+                    <label for="finish_canny_threshold2">
+                        Canny threshold1:
+                        <input type="range" min="1" max="1000" id="finish_canny_threshold2" ng-model="settings.roadSettings.finishLineSettings.cannyThreshold2">
+                        {{ settings.roadSettings.finishLineSettings.cannyThreshold2 }}
+                    </label>
+                </li>
+                <li>
+                    <label for="finish_canny_apertureSize">
+                        Canny aperture size:
+                        <input type="range" min="3" id="finish_canny_apertureSize" max="7" step="2" ng-model="settings.roadSettings.finishLineSettings.cannyApertureSize">
+                        {{ settings.roadSettings.finishLineSettings.cannyApertureSize }}
+                    </label>
+                </li>
+                <li>
+                    <label for="finish_lines_threshold">
+                        Lines threshold:
+                        <input type="range" min="1" id="finish_lines_threshold" max="1000" ng-model="settings.roadSettings.finishLineSettings.linesThreshold">
+                        {{ settings.roadSettings.finishLineSettings.linesThreshold }}
+                    </label>
+                </li>
+                <li>
+                    <label for="finish_lines_minLineSize">
+                        Lines min line size:
+                        <input type="range" min="1" id="finish_lines_minLineSize" max="1000" ng-model="settings.roadSettings.finishLineSettings.linesMinLineSize">
+                        {{ settings.roadSettings.finishLineSettings.linesMinLineSize }}
+                    </label>
+                </li>
+                <li>
+                    <label for="finish_lines_maxLineGap">
+                        Lines max line gap:
+                        <input type="range" min="1" id="finish_lines_maxLineGap" max="1000" ng-model="settings.roadSettings.finishLineSettings.linesMaxLineGap">
+                        {{ settings.roadSettings.finishLineSettings.linesMaxLineGap }}
+                    </label>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>

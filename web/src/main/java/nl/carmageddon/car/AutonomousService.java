@@ -1,4 +1,4 @@
-package nl.carmageddon.service;
+package nl.carmageddon.car;
 
 import nl.carmageddon.domain.CarmageddonSettings;
 

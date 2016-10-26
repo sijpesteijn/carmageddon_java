@@ -1,4 +1,4 @@
-package nl.carmageddon.service;
+package nl.carmageddon.car;
 
 import nl.carmageddon.domain.Dimension;
 import nl.carmageddon.domain.Line;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static nl.carmageddon.service.MatUtils.getCenterPoint;
+import static nl.carmageddon.MatUtils.getCenterPoint;
 
 /**
  * @author Gijs Sijpesteijn

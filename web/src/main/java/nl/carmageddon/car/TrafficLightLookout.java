@@ -1,4 +1,4 @@
-package nl.carmageddon.service;
+package nl.carmageddon.car;
 
 import nl.carmageddon.domain.*;
 import org.opencv.core.Core;
@@ -54,8 +54,6 @@ public class TrafficLightLookout extends Observable implements Lookout<TrafficLi
         Mat roiMat = new Mat(snapshot.clone(), region);
 
         view.setRoiMat(roiMat);
-        view.setResult(roiMat);
-        view.setRoi(region);
         return view;
     }
 
@@ -110,8 +108,7 @@ public class TrafficLightLookout extends Observable implements Lookout<TrafficLi
     }
 
     public void addViewToMat(Mat snapshot, TrafficLightView view) {
-        Rect roi = view.getRoi();
-        view.getResult().copyTo(snapshot.submat(roi));
+        // We kunnen niks toevoegen, we kijken naar het verschil in aantal pixels.
     }
 
     class TrafficLightLookoutResult extends LookoutResult {

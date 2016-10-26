@@ -1,4 +1,4 @@
-package nl.carmageddon.service;
+package nl.carmageddon;
 
 import nl.carmageddon.domain.PCA;
 import org.apache.commons.math3.linear.EigenDecomposition;

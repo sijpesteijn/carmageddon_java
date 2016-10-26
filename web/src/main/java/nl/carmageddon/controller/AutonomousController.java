@@ -1,6 +1,6 @@
 package nl.carmageddon.controller;
 
-import nl.carmageddon.service.AutonomousService;
+import nl.carmageddon.car.AutonomousService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
