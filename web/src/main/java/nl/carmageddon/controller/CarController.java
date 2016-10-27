@@ -44,6 +44,13 @@ public class CarController {
     }
 
     @POST
+    @Path(value = "/horn")
+    public void blowHorn() throws IOException {
+        logger.debug("Blow horn");
+        carInstructionSender.sendMessage("horn", "");
+    }
+
+    @POST
     @Path(value = "/mode/{mode}")
     public Response setMode(@PathParam("mode") Mode mode) throws IOException {
         this.mode = mode;

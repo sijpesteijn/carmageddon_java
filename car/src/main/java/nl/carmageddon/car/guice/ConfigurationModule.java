@@ -3,10 +3,7 @@ package nl.carmageddon.car.guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
-import nl.carmageddon.car.domain.CarSettings;
-import nl.carmageddon.car.domain.Pwm;
-import nl.carmageddon.car.domain.PwmImpl;
-import nl.carmageddon.car.domain.PwmMock;
+import nl.carmageddon.car.domain.*;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
@@ -24,9 +21,11 @@ public class ConfigurationModule extends AbstractModule {
         if (System.getProperty("os.arch").contains("arm")) {
             bind(Pwm.class).annotatedWith(Names.named("PWM22")).toInstance(new PwmImpl(22));
             bind(Pwm.class).annotatedWith(Names.named("PWM42")).toInstance(new PwmImpl(42));
+            bind(GPIO.class).toInstance(new GPIOImpl(16));
         } else {
             bind(Pwm.class).annotatedWith(Names.named("PWM22")).to(PwmMock.class);
             bind(Pwm.class).annotatedWith(Names.named("PWM42")).to(PwmMock.class);
+            bind(GPIO.class).to(GPIOMock.class);
         }
 
         try {

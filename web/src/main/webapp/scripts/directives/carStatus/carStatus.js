@@ -35,6 +35,16 @@
                 });
         };
 
+        $scope.blowHorn = function() {
+            $resource('./rest/car/horn').save({}, {},
+                function (success) {
+                    // console.debug('mode send', success);
+                },
+                function (error) {
+                    console.error('mode update failed', error);
+                });
+        };
+
         $scope.$on('$destroy', function () {
             console.debug('destroying carstatus controller');
             websocket.closeConnection();

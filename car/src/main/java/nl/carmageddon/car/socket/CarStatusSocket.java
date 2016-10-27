@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class CarStatusSocket {
     private static Logger logger = LoggerFactory.getLogger(CarStatusSocket.class);
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
     private String carStatus = "Can't tell";
     private Car car;
     private ServerSocket socket;
@@ -74,6 +74,7 @@ public class CarStatusSocket {
         this.clientConnections = clientConnections;
         this.lifelineTimer.schedule(socketListener, 100, TimeUnit.MILLISECONDS);
         this.statusTimer.scheduleAtFixedRate(statusSender, 0, 300, TimeUnit.MILLISECONDS);
+        this.mapper = new ObjectMapper();
     }
 
 }

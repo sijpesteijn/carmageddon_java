@@ -1,6 +1,7 @@
 package nl.carmageddon.car.domain;
 
 import com.google.inject.Inject;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import javax.inject.Singleton;
 import java.util.Observable;
@@ -12,13 +13,16 @@ import java.util.Observable;
 public class Car extends Observable {
     private Steer steer;
     private Engine engine;
+    @JsonIgnore
+    private Horn horn;
     private Mode mode = Mode.disabled;
     private boolean connected = false;
 
     @Inject
-    public Car(CarSettings settings, Steer steer, Engine engine) {
+    public Car(CarSettings settings, Steer steer, Engine engine, Horn horn) {
         this.steer = steer;
         this.engine = engine;
+        this.horn = horn;
         this.engine.setThrottleLimit(settings.getThrotteLimit());
     }
 
@@ -52,5 +56,9 @@ public class Car extends Observable {
         }
         setChanged();
         notifyObservers();
+    }
+
+    public Horn getHorn() {
+        return horn;
     }
 }
