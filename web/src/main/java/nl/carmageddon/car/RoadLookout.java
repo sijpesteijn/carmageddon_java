@@ -23,23 +23,14 @@ import static org.opencv.imgproc.Imgproc.line;
  */
 @Singleton
 public class RoadLookout extends Observable implements Lookout<RoadLookoutView> {
-
     private static final Logger logger = LoggerFactory.getLogger(TrafficLightLookout.class);
-
     private boolean run;
-
     private LookoutResult result;
-
     private RoadSettings settings;
-
     private Camera camera;
-
     private CarInstructionSender carInstructionSender;
-
     private FinishLineHelper finishLineHelper;
-
     private LeftLineHelper leftLineHelper;
-
     private RightLineHelper rightLineHelper;
 
     @Inject
@@ -63,10 +54,11 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
             addViewToMat(snapshot, roadLookoutView);
             // Als race gestopt is of we zijn de 1e finish line gepasseerd en de 2e is dichterbij dan 40 pixel
             if (!run ||
-                finishLineHelper.pastFirstAndCloserThan(roadLookoutView, 10)) {
-                breakCar(-18);
+                finishLineHelper.pastFirstAndCloserThan(roadLookoutView, settings.getMinDistance2FinishLine())) {
+                breakCar(settings.getBreakVelocity());
                 result = new LookoutResult(AutonomousStatus.RACE_FINISHED, snapshot);
                 notifyClients(result);
+                run = false;
             }
             // als er geen linker en rechter lijn zijn en we zijn nog niet over de 1e finish line -> stoppen, want dan
             // geen weg meer.
@@ -221,16 +213,24 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
 
     private void instructCar(RoadLookoutView view) {
         if (view.getLeftLane() == null) {
-            carInstructionSender.sendMessage("throttle", 30);
+            carInstructionSender.sendMessage("throttle", settings.getSteeringSpeed());
             carInstructionSender.sendMessage("angle", -20);
         }
         else if (view.getRightLane() == null) {
-            carInstructionSender.sendMessage("throttle", 30);
+            carInstructionSender.sendMessage("throttle", settings.getSteeringSpeed());
             carInstructionSender.sendMessage("angle", 20);
         }
         else {
-            carInstructionSender.sendMessage("throttle", 32);
-            carInstructionSender.sendMessage("angle", 0);
+            carInstructionSender.sendMessage("throttle", settings.getStraightSpeed());
+            if (abs(getCenterPoint(view.getLeftLane()).x - view.getLaneCenter().x) < settings.getMinSideDistance()) {
+                logger.debug("Too close to the left.");
+                carInstructionSender.sendMessage("angle", 20);
+            } else if(abs(getCenterPoint(view.getRightLane()).x - view.getLaneCenter().x) < settings.getMinSideDistance()) {
+                logger.debug("Too close to the right.");
+                carInstructionSender.sendMessage("angle", -20);
+            } else {
+                carInstructionSender.sendMessage("angle", 0);
+            }
         }
     }
 
@@ -244,7 +244,7 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
             }
             if (this.settings.isShowFinishLines() && view.getFinishLines() != null &&
                 view.getFinishLines().size() > 0) {
-                logger.debug("Finish lines: " + view.getFinishLines().size());
+//                logger.debug("Finish lines: " + view.getFinishLines().size());
                 circle(snapshot, view.getFinishCenter(), 5, new Scalar(255, 0, 255), 3);
                 if (view.getHorizontalLines() != null) {
                     view.getHorizontalLines().forEach(line -> line(snapshot, line.getStart(), line.getEnd(), new Scalar

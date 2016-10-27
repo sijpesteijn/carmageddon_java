@@ -1,5 +1,6 @@
 package nl.carmageddon;
 
+import nl.carmageddon.domain.Line;
 import nl.carmageddon.domain.PCA;
 import org.apache.commons.math3.linear.EigenDecomposition;
 import org.apache.commons.math3.linear.MatrixUtils;
@@ -7,6 +8,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.stat.correlation.Covariance;
 import org.opencv.core.Point;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.atan;
@@ -21,6 +23,10 @@ public class MatUtils {
         double averageX = points.stream().mapToDouble(point -> point.x).average().getAsDouble();
         double averageY = points.stream().mapToDouble(point -> point.y).average().getAsDouble();
         return new Point(averageX, averageY);
+    }
+
+    public static Point getCenterPoint(Line line) {
+        return getCenterPoint(new ArrayList<Point>() {{ add(line.getStart()); add(line.getEnd());}});
     }
 
     public static PCA calculatePCA(List<Point> points) {

@@ -3,7 +3,7 @@ package nl.carmageddon.car.domain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 /**
@@ -13,56 +13,37 @@ public class GPIOImpl implements GPIO {
     private static final Logger logger = LoggerFactory.getLogger(GPIOImpl.class);
     private FileWriter unexportFile;
     private FileWriter exportFile;
-    private int nr;
+    private String nr;
 
-    public GPIOImpl(int nr) {
+    public GPIOImpl(String nr) {
         this.nr = nr;
-        try {
-            unexportFile = new FileWriter("/sys/class/gpio/unexport");
-            exportFile = new FileWriter("/sys/class/gpio/export");
-            // Reset the port
-            File exportFileCheck = new File("/sys/class/gpio/gpio" + nr);
-            if (exportFileCheck.exists()) {
-                unexportFile.write(nr);
-                unexportFile.flush();
-            }
-            // Set the port for use
-            exportFile.write(nr);
-            exportFile.flush();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+        echo("/sys/class/gpio/unexport", nr);
+        echo("/sys/class/gpio/export", nr);
     }
 
     @Override
     public void start() {
-        try {
-            FileWriter commandFile = new FileWriter("/sys/class/gpio/gpio"+nr+ "/value");
-            commandFile.write(1);
-            commandFile.flush();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        echo("/sys/class/gpio/gpio"+nr+ "/value","1");
     }
 
     @Override
     public void stop() {
+        echo("/sys/class/gpio/gpio"+nr+ "/value", "0");
+    }
+
+    @Override
+    public void setDirection(String direction) {
+        echo("/sys/class/gpio/gpio"+nr+"/direction", direction);
+    }
+
+    private void echo(String path, String value) {
         try {
-            FileWriter commandFile = new FileWriter("/sys/class/gpio/gpio"+nr+ "/value");
-            commandFile.write(0);
-            commandFile.flush();
+            BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+            writer.write(value);
+            writer.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
-    public void setDirection(String direction) {
-        try {
-            FileWriter directionFile = new FileWriter("/sys/class/gpio/gpio"+nr+"/direction");
-            directionFile.write(direction);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

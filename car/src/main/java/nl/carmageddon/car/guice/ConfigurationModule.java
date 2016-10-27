@@ -21,7 +21,7 @@ public class ConfigurationModule extends AbstractModule {
         if (System.getProperty("os.arch").contains("arm")) {
             bind(Pwm.class).annotatedWith(Names.named("PWM22")).toInstance(new PwmImpl(22));
             bind(Pwm.class).annotatedWith(Names.named("PWM42")).toInstance(new PwmImpl(42));
-            bind(GPIO.class).toInstance(new GPIOImpl(16));
+            bind(GPIO.class).toInstance(new GPIOImpl("60"));
         } else {
             bind(Pwm.class).annotatedWith(Names.named("PWM22")).to(PwmMock.class);
             bind(Pwm.class).annotatedWith(Names.named("PWM42")).to(PwmMock.class);

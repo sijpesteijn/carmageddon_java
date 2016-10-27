@@ -46,7 +46,7 @@ public class Camera {
         if (camera != null && camera.isOpened()) {
             return camera;
         }
-        camera = new VideoCapture(1);
+        camera = new VideoCapture(0);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -65,9 +65,13 @@ public class Camera {
     public Mat makeSnapshot() {
 //        return imread("/Users/gijs/programming/java/carmageddon/web/src/main/resources/ws1.jpg");
         Mat snapshot = new Mat();
-        VideoCapture camera = getCamera();
-        camera.grab();
-        camera.retrieve(snapshot);
+        try {
+            VideoCapture camera = getCamera();
+            camera.grab();
+            camera.retrieve(snapshot);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
         return snapshot;
     }
 

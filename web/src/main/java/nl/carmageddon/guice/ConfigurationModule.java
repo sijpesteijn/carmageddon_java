@@ -47,6 +47,11 @@ public class ConfigurationModule extends AbstractModule {
             roadSettings.setShowFinishLines(configuration.getBoolean("road.show.finishLines"));
             roadSettings.setShowRoadLines(configuration.getBoolean("road.show.roadlines"));
             roadSettings.setRoiHeight(configuration.getInt("road.roi.height"));
+            roadSettings.setBreakVelocity(configuration.getInt("road.break.velocity"));
+            roadSettings.setMinDistance2FinishLine(configuration.getInt("road.min.distance.second.finishline"));
+            roadSettings.setSteeringSpeed(configuration.getInt("road.steering.speed"));
+            roadSettings.setStraightSpeed(configuration.getInt("road.straight.speed"));
+            roadSettings.setMinSideDistance(configuration.getInt("road.side.distance.min"));
 
             LineSettings laneLineSettings = new LineSettings();
             laneLineSettings.setCannyThreshold1(configuration.getInt("road.lane.canny.threshold1"));

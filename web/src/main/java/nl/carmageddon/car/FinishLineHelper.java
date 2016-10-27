@@ -4,6 +4,8 @@ import nl.carmageddon.domain.Dimension;
 import nl.carmageddon.domain.Line;
 import nl.carmageddon.domain.RoadLookoutView;
 import org.opencv.core.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ import static nl.carmageddon.MatUtils.getCenterPoint;
  * @author Gijs Sijpesteijn
  */
 public class FinishLineHelper {
+    private static final Logger logger = LoggerFactory.getLogger(FinishLineHelper.class);
     private int prevNrOfFinishLines = 0;
     private Dimension cameraDimension;
 
@@ -23,6 +26,7 @@ public class FinishLineHelper {
 
     public boolean pastFirstAndCloserThan(RoadLookoutView view, int minDistance) {
         if (isPastFirstFinsihLine(view)) {
+            logger.debug("PAST FIRST");
             Line finishLine = view.getFinishLines().get(0);
             Point center = getCenterPoint(new ArrayList<Point>() {
                 {
@@ -30,7 +34,10 @@ public class FinishLineHelper {
                     add(finishLine.getEnd());
                 }
             });
-            if (cameraDimension.getHeight() - center.y < minDistance) {
+            double distance = cameraDimension.getHeight() - center.y;
+            logger.debug("DISTANCE: " + distance);
+            if (distance < minDistance) {
+                logger.debug("TOO CLOSE");
                 return true;
             }
         }
@@ -86,7 +93,7 @@ public class FinishLineHelper {
         long count = horizontalPoints.stream().filter(point -> center_y - point.y < range && point.y - center_y < range)
                                      .count();
         int percentage = (int) (count*100/horizontalPoints.size());
-        System.out.println("Percentage " + percentage);
+//        System.out.println("Percentage " + percentage);
         return percentage;
     }
 

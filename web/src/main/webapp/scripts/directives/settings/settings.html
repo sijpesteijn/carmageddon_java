@@ -61,6 +61,46 @@
                     {{ settings.roadSettings.roiHeight }}
                 </label>
             </li>
+            <li>
+                <label for="roi_straight_speed">
+                    Straight speed:
+                    <input type="range" min="1" id="roi_straight_speed" max="{{settings.beagleBoneSettings.throttleLimit}}"
+                           ng-model="settings.roadSettings.straightSpeed">
+                    {{ settings.roadSettings.straightSpeed }}
+                </label>
+            </li>
+            <li>
+                <label for="roi_steering_speed">
+                    Steering speed:
+                    <input type="range" min="1" id="roi_steering_speed" max="{{settings.beagleBoneSettings.throttleLimit}}"
+                           ng-model="settings.roadSettings.steeringSpeed">
+                    {{ settings.roadSettings.steeringSpeed }}
+                </label>
+            </li>
+            <li>
+                <label for="roi_min_side_distance">
+                    Min side distance:
+                    <input type="range" min="1" id="roi_min_side_distance" max="{{settings.cameraDimension.width/2}}"
+                           ng-model="settings.roadSettings.minSideDistance">
+                    {{ settings.roadSettings.minSideDistance }}
+                </label>
+            </li>
+            <li>
+                <label for="roi_break_velocity">
+                    Break velocity:
+                    <input type="range" min="1" id="roi_break_velocity" max="{{settings.beagleBoneSettings.throttleLimit}}"
+                           ng-model="settings.roadSettings.breakVelocity">
+                    {{ settings.roadSettings.breakVelocity }}
+                </label>
+            </li>
+            <li>
+                <label for="roi_min_distance_finish">
+                    Min distance 2e FinishLine:
+                    <input type="range" min="1" id="roi_min_distance_finish" max="200"
+                           ng-model="settings.roadSettings.minDistance2FinishLine">
+                    {{ settings.roadSettings.minDistance2FinishLine }}
+                </label>
+            </li>
         </ul>
         <ul class="tabHeader">
             <li><a href="#" ng-click="subtab='lane'" ng-class="{'active': subtab == 'lane'}">Lane</a></li>
