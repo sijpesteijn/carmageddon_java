@@ -11,9 +11,9 @@ public class RoadLookoutView implements View {
     private Line leftLane;
     private Line rightLane;
     private List<Line> roadLines;
-    private List<Line> finishLines;
     private Point laneCenter;
-
+    private List<Line> horizontalLines;
+    private List<Line> finishLines;
     private Point finishCenter;
 
     public void setRoadLines(List<Line> roadLines) {
@@ -62,5 +62,13 @@ public class RoadLookoutView implements View {
 
     public Point getFinishCenter() {
         return finishCenter;
+    }
+
+    public void setHorizontalLines(List<Line> horizontalLines) {
+        this.horizontalLines = horizontalLines;
+    }
+
+    public List<Line> getHorizontalLines() {
+        return horizontalLines;
     }
 }

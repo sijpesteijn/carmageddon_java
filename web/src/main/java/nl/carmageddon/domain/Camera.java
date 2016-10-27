@@ -46,7 +46,7 @@ public class Camera {
         if (camera != null && camera.isOpened()) {
             return camera;
         }
-        camera = new VideoCapture(0);
+        camera = new VideoCapture(url);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -63,7 +63,7 @@ public class Camera {
     }
 
     public Mat makeSnapshot() {
-//        return Imgcodecs.imread("/Users/gijs/programming/java/carmageddon/web/src/main/resources/ws6.jpg");
+//        return imread("/Users/gijs/programming/java/carmageddon/web/src/main/resources/ws1.jpg");
         Mat snapshot = new Mat();
         VideoCapture camera = getCamera();
         camera.grab();

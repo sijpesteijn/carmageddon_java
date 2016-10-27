@@ -18,7 +18,7 @@ public class Engine extends Observable {
     private static final Logger log = LoggerFactory.getLogger(Engine.class);
     private static int dutyMiddle = 1480000;
     private static int MAX_THROTTLE = 120;
-    private static int SPEED_STEP = 5000;
+    private static int SPEED_STEP = 2500;
 
     private Pwm pwm;
     private int throttle;

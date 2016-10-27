@@ -56,7 +56,7 @@ public class LifeLineSocket {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             if (this.car.isConnected() && System.currentTimeMillis() - this.lastTime > this.delay * 2) {
                 logger.debug("No ping command after " + (this.delay*2));
-                this.clientConnections = new ArrayList<Socket>();
+                this.clientConnections = new ArrayList<>();
                 this.car.setMode(Mode.disabled);
                 this.car.setConnected(false);
             }
@@ -77,14 +77,12 @@ public class LifeLineSocket {
             String req;
             try {
                 while (dis != null && (req = dis.readLine()) != null) {
-//                    logger.debug("received: " + req);
                     if (!car.isConnected()) {
                         car.setConnected(true);
                     }
                     lastTime = System.currentTimeMillis();
                     out.println("pong");
                     out.flush();
-//                    logger.debug("send: pong");
                 }
             } catch (IOException e) {
                 logger.error(e.getMessage());
