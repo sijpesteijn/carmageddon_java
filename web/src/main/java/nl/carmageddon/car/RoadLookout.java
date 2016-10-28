@@ -87,10 +87,8 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
      */
     private void breakCar(int velocity) {
         try {
-            carInstructionSender.sendMessage("throttle", 0);
-            Thread.sleep(200);
             carInstructionSender.sendMessage("throttle", velocity);
-            Thread.sleep(800);
+            Thread.sleep(700);
         } catch (Exception e) {
             logger.error(e.getMessage());
         } finally {

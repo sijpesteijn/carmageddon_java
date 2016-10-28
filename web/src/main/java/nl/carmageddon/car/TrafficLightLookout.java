@@ -47,17 +47,23 @@ public class TrafficLightLookout extends Observable implements Lookout<TrafficLi
 
     public TrafficLightView getCurrentView(Mat snapshot) {
         TrafficLightView view = new TrafficLightView();
+        try {
 
-        // Get just a region to look at
-        ROI roi = settings.getRoi();
-        Rect region = new Rect(roi.getX(), roi.getY(), roi.getWidth(), roi.getHeight());
-        Mat roiMat = new Mat(snapshot.clone(), region);
+            // Get just a region to look at
+            ROI roi = settings.getRoi();
+            Rect region = new Rect(roi.getX(), roi.getY(), roi.getWidth(), roi.getHeight());
+            Mat roiMat = new Mat(snapshot.clone(), region);
 
-        view.setRoiMat(roiMat);
+            view.setRoiMat(roiMat);
+        } catch(Exception e) {
+            logger.error("Get current view: " + e.getMessage());
+        }
         return view;
     }
 
     private LookoutResult waitForGo(TrafficLightView viewWithLightOn) {
+        LookoutResult result = null;
+        try {
         boolean lightsOff = false;
         while (run && !lightsOff) {
             Mat snapshot = this.camera.makeSnapshot();
@@ -71,16 +77,19 @@ public class TrafficLightLookout extends Observable implements Lookout<TrafficLi
             }
             notifyClients(result);
         }
+        } catch(Exception e) {
+            logger.error("Wait for go: " + e.getMessage());
+        }
         return result;
     }
 
     private int pixelDifferencePercentage(TrafficLightView viewWithLightOn, TrafficLightView
             currentTrafficLightArea) {
+        try {
         int count = 0;
         Mat lightOn = viewWithLightOn.getRoiMat();
         Mat current = currentTrafficLightArea.getRoiMat();
-
-        Mat result = new Mat();
+        Mat result = new Mat(lightOn.rows(), lightOn.cols(), CV_8UC1);
         double threshold = 30;
         Core.absdiff(lightOn, current, result);
         Mat bw = new Mat(result.rows(), result.cols(), CV_8UC1);
@@ -97,6 +106,11 @@ public class TrafficLightLookout extends Observable implements Lookout<TrafficLi
             }
         }
         return (int) (count*100/result.total());
+
+        } catch(Exception e) {
+            logger.error("Pixel difference percentage: " + e.getMessage());
+        }
+        return 0;
     }
 
     public void stop() {

@@ -10,11 +10,7 @@
         $scope.settings;
         $scope.tab = 'general';
         $scope.subtab = 'lane';
-        $scope.roadViewTypes = [
-            {id:'result',name:'Result'},
-            {id:'baw',name:'Black & White'},
-            {id:'canny',name:'Canny'}
-        ];
+        $scope.startLanes = ['left','right'];
 
 
         settingsFactory.getSettings().then(function (data) {

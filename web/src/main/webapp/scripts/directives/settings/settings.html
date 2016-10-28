@@ -78,6 +78,16 @@
                 </label>
             </li>
             <li>
+                <label for="roi_start_lane">
+                    Start lane:
+                    <select  id="roi_start_lane" class="viewType" ng-model="settings.roadSettings.startLane">
+                        <option ng-repeat="startLane in startLanes"
+                                value="{{startLane}}"
+                                ng-selected="settings.roadSettings.startLane == startLane">{{startLane}}</option>
+                    </select>
+                </label>
+            </li>
+            <li>
                 <label for="roi_min_side_distance">
                     Min side distance:
                     <input type="range" min="1" id="roi_min_side_distance" max="{{settings.cameraDimension.width/2}}"
