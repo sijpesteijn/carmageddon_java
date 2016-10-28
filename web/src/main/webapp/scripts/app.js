@@ -60,7 +60,6 @@ app.factory('websocketFactory', function ($websocket, $location, $interval) {
             connected = false;
             stopPinger();
             console.log('Connection stopped' + error);
-            // callback(error);
         });
 
         this.onMessage = function(callback) {
