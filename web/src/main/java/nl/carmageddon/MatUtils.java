@@ -10,6 +10,8 @@ import org.opencv.core.Point;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.Math.atan;
 import static java.lang.Math.toDegrees;
@@ -26,7 +28,15 @@ public class MatUtils {
     }
 
     public static Point getCenterPoint(Line line) {
-        return getCenterPoint(new ArrayList<Point>() {{ add(line.getStart()); add(line.getEnd());}});
+        return getCenterPoint(new ArrayList<Point>() {{
+            add(line.getStart());
+            add(line.getEnd());
+        }});
+    }
+
+    public static Point getCenterPointFromLines(List<Line> lines) {
+        return getCenterPoint(lines.stream().flatMap(l -> Stream.of(l.getStart(), l.getEnd()))
+                .collect(Collectors.toList()));
     }
 
     public static PCA calculatePCA(List<Point> points) {
@@ -35,21 +45,21 @@ public class MatUtils {
         pca.setCenter(center);
 
         double[][] pointMatrix = points.stream().map(point ->
-                                                             new double[] { point.x - center.x, point.y - center.y }).toArray(double[][] :: new);
+                new double[]{point.x - center.x, point.y - center.y}).toArray(double[][]::new);
 
         RealMatrix mx = MatrixUtils.createRealMatrix(pointMatrix);
         RealMatrix cov = new Covariance(mx).getCovarianceMatrix();
         EigenDecomposition decomposition = new EigenDecomposition(cov);
 
-        Point axisX = new Point(center.x + (0.02 * decomposition.getRealEigenvalue(0) * decomposition.getV().getEntry(0,0)),
-                                center.y + (0.02 * decomposition.getRealEigenvalue(0) * decomposition.getV().getEntry(0,1)));
+        Point axisX = new Point(center.x + (0.02 * decomposition.getRealEigenvalue(0) * decomposition.getV().getEntry(0, 0)),
+                center.y + (0.02 * decomposition.getRealEigenvalue(0) * decomposition.getV().getEntry(0, 1)));
 
-        Point axisY = new Point(center.x - (0.02 * decomposition.getRealEigenvalue(1) * decomposition.getV().getEntry(1,0)),
-                                center.y + (0.02 * decomposition.getRealEigenvalue(1) * decomposition.getV().getEntry(1,1)));
+        Point axisY = new Point(center.x - (0.02 * decomposition.getRealEigenvalue(1) * decomposition.getV().getEntry(1, 0)),
+                center.y + (0.02 * decomposition.getRealEigenvalue(1) * decomposition.getV().getEntry(1, 1)));
         pca.setAxisX(axisX);
         pca.setAxisY(axisY);
 
-        double angle = toDegrees(atan(decomposition.getRealEigenvalues()[1]/decomposition.getRealEigenvalues()[0]));
+        double angle = toDegrees(atan(decomposition.getRealEigenvalues()[1] / decomposition.getRealEigenvalues()[0]));
         pca.setAngle(angle);
         return pca;
     }

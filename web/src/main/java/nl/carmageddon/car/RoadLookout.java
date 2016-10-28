@@ -12,9 +12,11 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Optional;
 
 import static java.lang.Math.*;
 import static nl.carmageddon.MatUtils.getCenterPoint;
+import static nl.carmageddon.car.TrackLineHelper.getIntersection;
 import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.line;
 
@@ -24,6 +26,7 @@ import static org.opencv.imgproc.Imgproc.line;
 @Singleton
 public class RoadLookout extends Observable implements Lookout<RoadLookoutView> {
     private static final Logger logger = LoggerFactory.getLogger(RoadLookout.class);
+    int index = 0;
     private boolean run;
     private LookoutResult result;
     private RoadSettings settings;
@@ -35,13 +38,65 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
 
     @Inject
     public RoadLookout(Camera camera, CarInstructionSender carInstructionSender,
-            CarmageddonSettings carmageddonSettings) {
+                       CarmageddonSettings carmageddonSettings) {
         this.camera = camera;
         this.carInstructionSender = carInstructionSender;
         this.settings = carmageddonSettings.getRoadSettings();
         this.finishLineHelper = new FinishLineHelper(carmageddonSettings.getCameraDimension());
         this.leftLineHelper = new LeftLineHelper(carmageddonSettings.getCameraDimension());
         this.rightLineHelper = new RightLineHelper(carmageddonSettings.getCameraDimension());
+    }
+
+    static List<Point> getPoints(Orientation orientation, List<Point> allPoints) {
+        List<Point> points = new ArrayList<>();
+        for (int i = 0; i < allPoints.size(); i = i + 2) {
+            Point start = allPoints.get(i);
+            Point end = allPoints.get(i + 1);
+            double angle = toDegrees(atan2(abs(start.y - end.y), abs(start.x - end.x)));
+            // filter vertical/horizontal
+            if (orientation == Orientation.VERTICAL && angle > 10) {
+                points.add(start);
+                points.add(end);
+            } else if (orientation == Orientation.HORIZONTAL && angle < 15) {
+                points.add(start);
+                points.add(end);
+            }
+        }
+        return points;
+    }
+
+    public static List<Point> findPointPairsInMath(Mat snapshot, LineSettings lineSettings, int roiHeight) {
+        // Get region to look at
+        Rect roi = new Rect(0, roiHeight, snapshot.width(), snapshot.height() - roiHeight);
+        Mat roiMath = new Mat(snapshot, roi);
+
+        // Blur and convert to gray
+        Imgproc.GaussianBlur(roiMath, roiMath, new Size(3, 3), 3);
+        Imgproc.cvtColor(roiMath, roiMath, Imgproc.COLOR_RGB2GRAY, 0);
+
+        // Edge detection
+        Imgproc.Canny(roiMath, roiMath, lineSettings.getCannyThreshold1(), lineSettings.getCannyThreshold2(),
+                lineSettings.getCannyApertureSize(), false);
+
+        // Find the lines
+        Mat lines = new Mat();
+        Imgproc.HoughLinesP(roiMath, lines, 1, Math.PI / 180, lineSettings.getLinesThreshold(),
+                lineSettings.getLinesMinLineSize(), lineSettings.getLinesMaxLineGap());
+
+        List<Point> points = new ArrayList<>();
+        for (int x = 0; x < lines.rows(); x++) {
+            double[] vec = lines.get(x, 0);
+            double x1 = vec[0],
+                    y1 = vec[1] + roi.y,
+                    x2 = vec[2],
+                    y2 = vec[3] + roi.y;
+            Point start = new Point(x1, y1);
+            Point end = new Point(x2, y2);
+
+            points.add(start);
+            points.add(end);
+        }
+        return points;
     }
 
     @Override
@@ -54,7 +109,7 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
             addViewToMat(snapshot, roadLookoutView);
             // Als race gestopt is of we zijn de 1e finish line gepasseerd en de 2e is dichterbij dan 40 pixel
             if (!run ||
-                finishLineHelper.pastFirstAndCloserThan(roadLookoutView, settings.getMinDistance2FinishLine())) {
+                    finishLineHelper.pastFirstAndCloserThan(roadLookoutView, settings.getMinDistance2FinishLine())) {
                 breakCar(settings.getBreakVelocity());
                 result = new LookoutResult(AutonomousStatus.RACE_FINISHED, snapshot);
                 notifyClients(result);
@@ -63,16 +118,15 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
             // als er geen linker en rechter lijn zijn en we zijn nog niet over de 1e finish line -> stoppen, want dan
             // geen weg meer.
             else if (run &&
-                     !finishLineHelper.isPastFirstFinsihLine(roadLookoutView) &&
-                     roadLookoutView.getLeftLane() == null &&
-                     roadLookoutView.getRightLane() == null) {
+                    !finishLineHelper.isPastFirstFinsihLine(roadLookoutView) &&
+                    roadLookoutView.getLeftLane() == null &&
+                    roadLookoutView.getRightLane() == null) {
                 carInstructionSender.sendMessage("throttle", 0);
                 result = new LookoutResult(AutonomousStatus.NO_ROAD, snapshot);
                 notifyClients(result);
                 run = false;
 
-            }
-            else { // Gas op de plank
+            } else { // Gas op de plank
                 instructCar(roadLookoutView);
                 result = new LookoutResult(AutonomousStatus.RACING, snapshot);
                 notifyClients(result);
@@ -83,6 +137,7 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
 
     /**
      * Stop de auto
+     *
      * @param velocity
      */
     private void breakCar(int velocity) {
@@ -106,14 +161,35 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
         notifyObservers(event);
     }
 
-    int index = 0;
     public RoadLookoutView getCurrentView(Mat snapshot) {
         try {
             RoadLookoutView view = new RoadLookoutView();
 
+            boolean isRightTrack = settings.getStartLane().equals("right");
+
             List<Point> vPoints = findPointPairsInMath(snapshot, settings.getLaneLineSettings(),
-                                                       settings.getRoiHeight());
+                    settings.getRoiHeight());
             List<Point> verticalPoints = getPoints(Orientation.VERTICAL, vPoints);
+
+            final List<Line> lines = TrackLineHelper.convert2Lines(verticalPoints);
+
+            if (!lines.isEmpty()) {
+                final Optional<Line> rightLine = TrackLineHelper.getRightLine(lines, isRightTrack);
+                final Optional<Line> leftLine = TrackLineHelper.getLeftLine(lines, isRightTrack);
+
+                rightLine.ifPresent(line -> view.setRightLane(line));
+                leftLine.ifPresent(line -> view.setLeftLane(line));
+
+                if (leftLine.isPresent() && rightLine.isPresent()) {
+                    final Line line1 = new Line(leftLine.get().getStart(), rightLine.get().getEnd());
+                    final Line line2 = new Line(leftLine.get().getEnd(), rightLine.get().getStart());
+                    // line(clone, line.getStart(), line.getEnd(), new Scalar(0, 255, 255), 2);
+
+                    final Point point = getIntersection(line1, line2).get();
+                }
+
+            }
+
             if (verticalPoints.size() > 0) {
                 List<Line> verticalLines = createLines(verticalPoints);
                 view.setRoadLines(verticalLines);
@@ -128,7 +204,7 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
             }
 
             List<Point> hPoints = findPointPairsInMath(snapshot, settings.getFinishLineSettings(),
-                                                       settings.getRoiHeight());
+                    settings.getRoiHeight());
             List<Point> horizontalPoints = getPoints(Orientation.HORIZONTAL, hPoints);
             if (horizontalPoints.size() > 0) {
                 List<Line> horizontalLines = createLines(horizontalPoints);
@@ -157,73 +233,19 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
         return lines;
     }
 
-    private List<Point> getPoints(Orientation orientation, List<Point> allPoints) {
-        List<Point> points = new ArrayList<>();
-        for (int i = 0; i < allPoints.size(); i = i + 2) {
-            Point start = allPoints.get(i);
-            Point end = allPoints.get(i + 1);
-            double angle = toDegrees(atan2(abs(start.y - end.y), abs(start.x - end.x)));
-            // filter vertical/horizontal
-            if (orientation == Orientation.VERTICAL && angle > 10) {
-                points.add(start);
-                points.add(end);
-            }
-            else if (orientation == Orientation.HORIZONTAL && angle < 15) {
-                points.add(start);
-                points.add(end);
-            }
-        }
-        return points;
-    }
-
-    private List<Point> findPointPairsInMath(Mat snapshot, LineSettings lineSettings, int roiHeight) {
-        // Get region to look at
-        Rect roi = new Rect(0, roiHeight, snapshot.width(), snapshot.height() - roiHeight);
-        Mat roiMath = new Mat(snapshot, roi);
-
-        // Blur and convert to gray
-        Imgproc.GaussianBlur(roiMath, roiMath, new Size(3, 3), 3);
-        Imgproc.cvtColor(roiMath, roiMath, Imgproc.COLOR_RGB2GRAY, 0);
-
-        // Edge detection
-        Imgproc.Canny(roiMath, roiMath, lineSettings.getCannyThreshold1(), lineSettings.getCannyThreshold2(),
-                      lineSettings.getCannyApertureSize(), false);
-
-        // Find the lines
-        Mat lines = new Mat();
-        Imgproc.HoughLinesP(roiMath, lines, 1, Math.PI / 180, lineSettings.getLinesThreshold(),
-                            lineSettings.getLinesMinLineSize(), lineSettings.getLinesMaxLineGap());
-
-        List<Point> points = new ArrayList<>();
-        for (int x = 0; x < lines.rows(); x++) {
-            double[] vec = lines.get(x, 0);
-            double x1 = vec[0],
-                    y1 = vec[1] + roi.y,
-                    x2 = vec[2],
-                    y2 = vec[3] + roi.y;
-            Point start = new Point(x1, y1);
-            Point end = new Point(x2, y2);
-            points.add(start);
-            points.add(end);
-        }
-        return points;
-    }
-
     private void instructCar(RoadLookoutView view) {
         if (view.getLeftLane() == null) {
             carInstructionSender.sendMessage("throttle", settings.getSteeringSpeed());
             carInstructionSender.sendMessage("angle", -20);
-        }
-        else if (view.getRightLane() == null) {
+        } else if (view.getRightLane() == null) {
             carInstructionSender.sendMessage("throttle", settings.getSteeringSpeed());
             carInstructionSender.sendMessage("angle", 20);
-        }
-        else {
+        } else {
             carInstructionSender.sendMessage("throttle", settings.getStraightSpeed());
             if (abs(getCenterPoint(view.getLeftLane()).x - view.getLaneCenter().x) < settings.getMinSideDistance()) {
                 logger.debug("Too close to the left.");
                 carInstructionSender.sendMessage("angle", 20);
-            } else if(abs(getCenterPoint(view.getRightLane()).x - view.getLaneCenter().x) < settings.getMinSideDistance()) {
+            } else if (abs(getCenterPoint(view.getRightLane()).x - view.getLaneCenter().x) < settings.getMinSideDistance()) {
                 logger.debug("Too close to the right.");
                 carInstructionSender.sendMessage("angle", -20);
             } else {
@@ -241,7 +263,7 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
                 });
             }
             if (this.settings.isShowFinishLines() && view.getFinishLines() != null &&
-                view.getFinishLines().size() > 0) {
+                    view.getFinishLines().size() > 0) {
 //                logger.debug("Finish lines: " + view.getFinishLines().size());
                 circle(snapshot, view.getFinishCenter(), 5, new Scalar(255, 0, 255), 3);
                 if (view.getHorizontalLines() != null) {

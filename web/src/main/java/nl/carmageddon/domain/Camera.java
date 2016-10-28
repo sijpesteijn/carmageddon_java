@@ -37,7 +37,7 @@ public class Camera {
         if (camera != null && camera.isOpened()) {
             return camera;
         }
-        if (this.bbIp.equals("localhost")) {
+        if (true || this.bbIp.equals("localhost")) {
             camera = new VideoCapture(0);
         } else {
             camera = new VideoCapture(url);
