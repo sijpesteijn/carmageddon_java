@@ -19,34 +19,30 @@ import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_WIDTH;
 public class Camera {
     private static Logger logger = LoggerFactory.getLogger(Camera.class);
     private final Dimension dimension;
+    private final String bbIp;
+
     @JsonIgnore
     private VideoCapture camera;
-    private int id;
     private String url;
 
     @Inject
     public Camera(CarmageddonSettings settings) {
         this.dimension = settings.getCameraDimension();
+        this.bbIp = settings.getBeagleBoneSettings().getBeagleBoneIp();
         url = "http://" + settings.getBeagleBoneSettings().getBeagleBoneIp() + ":"
                 + settings.getBeagleBoneSettings().getStreamPort() + "/?action=stream";
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-        if (camera != null) {
-            camera.release();
-        }
     }
 
     public VideoCapture getCamera() {
         if (camera != null && camera.isOpened()) {
             return camera;
         }
-        camera = new VideoCapture(0);
+        if (this.bbIp.equals("localhost")) {
+            camera = new VideoCapture(0);
+        } else {
+            camera = new VideoCapture(url);
+        }
+
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
