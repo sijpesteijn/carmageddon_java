@@ -183,29 +183,18 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
                 if (leftLine.isPresent() && rightLine.isPresent()) {
                     final Line line1 = new Line(leftLine.get().getStart(), rightLine.get().getEnd());
                     final Line line2 = new Line(leftLine.get().getEnd(), rightLine.get().getStart());
-                    // line(clone, line.getStart(), line.getEnd(), new Scalar(0, 255, 255), 2);
 
-                    final Point point = getIntersection(line1, line2).get();
+                    final Point laneCenter = getIntersection(line1, line2).get();
+                    view.setLaneCenter(laneCenter);
                 }
 
             }
 
-            if (verticalPoints.size() > 0) {
-                List<Line> verticalLines = createLines(verticalPoints);
-                view.setRoadLines(verticalLines);
-                Point center = getCenterPoint(verticalPoints);
-                view.setLaneCenter(center);
-                // Splits de verticale punten in linker en rechter
-                Line leftLine = leftLineHelper.findLeftLine(verticalPoints);
-                view.setLeftLane(leftLine);
-
-                Line rightLine = rightLineHelper.findRightLine(verticalPoints);
-                view.setRightLane(rightLine);
-            }
-
             List<Point> hPoints = findPointPairsInMath(snapshot, settings.getFinishLineSettings(),
                     settings.getRoiHeight());
+
             List<Point> horizontalPoints = getPoints(Orientation.HORIZONTAL, hPoints);
+
             if (horizontalPoints.size() > 0) {
                 List<Line> horizontalLines = createLines(horizontalPoints);
                 view.setHorizontalLines(horizontalLines);
