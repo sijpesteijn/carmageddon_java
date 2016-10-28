@@ -26,12 +26,10 @@ import java.util.concurrent.TimeUnit;
 public class LifeLineSocket {
     private static Logger logger = LoggerFactory.getLogger(LifeLineSocket.class);
     private final ScheduledExecutorService socketListenerTimer = Executors.newSingleThreadScheduledExecutor();
-    private final int delay = 500;
+    private final int delay = 10000;
     private ServerSocket socket;
     private Car car;
-
     private List<Socket> clientConnections;
-
     private long lastTime;
 
     @Inject

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Observable;
 
 import static java.lang.Math.*;
+import static java.lang.Thread.sleep;
 import static nl.carmageddon.MatUtils.getCenterPoint;
 import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.line;
@@ -88,7 +89,7 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
     private void breakCar(int velocity) {
         try {
             carInstructionSender.sendMessage("throttle", velocity);
-            Thread.sleep(700);
+            sleep(700);
         } catch (Exception e) {
             logger.error(e.getMessage());
         } finally {
@@ -213,23 +214,35 @@ public class RoadLookout extends Observable implements Lookout<RoadLookoutView> 
         if (view.getLeftLane() == null) {
             carInstructionSender.sendMessage("throttle", settings.getSteeringSpeed());
             carInstructionSender.sendMessage("angle", -20);
+            delay(200);
         }
         else if (view.getRightLane() == null) {
             carInstructionSender.sendMessage("throttle", settings.getSteeringSpeed());
             carInstructionSender.sendMessage("angle", 20);
+            delay(200);
         }
         else {
             carInstructionSender.sendMessage("throttle", settings.getStraightSpeed());
             if (abs(getCenterPoint(view.getLeftLane()).x - view.getLaneCenter().x) < settings.getMinSideDistance()) {
                 logger.debug("Too close to the left.");
-                carInstructionSender.sendMessage("angle", 20);
+                carInstructionSender.sendMessage("angle", 17);
+                delay(200);
             } else if(abs(getCenterPoint(view.getRightLane()).x - view.getLaneCenter().x) < settings.getMinSideDistance()) {
                 logger.debug("Too close to the right.");
-                carInstructionSender.sendMessage("angle", -20);
+                carInstructionSender.sendMessage("angle", -17);
+                delay(200);
             } else {
                 carInstructionSender.sendMessage("angle", 0);
             }
         }
+    }
+
+    private void delay(int milliseconds) {
+//        try {
+//            Thread.sleep(milliseconds);
+//        } catch (Exception e) {
+//            logger.error("DELAY: " + e.getMessage());
+//        }
     }
 
     public void addViewToMat(Mat snapshot, RoadLookoutView view) {

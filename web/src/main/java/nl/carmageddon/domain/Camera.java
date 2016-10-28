@@ -34,26 +34,32 @@ public class Camera {
     }
 
     public VideoCapture getCamera() {
-        if (camera != null && camera.isOpened()) {
-            return camera;
-        }
-        if (this.bbIp.equals("localhost")) {
-            camera = new VideoCapture(0);
-        } else {
-            camera = new VideoCapture(url);
-        }
-
         try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (!camera.isOpened()) {
-            logger.error("No webcam with id " + url + " found!");
-            camera = null;
-        } else {
-            camera.set(CV_CAP_PROP_FRAME_WIDTH, dimension.getWidth());
-            camera.set(CV_CAP_PROP_FRAME_HEIGHT, dimension.getHeight());
+            if (camera != null && camera.isOpened()) {
+                return camera;
+            }
+            if (this.bbIp.equals("localhost")) {
+                camera = new VideoCapture(0);
+            }
+            else {
+                camera = new VideoCapture(url);
+            }
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (!camera.isOpened()) {
+                logger.error("No webcam with id " + url + " found!");
+                camera = null;
+            }
+            else {
+                camera.set(CV_CAP_PROP_FRAME_WIDTH, dimension.getWidth());
+                camera.set(CV_CAP_PROP_FRAME_HEIGHT, dimension.getHeight());
+            }
+        } catch (Exception e) {
+            logger.error("Get camera: " + e.getMessage());
         }
         return camera;
     }

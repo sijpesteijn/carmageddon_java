@@ -49,7 +49,7 @@ app.factory('websocketFactory', function ($websocket, $location, $interval) {
         function startPinger() {
             pinger = $interval(function () {
                 connection.send('ping');
-            }, 100)
+            }, 300)
         }
 
         function stopPinger() {

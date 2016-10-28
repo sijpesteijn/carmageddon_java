@@ -82,7 +82,7 @@ public class AutonomousStatusWebsocket implements Observer{
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("update " + e.getMessage());
         }
     }
 
