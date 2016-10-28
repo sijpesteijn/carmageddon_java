@@ -52,7 +52,7 @@ public class ConfigurationModule extends AbstractModule {
             roadSettings.setSteeringSpeed(configuration.getInt("road.steering.speed"));
             roadSettings.setStraightSpeed(configuration.getInt("road.straight.speed"));
             roadSettings.setMinSideDistance(configuration.getInt("road.side.distance.min"));
-
+            roadSettings.setStartLane(configuration.getString("road.start.lane"));
             LineSettings laneLineSettings = new LineSettings();
             laneLineSettings.setCannyThreshold1(configuration.getInt("road.lane.canny.threshold1"));
             laneLineSettings.setCannyThreshold2(configuration.getInt("road.lane.canny.threshold2"));

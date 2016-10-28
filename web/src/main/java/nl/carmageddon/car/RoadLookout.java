@@ -23,7 +23,7 @@ import static org.opencv.imgproc.Imgproc.line;
  */
 @Singleton
 public class RoadLookout extends Observable implements Lookout<RoadLookoutView> {
-    private static final Logger logger = LoggerFactory.getLogger(TrafficLightLookout.class);
+    private static final Logger logger = LoggerFactory.getLogger(RoadLookout.class);
     private boolean run;
     private LookoutResult result;
     private RoadSettings settings;

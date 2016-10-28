@@ -54,7 +54,7 @@ public class LifeLineWebsocket {
 
                 }
             }
-        }, 0, 500, TimeUnit.MILLISECONDS);
+        }, 0, 300, TimeUnit.MILLISECONDS);
     }
 
     private void setupSocket() throws IOException {

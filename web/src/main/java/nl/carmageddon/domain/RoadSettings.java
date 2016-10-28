@@ -14,6 +14,7 @@ public class RoadSettings {
     private int steeringSpeed;
     private int straightSpeed;
     private int minSideDistance;
+    private String startLane;
 
     public void setShowFinishLines(boolean showFinishLines) {
         this.showFinishLines = showFinishLines;
@@ -93,5 +94,13 @@ public class RoadSettings {
 
     public int getMinSideDistance() {
         return minSideDistance;
+    }
+
+    public void setStartLane(String startLane) {
+        this.startLane = startLane;
+    }
+
+    public String getStartLane() {
+        return startLane;
     }
 }

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_HEIGHT;
 import static org.opencv.videoio.Videoio.CV_CAP_PROP_FRAME_WIDTH;
 
@@ -59,16 +60,16 @@ public class Camera {
     }
 
     public Mat makeSnapshot() {
-//        return imread("./src/main/resources/ws1.jpg");
-        Mat snapshot = new Mat();
-        try {
-            VideoCapture camera = getCamera();
-            camera.grab();
-            camera.retrieve(snapshot);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-        return snapshot;
+        return imread("./src/main/resources/ws6.jpg");
+//        Mat snapshot = new Mat();
+//        try {
+//            VideoCapture camera = getCamera();
+//            camera.grab();
+//            camera.retrieve(snapshot);
+//        } catch (Exception e) {
+//            logger.error(e.getMessage());
+//        }
+//        return snapshot;
     }
 
     public boolean isOpened() {
