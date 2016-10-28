@@ -59,7 +59,7 @@ public class Camera {
     }
 
     public Mat makeSnapshot() {
-//        return imread("/Users/gijs/programming/java/carmageddon/web/src/main/resources/ws1.jpg");
+//        return imread("./src/main/resources/ws1.jpg");
         Mat snapshot = new Mat();
         try {
             VideoCapture camera = getCamera();
